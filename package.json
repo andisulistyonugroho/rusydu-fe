@@ -10,8 +10,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "dayjs-nuxt": "^2.1.9",
     "nuxt": "^3.12.2",
     "vue": "latest",
     "vuetify-nuxt-module": "^0.14.1"
+  },
+  "devDependencies": {
+    "nuxt-lodash": "^2.5.3",
+    "sass": "^1.77.6"
   }
 }

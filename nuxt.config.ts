@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-16',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'Catat',
+      title: 'RUSYDU',
       meta: [
         { name: 'description', content: 'Biar gampang dilihat lagi' }
       ],
@@ -48,7 +48,6 @@ export default defineNuxtConfig({
     moduleOptions: {
     },
     vuetifyOptions: {
-      
     }
   }
 })

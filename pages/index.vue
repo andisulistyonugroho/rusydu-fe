@@ -2,22 +2,24 @@
 const dayjs = useDayjs()
 const startDate = dayjs().subtract(7, 'days')
 const dNewRecord = ref(false)
+const tDate = ref()
 const days = []
 
 for (let i = 1; i <= 37; i++) {
   const theDay = startDate.add(i, 'days')
   days.push({
-    value: theDay,
-    text: theDay.format('ddd DD, MM YYYY')
+    text: theDay.format('ddd, DD MMM YYYY')
   })
 }
 
 const addNew = useDebounce((data) => {
   dNewRecord.value = true
+  tDate.value = data.text
 }, 1000, { leading: true, trailing: false })
 
 const closeIt = () => {
   dNewRecord.value = false
+  tDate.value = null
 }
 
 </script>
@@ -57,7 +59,7 @@ const closeIt = () => {
         <v-divider></v-divider>
       </v-col>
     </v-row>
-    <LazyAddDailyRecord :dialog="dNewRecord" @closeit="closeIt" />
+    <LazyAddDailyRecord :dialog="dNewRecord" :transactiondate="tDate" @closeit="closeIt" />
     <v-footer app class="bg-indigo-lighten-1 text-center d-flex flex-column">
 
       <div>

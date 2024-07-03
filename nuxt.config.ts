@@ -3,7 +3,7 @@ import { defineNuxtConfig } from "nuxt/config"
 export default defineNuxtConfig({
   devtools: { enabled: true },
   devServer: {
-    host: '0.0.0.0',
+    // host: '0.0.0.0',
     port: 8080
   },
   ssr: false,

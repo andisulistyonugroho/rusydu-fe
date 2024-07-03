@@ -1,13 +1,24 @@
 <script setup>
 const props = defineProps({
-  dialog: { type: Boolean, default: false }
+  dialog: { type: Boolean, default: false },
+  transactiondate: { type: String, default: null }
 })
+const transactionType = [
+  { label: 'Kredit', value: 'C' },
+  { label: 'Debit', value: 'D' },
+  { label: 'Mutasi', value: 'M' },
+  { label: 'Hutang', value: 'H' },
+  { label: 'Piutang', value: 'P' }
+]
 const emit = defineEmits(['closeit'])
+const dayjs = useDayjs()
 
 const payload = ref({
+  title: null,
   transactionType: 'C',
   amount: 0
 })
+const transactionDate = computed(() => dayjs(props.transactiondate).format('YYYY-MM-DD HH:mm:ss'))
 </script>
 <template>
   <v-dialog v-model="props.dialog">
@@ -19,13 +30,12 @@ const payload = ref({
         <v-toolbar-title>Pencatatan</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
-        <div class="text-center">2024/07/02</div>
-        <v-radio-group v-model="payload.transactionType" inline class="px-5">
-          <v-radio label="Kredit" value="C" />
-          <v-radio label="Debit" value="D" />
-          <v-radio label="Mutasi" value="M" />
+        <div class="text-center text-h6">{{ transactiondate }}</div>
+        <v-radio-group v-model="payload.transactionType" inline>
+          <v-radio v-for="row in transactionType" :label="row.label" :value="row.value" />
         </v-radio-group>
-        <v-text-field label="Title" variant="underlined" />
+        <v-text-field v-model="payload.title" label="Title" variant="underlined" placeholder="Pembelian bensin"
+          persistent-placeholder />
         <v-text-field v-model="payload.amount" :rules="[(v) => !!v || 'Required item']" label="Nominal"
           variant="underlined" type="number" />
         <v-select v-show="payload.transactionType === 'M' || payload.transactionType === 'D'" label="Akun Asal"
@@ -33,7 +43,9 @@ const payload = ref({
         <v-select v-show="payload.transactionType === 'M' || payload.transactionType === 'C'" label="Akun Tujuan"
           :items="['CIMB', 'Dompet']" variant="underlined" />
 
-        {{ payload }}
+        payload: {{ payload }}
+        tdate: {{ transactiondate }}
+        tdd: {{ transactionDate }}
       </v-card-text>
       <v-card-actions>
         <v-btn variant="tonal" color="error">batal</v-btn>

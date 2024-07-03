@@ -40,7 +40,9 @@ export default defineNuxtConfig({
   modules: [
     'vuetify-nuxt-module',
     'dayjs-nuxt',
-    'nuxt-lodash'
+    'nuxt-lodash',
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt'
   ],
   vuetify: {
     moduleOptions: {

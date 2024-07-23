@@ -15,7 +15,7 @@ const snacko = ref({
     <v-app-bar class="border-b">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Catatan</v-app-bar-title>
+      <v-app-bar-title>Rusydu</v-app-bar-title>
     </v-app-bar>
 
     <v-main>

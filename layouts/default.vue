@@ -1,33 +1,27 @@
 <script setup>
 const waitDialog = ref(false)
+const drawer = ref(false)
 const snacko = ref({
   message: null,
   color: null,
-  open: false
+  open: false,
 })
 </script>
 <template>
   <v-app>
-    <v-app-bar app class="border-b">
-      <v-container fluid>
-        <!-- <v-toolbar-title> -->
-        <div class="d-flex justify-space-between">
-          <div>
-            <!-- <v-btn icon height="24" @click="theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'"> -->
-            <!-- <v-icon @click="">mdi-theme-light-dark</v-icon> -->
-            <!-- </v-btn> -->
-          </div>
-        </div>
+    <v-navigation-drawer v-model="drawer">
+      <LazyTheMenu />
+    </v-navigation-drawer>
+    <v-app-bar class="border-b">
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-        <!-- </v-toolbar-title> -->
-      </v-container>
-      <v-progress-linear :active="waitDialog" :indeterminate="waitDialog" absolute bottom
-        color="primary"></v-progress-linear>
+      <v-app-bar-title>Catatan</v-app-bar-title>
     </v-app-bar>
 
     <v-main>
       <slot />
     </v-main>
+
     <v-snackbar v-model="snacko.open" :color="snacko.color" multi-line>
       {{ snacko.message }}
 

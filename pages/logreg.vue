@@ -3,6 +3,7 @@ definePageMeta({
   layout: 'empty'
 })
 const route = useRoute()
+const router = useRouter()
 const action = route.query.action
 const passType = ref(true)
 const loginF = ref()
@@ -77,7 +78,7 @@ const doLogin = (async () => {
   <v-container class="fill-height">
     <v-row>
       <v-col cols="12" md="4" offset-md="4">
-        <v-card variant="tonal" color="primary" class="pt-5 pb-5" rounded="xl">
+        <v-card variant="tonal" class="pt-5 pb-5" rounded="xl">
           <v-tabs v-model="tab" fixed-tabs>
             <v-tab size="large" variant="plain" :value="1">
               masuk
@@ -116,7 +117,6 @@ const doLogin = (async () => {
             <v-spacer></v-spacer>
             <v-btn size="large" rounded="lg" block variant="tonal" class="text-capitalize" @click="doSubmit">
               Submit&nbsp;
-              <v-icon right>mdi-login</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>

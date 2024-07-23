@@ -10,14 +10,14 @@ export default {
     themes: {
       dark: {
         colors: {
-          primary: '#FFFFFF'
+          // primary: '#FFFFFF'
           // primary: '#FFD580'
         }
       },
       light: {
         dark: false,
         colors: {
-          // primary: '#22549F',
+          // primary: '#424242',
           // secondary: '#E39139',
         }
       },

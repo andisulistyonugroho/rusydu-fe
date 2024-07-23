@@ -1,4 +1,7 @@
 <script setup>
+definePageMeta({
+  layout: 'secondlayer'
+})
 const items = [
   {
     title: 'Item #1',
@@ -34,7 +37,7 @@ const items = [
   <div>
     <v-list :items="items"></v-list>
     <div class="text-center">
-      <v-btn>add new</v-btn>
+      <v-btn to="/accounts/form">tambah</v-btn>
     </div>
   </div>
 </template>

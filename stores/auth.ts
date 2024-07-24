@@ -35,8 +35,19 @@ export const useAuthStore = defineStore('auth', () => {
   const changingTheme = (value: boolean) => {
     dark.value = value ? 'light' : 'dark'
   }
+  const register = (async (payload: {
+    realm: string,
+    username: string,
+    email: string
+  }) => {
+    try {
+      return Promise.resolve()
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
 
-  return { setUser, setProfile, setRole, logout, changingTheme, user, dark }
+  return { setUser, setProfile, setRole, logout, changingTheme, register, user, dark }
 },
   {
     persist: {

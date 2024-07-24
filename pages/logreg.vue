@@ -9,15 +9,13 @@ const passType = ref(true)
 const loginF = ref()
 const regisF = ref()
 const payload = ref({
-  username: null,
+  email: null,
   wa_number: null,
   password: null
 })
 const tab = ref(1)
 const checkbox = ref(false)
-if (action === 'login') {
-  tab.value = 1
-} else {
+if (action === 'regis') {
   tab.value = 2
 }
 
@@ -52,8 +50,7 @@ const doSubmit = useDebounce(async () => {
 const doRegis = (async () => {
   try {
     payload.value.realm = 'member'
-    payload.value.email = `${payload.value.wa_number}@catet.in`
-    payload.value.emailVerified = true
+    payload.value.username = payload.value.wa_number
     const { data } = await register(payload.value)
     return Promise.resolve(data)
   } catch (error) {
@@ -64,7 +61,7 @@ const doRegis = (async () => {
 const doLogin = (async () => {
   try {
     const data = await login(
-      `${payload.value.wa_number}@catet.in`,
+      `${payload.value.email}@catet.in`,
       payload.value.password
     )
     setUser({ token: data.id, userId: data.userId })
@@ -75,54 +72,50 @@ const doLogin = (async () => {
 })
 </script>
 <template>
-  <v-container class="fill-height">
-    <v-row>
-      <v-col cols="12" md="4" offset-md="4">
-        <v-card variant="tonal" class="pt-5 pb-5" rounded="xl">
-          <v-tabs v-model="tab" fixed-tabs>
-            <v-tab size="large" variant="plain" :value="1">
-              masuk
-            </v-tab>
-            <v-tab size="large" variant="plain" :value="2">
-              buat akun
-            </v-tab>
-          </v-tabs>
-          <v-card-item class="pt-10">
-            <v-window v-model="tab">
-              <v-window-item :value="1">
-                <v-form ref="loginF" lazy-validation>
-                  <v-text-field v-model="payload.wa_number" :rules="[v => !!v || 'item required']" rounded="lg"
-                    variant="underlined" label="No WA*" clearable type="number" />
-                  <v-text-field v-model="payload.password" :rules="[v => !!v || 'item required']" rounded="lg"
-                    variant="underlined" label="Password*" :append-inner-icon="passType ? 'mdi-eye-off' : 'mdi-eye'"
-                    :type="passType ? 'password' : 'text'" @click:append-inner="passType = !passType" clearable />
-                </v-form>
-              </v-window-item>
-              <v-window-item :value="2">
-                <v-form ref="regisF" lazy-validation>
-                  <v-text-field v-model="payload.wa_number" :rules="[v => !!v || 'item required']" rounded="lg"
-                    variant="underlined" label="No WA*" clearable type="number" />
-                  <v-text-field v-model="payload.username" :rules="[v => !!v || 'item required']" rounded="lg"
-                    variant="underlined" label="Username*" clearable />
-                  <v-text-field v-model="payload.password" :rules="[v => !!v || 'item required']" rounded="lg"
-                    variant="underlined" label="Password*" :append-inner-icon="passType ? 'mdi-eye-off' : 'mdi-eye'"
-                    :type="passType ? 'password' : 'text'" @click:append-inner="passType = !passType" clearable />
-                  <v-checkbox v-model="checkbox" :rules="[v => !!v || 'checkbox required']"
-                    label="Username &amp; Password sudah saya simpan di tempat yang aman"></v-checkbox>
-                </v-form>
-              </v-window-item>
-            </v-window>
-          </v-card-item>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn size="large" rounded="lg" block variant="tonal" class="text-capitalize" @click="doSubmit">
-              Submit&nbsp;
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+  <v-container>
+    <v-row style="height:100vh;">
+      <v-col align-self="start" cols="12" md="4" offset-md="4">
+        <div class="text-center ma-12">
+          <h1>Rusydu</h1>
+          <div class="text-caption">Jaga dan kelola hartamu</div>
+        </div>
       </v-col>
-      <v-col cols="12" class="text-center">
-        <v-chip color="primary" variant="text" to="/">Kembali ke home</v-chip>
+      <v-col align-self="end" cols="12" md="4" offset-md="4" class="mb-16">
+        <v-tabs v-model="tab" fixed-tabs class="mb-3">
+          <v-tab size="large" variant="plain" :value="1" rounded="0">
+            masuk
+          </v-tab>
+          <v-tab size="large" variant="plain" :value="2" rounded="0">
+            buat akun
+          </v-tab>
+        </v-tabs>
+        <v-window v-model="tab">
+          <v-window-item :value="1">
+            <v-form ref="loginF" lazy-validation>
+              <v-text-field v-model="payload.wa_number" :rules="[v => !!v || 'item required']" rounded="lg"
+                variant="underlined" label="No WA*" clearable type="number" />
+              <v-text-field v-model="payload.password" :rules="[v => !!v || 'item required']" rounded="lg"
+                variant="underlined" label="Password*" :append-inner-icon="passType ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="passType ? 'password' : 'text'" @click:append-inner="passType = !passType" clearable />
+            </v-form>
+          </v-window-item>
+          <v-window-item :value="2">
+            <v-form ref="regisF" lazy-validation>
+              <v-text-field v-model="payload.wa_number" :rules="[v => !!v || 'item required']" rounded="lg"
+                variant="underlined" label="No WA*" clearable type="number" />
+              <v-text-field v-model="payload.email" :rules="[v => !!v || 'item required']" rounded="lg"
+                variant="underlined" label="Email*" clearable />
+              <v-text-field v-model="payload.password" :rules="[v => !!v || 'item required']" rounded="lg"
+                variant="underlined" label="Password*" :append-inner-icon="passType ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="passType ? 'password' : 'text'" @click:append-inner="passType = !passType" clearable />
+              <v-checkbox v-model="checkbox" :rules="[v => !!v || 'checkbox required']"
+                label="Username &amp; Password sudah saya simpan di tempat yang aman"></v-checkbox>
+            </v-form>
+          </v-window-item>
+        </v-window>
+        <v-btn size="large" rounded="lg" block variant="tonal" class="text-capitalize" @click="doSubmit">
+          Submit&nbsp;
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>

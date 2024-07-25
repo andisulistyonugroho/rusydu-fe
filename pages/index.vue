@@ -1,4 +1,5 @@
 <script setup>
+const { $debounce } = useNuxtApp()
 const dayjs = useDayjs()
 const startDate = dayjs().subtract(7, 'days')
 const dNewRecord = ref(false)
@@ -12,7 +13,7 @@ for (let i = 1; i <= 37; i++) {
   })
 }
 
-const addNew = useDebounce((data) => {
+const addNew = $debounce((data) => {
   dNewRecord.value = true
   tDate.value = data.text
 }, 1000, { leading: true, trailing: false })

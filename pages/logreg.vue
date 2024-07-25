@@ -2,6 +2,7 @@
 definePageMeta({
   layout: 'empty'
 })
+const { $debounce } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 const action = route.query.action
@@ -19,7 +20,7 @@ if (action === 'regis') {
   tab.value = 2
 }
 
-const doSubmit = useDebounce(async () => {
+const doSubmit = $debounce(async () => {
   try {
     if (tab.value === 1) {
       const validate = await loginF.value.validate()

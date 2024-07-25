@@ -21,7 +21,7 @@ $bus.$emit('set-header', 'Akun Keuangan')
         </template>
       </v-list-item>
     </v-list>
-    <div class="text-center">
+    <div class="text-center pt-5">
       <v-btn to="/accounts/form">tambah</v-btn>
     </div>
   </div>

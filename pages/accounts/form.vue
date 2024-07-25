@@ -19,8 +19,7 @@ const wa_number = ref()
         <v-form ref="form" lazy-validation>
           <v-text-field v-model="data.title" :rules="[v => !!v || 'tidak boleh kosong']" variant="underlined"
             label="Nama Akun*" />
-          <v-text-field v-model="data.sBalance" type="number" :rules="[v => !!v || 'tidak boleh kosong']"
-            variant="underlined" label="Saldo Awal*" />
+          <v-text-field v-model="data.sBalance" type="number" variant="underlined" label="Saldo Awal*" />
           <v-checkbox v-model="checkbox" :rules="[v => !!v || 'harus dicentang']" label="Semua data sudah sesuai" />
         </v-form>
         <div class="text-right">

@@ -3,10 +3,10 @@ definePageMeta({
   layout: 'empty',
   middleware: 'auth'
 })
-const { $debounce, $bus } = useNuxtApp()
+const { $debounce, $bus, $api } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
-const { register, login, setUser } = useAuthStore()
+const { setUser } = useAuthStore()
 
 const action = route.query.action
 const passType = ref(true)
@@ -53,9 +53,13 @@ const doSubmit = $debounce(async () => {
 
 const doRegis = (async () => {
   try {
-    payload.value.realm = 'member'
     payload.value.username = payload.value.wa_number
-    const data = await register(payload.value)
+    const { data } = await $api.post('/Users', {
+      realm: 'member',
+      username: payload.value.wa_number,
+      email: payload.value.email,
+      password: payload.value.password
+    })
     return Promise.resolve(data)
   } catch (error) {
     return Promise.reject(error)
@@ -64,8 +68,8 @@ const doRegis = (async () => {
 
 const doLogin = (async () => {
   try {
-    const data = await login({
-      username: payload.value.wa_number,
+    const { data } = await $api.post('/Users/login', {
+      username: `member:${payload.value.wa_number}`,
       password: payload.value.password
     })
     setUser({ token: data.id, userId: data.userId })

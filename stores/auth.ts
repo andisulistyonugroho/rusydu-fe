@@ -4,7 +4,7 @@
 // function()s become actions
 
 export const useAuthStore = defineStore('auth', () => {
-  const { $api } = useNuxtApp()
+
 
   type ProfileType = {
     [key: string]: any
@@ -37,38 +37,8 @@ export const useAuthStore = defineStore('auth', () => {
   const changingTheme = (value: boolean) => {
     dark.value = value ? 'light' : 'dark'
   }
-  const register = (async (payload: {
-    realm: string,
-    username: string,
-    email: string,
-    password: string
-  }) => {
-    try {
-      const { data } = await $api.post('/Users', {
-        realm: payload.realm,
-        username: payload.username,
-        email: payload.email,
-        password: payload.password
-      })
-      return Promise.resolve(data)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  })
-  const login = (async (payload: { username: string, password: string }) => {
-    try {
-      const { data } = await $api.post('/Users/login', {
-        username: `member:${payload.username}`,
-        password: payload.password
-      })
-      $api.defaults.headers.common['Authorization'] = data.id
-      return Promise.resolve(data)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  })
 
-  return { setUser, setProfile, setRole, logout, changingTheme, register, login, user, dark }
+  return { setUser, setProfile, setRole, logout, changingTheme, user, dark }
 },
   {
     persist: {

@@ -1,14 +1,37 @@
 <script setup>
+const { $bus } = useNuxtApp()
+
+const waitDialog = ref(false)
 const snacko = ref({
   message: null,
   color: null,
   open: false
+})
+
+$bus.$on('wait-dialog', (dialogValue) => {
+  waitDialog.value = dialogValue
+  console.log(waitDialog.value)
+})
+$bus.$on('eat-snackbar', (theSnack) => {
+  snacko.value.color = theSnack instanceof Error ? 'error' : 'success'
+  snacko.value.message = theSnack instanceof Error ? theSnack.response ? `${theSnack.response.data.error.statusCode}: ${theSnack.response.data.error.message}` : theSnack : theSnack
+  snacko.value.open = true
+})
+$bus.$on('set-header', (val) => {
+  title.value = val
+})
+onBeforeUnmount(() => {
+  $bus.$off('wait-dialog')
+  $bus.$off('eat-snackbar')
+  $bus.$off('set-header')
 })
 </script>
 <template>
   <v-app>
     <v-main>
       <slot />
+      <v-progress-linear :active="waitDialog" :indeterminate="waitDialog" absolute bottom
+        color="primary"></v-progress-linear>
     </v-main>
     <v-snackbar v-model="snacko.open" :color="snacko.color" multi-line>
       {{ snacko.message }}

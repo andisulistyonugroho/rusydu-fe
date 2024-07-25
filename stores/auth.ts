@@ -4,6 +4,8 @@
 // function()s become actions
 
 export const useAuthStore = defineStore('auth', () => {
+  const { $api } = useNuxtApp()
+
   type ProfileType = {
     [key: string]: any
   }
@@ -38,10 +40,18 @@ export const useAuthStore = defineStore('auth', () => {
   const register = (async (payload: {
     realm: string,
     username: string,
-    email: string
+    email: string,
+    password: string
   }) => {
     try {
-      return Promise.resolve()
+      const { data } = await $api.post('/Users', {
+        realm: payload.realm,
+        username: payload.username,
+        email: payload.email,
+        password: payload.password,
+        emailVerified: true
+      })
+      return Promise.resolve(data)
     } catch (error) {
       return Promise.reject(error)
     }

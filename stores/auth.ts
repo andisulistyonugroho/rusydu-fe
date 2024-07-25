@@ -73,7 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
   {
     persist: {
       storage: persistedState.localStorage,
-      key: 'r00sydoo'
+      key: 'r00sydoo_auth'
     }
   }
 )

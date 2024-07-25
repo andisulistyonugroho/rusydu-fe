@@ -1,7 +1,13 @@
 <script setup>
 definePageMeta({
-  layout: 'secondlayer'
+  layout: 'secondlayer',
+  middleware: 'auth'
 })
+
+const { getMyAccounts } = useAccountStore()
+
+getMyAccounts()
+
 const items = [
   {
     title: 'Item #1',

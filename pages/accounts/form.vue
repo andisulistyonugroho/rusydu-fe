@@ -1,7 +1,9 @@
 <script setup>
+const { $bus } = useNuxtApp()
 definePageMeta({
   layout: 'secondlayer'
 })
+$bus.$emit('set-header', 'Buat Akun')
 const data = ref({
   title: null,
   sBalance: 0,

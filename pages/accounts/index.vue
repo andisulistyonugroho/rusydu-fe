@@ -1,9 +1,10 @@
 <script setup>
+const { $bus } = useNuxtApp()
 definePageMeta({
   layout: 'secondlayer',
   middleware: 'auth'
 })
-
+$bus.$emit('set-header', 'Akun Keuangan')
 const { getMyAccounts } = useAccountStore()
 
 getMyAccounts()

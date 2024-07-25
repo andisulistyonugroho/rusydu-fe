@@ -1,4 +1,9 @@
 <script setup>
+definePageMeta({
+  layout: 'default',
+  middleware: 'auth'
+})
+
 const { $debounce } = useNuxtApp()
 const dayjs = useDayjs()
 const startDate = dayjs().subtract(7, 'days')

@@ -48,21 +48,32 @@ export const useAuthStore = defineStore('auth', () => {
         realm: payload.realm,
         username: payload.username,
         email: payload.email,
-        password: payload.password,
-        emailVerified: true
+        password: payload.password
       })
       return Promise.resolve(data)
     } catch (error) {
       return Promise.reject(error)
     }
   })
+  const login = (async (payload: { username: string, password: string }) => {
+    try {
+      const { data } = await $api.post('/Users/login', {
+        username: `member:${payload.username}`,
+        password: payload.password
+      })
+      $api.defaults.headers.common['Authorization'] = data.id
+      return Promise.resolve(data)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
 
-  return { setUser, setProfile, setRole, logout, changingTheme, register, user, dark }
+  return { setUser, setProfile, setRole, logout, changingTheme, register, login, user, dark }
 },
   {
     persist: {
       storage: persistedState.localStorage,
-      key: 'n3tand41n'
+      key: 'r00sydoo'
     }
   }
 )

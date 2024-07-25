@@ -10,7 +10,6 @@ const snacko = ref({
 
 $bus.$on('wait-dialog', (dialogValue) => {
   waitDialog.value = dialogValue
-  console.log(waitDialog.value)
 })
 $bus.$on('eat-snackbar', (theSnack) => {
   snacko.value.color = theSnack instanceof Error ? 'error' : 'success'

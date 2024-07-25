@@ -1,10 +1,13 @@
 <script setup>
 definePageMeta({
-  layout: 'empty'
+  layout: 'empty',
+  middleware: 'auth'
 })
-const { $debounce } = useNuxtApp()
+const { $debounce, $bus } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
+const { register, login, setUser } = useAuthStore()
+
 const action = route.query.action
 const passType = ref(true)
 const loginF = ref()
@@ -29,6 +32,7 @@ const doSubmit = $debounce(async () => {
       }
       $bus.$emit('wait-dialog', true)
       await doLogin()
+      router.replace('/')
     } else if (tab.value === 2) {
       const validate = await regisF.value.validate()
       if (!validate.valid) {
@@ -37,11 +41,10 @@ const doSubmit = $debounce(async () => {
       $bus.$emit('wait-dialog', true)
       await doRegis()
       await doLogin()
+      router.replace('/accounts')
     }
     $bus.$emit('wait-dialog', false)
-    router.replace('/themes')
   } catch (error) {
-
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', error)
   }
@@ -52,7 +55,7 @@ const doRegis = (async () => {
   try {
     payload.value.realm = 'member'
     payload.value.username = payload.value.wa_number
-    const { data } = await register(payload.value)
+    const data = await register(payload.value)
     return Promise.resolve(data)
   } catch (error) {
     return Promise.reject(error)
@@ -61,10 +64,10 @@ const doRegis = (async () => {
 
 const doLogin = (async () => {
   try {
-    const data = await login(
-      `${payload.value.email}@catet.in`,
-      payload.value.password
-    )
+    const data = await login({
+      username: payload.value.wa_number,
+      password: payload.value.password
+    })
     setUser({ token: data.id, userId: data.userId })
     return Promise.resolve()
   } catch (error) {
@@ -104,13 +107,15 @@ const doLogin = (async () => {
             <v-form ref="regisF" lazy-validation>
               <v-text-field v-model="payload.wa_number" :rules="[v => !!v || 'item required']" rounded="lg"
                 variant="underlined" label="No WA*" clearable type="number" />
-              <v-text-field v-model="payload.email" :rules="[v => !!v || 'item required']" rounded="lg"
-                variant="underlined" label="Email*" clearable />
+              <v-text-field v-model="payload.email" :rules="[
+                v => !!v || 'item required',
+                v => /.+@.+\..+/.test(v) || 'E-mail not valid'
+              ]" rounded="lg" variant="underlined" label="Email*" clearable />
               <v-text-field v-model="payload.password" :rules="[v => !!v || 'item required']" rounded="lg"
                 variant="underlined" label="Password*" :append-inner-icon="passType ? 'mdi-eye-off' : 'mdi-eye'"
                 :type="passType ? 'password' : 'text'" @click:append-inner="passType = !passType" clearable />
               <v-checkbox v-model="checkbox" :rules="[v => !!v || 'checkbox required']"
-                label="Username &amp; Password sudah saya simpan di tempat yang aman"></v-checkbox>
+                label="Password sudah saya simpan di tempat yang aman"></v-checkbox>
             </v-form>
           </v-window-item>
         </v-window>

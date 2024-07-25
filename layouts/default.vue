@@ -17,13 +17,9 @@ $bus.$on('eat-snackbar', (theSnack) => {
   snacko.value.message = theSnack instanceof Error ? theSnack.response ? `${theSnack.response.data.error.statusCode}: ${theSnack.response.data.error.message}` : theSnack : theSnack
   snacko.value.open = true
 })
-$bus.$on('set-header', (val) => {
-  title.value = val
-})
 onBeforeUnmount(() => {
   $bus.$off('wait-dialog')
   $bus.$off('eat-snackbar')
-  $bus.$off('set-header')
 })
 </script>
 <template>

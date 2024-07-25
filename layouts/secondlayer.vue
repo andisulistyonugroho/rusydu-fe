@@ -1,4 +1,5 @@
 <script setup>
+console.log('layer')
 const { $bus } = useNuxtApp()
 const waitDialog = ref(false)
 const title = ref('Rusydu')

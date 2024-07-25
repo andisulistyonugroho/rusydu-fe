@@ -1,48 +1,26 @@
 <script setup>
+console.log('accounts')
 const { $bus } = useNuxtApp()
 definePageMeta({
   layout: 'secondlayer',
   middleware: 'auth'
 })
-$bus.$emit('set-header', 'Akun Keuangan')
-const { getMyAccounts } = useAccountStore()
+const { getMyAccounts, accounts } = useAccountStore()
 
 getMyAccounts()
-
-const items = [
-  {
-    title: 'Item #1',
-    value: 1,
-    props: {
-      to: '/asdf',
-      appendIcon: 'mdi-chevron-right'
-    }
-  },
-  {
-    title: 'Item #2',
-    value: 2,
-  },
-  {
-    title: 'Item #3',
-    value: 3,
-  },
-  {
-    title: 'Item #4',
-    value: 4,
-  },
-  {
-    title: 'Item #5',
-    value: 5,
-  },
-  {
-    title: 'Item #6',
-    value: 6,
-  },
-]
+$bus.$emit('set-header', 'Akun Keuangan')
 </script>
 <template>
   <div>
-    <v-list :items="items"></v-list>
+    <v-list>
+      <v-list-item v-for="row in accounts" :title="row.title">
+        <div class="font-weight-bold">{{ toMoney(row.eBalance) }}</div>
+        <div class="text-caption">{{ formatDate(row.updatedAt) }}</div>
+        <template v-slot:append>
+          <v-btn icon="mdi-chevron-right" variant="text"></v-btn>
+        </template>
+      </v-list-item>
+    </v-list>
     <div class="text-center">
       <v-btn to="/accounts/form">tambah</v-btn>
     </div>

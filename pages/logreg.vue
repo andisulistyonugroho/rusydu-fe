@@ -5,7 +5,6 @@ definePageMeta({
 })
 const { $debounce, $bus, $api } = useNuxtApp()
 const route = useRoute()
-const router = useRouter()
 const { setUser } = useAuthStore()
 
 const action = route.query.action
@@ -32,7 +31,7 @@ const doSubmit = $debounce(async () => {
       }
       $bus.$emit('wait-dialog', true)
       await doLogin()
-      router.replace('/')
+      navigateTo('/', { replace: true })
     } else if (tab.value === 2) {
       const validate = await regisF.value.validate()
       if (!validate.valid) {
@@ -41,7 +40,7 @@ const doSubmit = $debounce(async () => {
       $bus.$emit('wait-dialog', true)
       await doRegis()
       await doLogin()
-      router.replace('/accounts')
+      navigateTo('/accounts', { replace: true })
     }
     $bus.$emit('wait-dialog', false)
   } catch (error) {
@@ -88,7 +87,7 @@ const doLogin = (async () => {
           <div class="text-caption">Jaga dan kelola hartamu</div>
         </div>
       </v-col>
-      <v-col align-self="end" cols="12" md="4" offset-md="4" class="mb-16">
+      <v-col align-self="end" cols="12" md="4" offset-md="4" class="mb-3">
         <v-tabs v-model="tab" fixed-tabs class="mb-3">
           <v-tab size="large" variant="plain" :value="1" rounded="0">
             masuk

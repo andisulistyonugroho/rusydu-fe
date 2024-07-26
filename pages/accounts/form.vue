@@ -1,16 +1,29 @@
 <script setup>
-const { $bus } = useNuxtApp()
+const { $bus, $debounce } = useNuxtApp()
+const { addMyAccounts } = useAccountStore()
+
 definePageMeta({
   layout: 'secondlayer'
 })
 $bus.$emit('set-header', 'Buat Akun')
 const data = ref({
   title: null,
-  sBalance: 0,
-  userId: null
+  sBalance: 0
 })
 const checkbox = ref(false)
-const wa_number = ref()
+const form = ref()
+
+const doSubmit = $debounce(async () => {
+  try {
+    $bus.$emit('wait-dialog', true)
+    await addMyAccounts(data.value)
+    navigateTo('/accounts', { replace: true })
+    $bus.$emit('wait-dialog', false)
+  } catch (error) {
+    $bus.$emit('wait-dialog', false)
+    $bus.$emit('eat-snackbar', error)
+  }
+})
 </script>
 <template>
   <v-container fluid>
@@ -23,7 +36,7 @@ const wa_number = ref()
           <v-checkbox v-model="checkbox" :rules="[v => !!v || 'harus dicentang']" label="Semua data sudah sesuai" />
         </v-form>
         <div class="text-right">
-          <v-btn>simpan</v-btn>
+          <v-btn @click="doSubmit()">simpan</v-btn>
         </div>
       </v-col>
     </v-row>

@@ -1,5 +1,5 @@
 export const useAccountStore = defineStore('account', () => {
-  const { $api } = useNuxtApp()
+  const { $api, $dayjs } = useNuxtApp()
   const { user } = useAuthStore()
 
   type Account = {
@@ -16,6 +16,7 @@ export const useAccountStore = defineStore('account', () => {
 
   const getMyAccounts = (async () => {
     try {
+      console.log('1:', accounts.value)
       const { data } = await $api.get('/FinancialAccounts', {
         params: {
           filter: {
@@ -26,12 +27,34 @@ export const useAccountStore = defineStore('account', () => {
         }
       })
       accounts.value = data
+      console.log('2:', accounts.value)
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+  const addMyAccounts = (async (payload: { title: string, sBalance: number }) => {
+    try {
+      console.log('x:', payload)
+      const { data } = await $api.post('/FinancialAccounts', {
+        userId: user.userId,
+        title: payload.title,
+        sBalance: payload.sBalance,
+        eBalance: payload.sBalance,
+        updatedAt: $dayjs().utc().format('YYYY-MM-DD HH:mm:ss')
+      })
+      return Promise.resolve(data)
     } catch (error) {
       return Promise.reject(error)
     }
   })
 
-  return { getMyAccounts, accounts }
+  // onBeforeMount(async () => {
+  // alert('a')
+  // getMyAccounts()
+  // })
+
+  return { getMyAccounts, addMyAccounts, accounts }
 }, {
   persist: {
     storage: persistedState.localStorage,

@@ -1,8 +1,7 @@
 import axios from "axios"
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
-  const router = useRouter()
-  const { user } = useAuthStore()
+  const { user, logout } = useAuthStore()
 
   let api = axios.create({ baseURL: config.public.apiBase })
 
@@ -20,8 +19,8 @@ export default defineNuxtPlugin(() => {
       const { data } = await api.post('/users/tokenThere')
 
       if (data.result === false) {
-        // logout()
-        router.replace({ path: "/logreg" })
+        logout()
+        navigateTo('/logreg', { replace: true })
       }
     }
     return Promise.reject(error)

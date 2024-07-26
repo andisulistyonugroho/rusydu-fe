@@ -40,7 +40,7 @@ const doSubmit = $debounce(async () => {
       $bus.$emit('wait-dialog', true)
       await doRegis()
       await doLogin()
-      navigateTo('/accounts', { replace: true })
+      navigateTo('/', { replace: true })
     }
     $bus.$emit('wait-dialog', false)
   } catch (error) {

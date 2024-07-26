@@ -28,6 +28,8 @@ const closeIt = () => {
   tDate.value = null
 }
 
+const bottom = ref(true)
+
 </script>
 <template>
   <v-container fluid class="fill-height">
@@ -66,8 +68,23 @@ const closeIt = () => {
       </v-col>
     </v-row>
     <LazyAddDailyRecord :dialog="dNewRecord" :transactiondate="tDate" @closeit="closeIt" />
+    <v-bottom-sheet v-model="bottom">
+      <v-card height="80vh">
+        <v-card-text>
+          <v-alert type="warning" color="primary" variant="" class="mt-2">
+            Sepertinya kamu belum bikin akun harta, yuk bikin dulu!<br>
+            <NuxtLink to="/accounts/form">
+              Klik disini
+            </NuxtLink><br><br>
+            <div class="text-caption font-italic">
+              "Akun harta adalah media tempat penyimpanan uang/harta. Contoh: Rekening Ayah, Rekening Bunda, Dompet
+              Ayah, Dompet Bunda, Amplop, dll"
+            </div>
+          </v-alert>
+        </v-card-text>
+      </v-card>
+    </v-bottom-sheet>
     <v-footer app class="bg-indigo-lighten-1 text-center d-flex flex-column">
-
       <div>
         Saldo: 10.000.00
       </div>

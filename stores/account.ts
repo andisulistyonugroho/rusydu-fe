@@ -16,7 +16,6 @@ export const useAccountStore = defineStore('account', () => {
 
   const getMyAccounts = (async () => {
     try {
-      console.log('1:', accounts.value)
       const { data } = await $api.get('/FinancialAccounts', {
         params: {
           filter: {
@@ -27,7 +26,6 @@ export const useAccountStore = defineStore('account', () => {
         }
       })
       accounts.value = data
-      console.log('2:', accounts.value)
       return Promise.resolve(true)
     } catch (error) {
       return Promise.reject(error)
@@ -35,7 +33,6 @@ export const useAccountStore = defineStore('account', () => {
   })
   const addMyAccounts = (async (payload: { title: string, sBalance: number }) => {
     try {
-      console.log('x:', payload)
       const { data } = await $api.post('/FinancialAccounts', {
         userId: user.userId,
         title: payload.title,

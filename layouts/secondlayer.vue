@@ -1,5 +1,4 @@
 <script setup>
-console.log('layer')
 const { $bus } = useNuxtApp()
 const waitDialog = ref(false)
 const title = ref('Rusydu')
@@ -29,7 +28,7 @@ onBeforeUnmount(() => {
 <template>
   <v-app>
     <v-app-bar class="border-b">
-      <v-btn icon @click="$router.go(-1)"><v-icon>mdi-arrow-left</v-icon></v-btn>
+      <v-btn icon @click="navigateTo()"><v-icon>mdi-arrow-left</v-icon></v-btn>
       <v-app-bar-title>{{ title }}</v-app-bar-title>
     </v-app-bar>
 

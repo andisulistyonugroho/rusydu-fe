@@ -8,13 +8,23 @@ definePageMeta({
 $bus.$emit('set-header', 'Buat Akun')
 const data = ref({
   title: null,
-  sBalance: 0
+  sBalance: null
 })
 const checkbox = ref(false)
 const form = ref()
+const options = {
+  number: { locale: 'id' },
+  onMaska: (detail) => {
+    data.value.sBalance = detail.unmasked
+  }
+}
 
 const doSubmit = $debounce(async () => {
   try {
+    const validate = await form.value.validate()
+    if (!validate.valid) {
+      return
+    }
     $bus.$emit('wait-dialog', true)
     await addMyAccounts(data.value)
     navigateTo('/accounts', { replace: true })
@@ -32,7 +42,7 @@ const doSubmit = $debounce(async () => {
         <v-form ref="form" lazy-validation>
           <v-text-field v-model="data.title" :rules="[v => !!v || 'tidak boleh kosong']" variant="underlined"
             label="Nama Akun*" />
-          <v-text-field v-model="data.sBalance" type="number" variant="underlined" label="Saldo Awal*" />
+          <v-text-field prefix="Rp" v-maska="options" variant="underlined" label="Saldo Awal*" />
           <v-checkbox v-model="checkbox" :rules="[v => !!v || 'harus dicentang']" label="Semua data sudah sesuai" />
         </v-form>
         <div class="text-right">

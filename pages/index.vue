@@ -5,6 +5,8 @@ definePageMeta({
 })
 
 const { $debounce } = useNuxtApp()
+const { accounts } = storeToRefs(useAccountStore())
+
 const dayjs = useDayjs()
 const startDate = dayjs().subtract(7, 'days')
 const dNewRecord = ref(false)
@@ -28,7 +30,13 @@ const closeIt = () => {
   tDate.value = null
 }
 
-const bottom = ref(true)
+const bottom = ref(false)
+
+onMounted(() => {
+  if (accounts.value.length === 0) {
+    bottom.value = true
+  }
+})
 
 </script>
 <template>
@@ -71,23 +79,23 @@ const bottom = ref(true)
     <v-bottom-sheet v-model="bottom">
       <v-card height="80vh">
         <v-card-text>
-          <v-alert type="warning" color="primary" variant="" class="mt-2">
+          <v-alert type="warning" color="primary" variant="tonal" class="mt-2">
             Sepertinya kamu belum bikin akun harta, yuk bikin dulu!<br>
             <NuxtLink to="/accounts/form">
               Klik disini
             </NuxtLink><br><br>
-            <div class="text-caption font-italic">
-              "Akun harta adalah media tempat penyimpanan uang/harta. Contoh: Rekening Ayah, Rekening Bunda, Dompet
+            <div>
+              "Akun harta adalah media tempat penyimpanan uang atau harta. Contoh: Rekening Ayah, Rekening Bunda, Dompet
               Ayah, Dompet Bunda, Amplop, dll"
             </div>
           </v-alert>
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
-    <v-footer app class="bg-indigo-lighten-1 text-center d-flex flex-column">
+    <!-- <v-footer app class="bg-indigo-lighten-1 text-center d-flex flex-column">
       <div>
         Saldo: 10.000.00
       </div>
-    </v-footer>
+    </v-footer> -->
   </v-container>
 </template>

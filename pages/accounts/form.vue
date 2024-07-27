@@ -33,7 +33,7 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', error)
   }
-})
+}, 1000, { leading: true, trailing: false })
 </script>
 <template>
   <v-container fluid>
@@ -46,7 +46,7 @@ const doSubmit = $debounce(async () => {
           <v-checkbox v-model="checkbox" :rules="[v => !!v || 'harus dicentang']" label="Semua data sudah sesuai" />
         </v-form>
         <div class="text-right">
-          <v-btn @click="doSubmit()">simpan</v-btn>
+          <v-btn variant="tonal" @click="doSubmit()">simpan</v-btn>
         </div>
       </v-col>
     </v-row>

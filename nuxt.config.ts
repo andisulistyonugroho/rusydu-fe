@@ -23,10 +23,6 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', href: '/favicon.ico' },
         {
-          rel: 'stylesheet',
-          href: 'https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css'
-        },
-        {
           rel: 'preconnect',
           href: 'https://fonts.googleapis.com'
         },

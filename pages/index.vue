@@ -46,8 +46,11 @@ onMounted(() => {
         <v-card variant="plain" class="mt-1">
           <v-card-text>
             <v-row no-gutters>
-              <v-col cols="12" class="font-weight-bold" @click="addNew(row)">
+              <v-col cols="10" class="font-weight-bold" @click="addNew(row)">
                 {{ row.text }}
+              </v-col>
+              <v-col cols="2" class="text-right">
+                <v-icon>mdi-file-document-plus</v-icon>
               </v-col>
               <template v-if="i === 10 || i === 4">
                 <v-col cols="8" class="mt-2 mb-2">

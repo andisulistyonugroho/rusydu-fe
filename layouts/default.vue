@@ -29,8 +29,8 @@ onBeforeUnmount(() => {
     </v-navigation-drawer>
     <v-app-bar class="border-b">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-
-      <v-app-bar-title>Rusydu</v-app-bar-title>
+      <v-app-bar-title></v-app-bar-title>
+      <v-btn icon="mdi-plus" />
     </v-app-bar>
 
     <v-main>

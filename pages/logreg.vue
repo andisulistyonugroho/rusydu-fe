@@ -47,7 +47,6 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', error)
   }
-
 }, 1000, { leading: true, trailing: false })
 
 const doRegis = (async () => {

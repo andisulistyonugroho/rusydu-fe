@@ -25,13 +25,13 @@ const alert = ref(true)
       </v-list-item>
     </v-list>
     <div class="mx-4 my-4">
-      <v-alert v-model="alert"
+      <v-alert v-model="alert" color="primary"
         text="Merupakan media tempat penyimpanan harta/uang anda. Contoh: Rekening Ayah, Rekening Bunda, Dompet Ayah, Dompet Bunda, Amplop, dll"
         title="Akun harta" type="info" variant="tonal" density="compact" closable />
 
     </div>
     <div class="text-center pt-5">
-      <v-btn to="/accounts/form" class="text-capitalize">tambah akun</v-btn>
+      <v-btn variant="tonal" to="/accounts/form" class="text-capitalize">tambah akun</v-btn>
     </div>
   </div>
 </template>

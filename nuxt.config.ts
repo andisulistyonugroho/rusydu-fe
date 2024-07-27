@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config"
+import { md3 } from 'vuetify/blueprints'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   devServer: {
@@ -42,12 +43,20 @@ export default defineNuxtConfig({
     'vuetify-nuxt-module',
     'dayjs-nuxt',
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt'
+    '@pinia-plugin-persistedstate/nuxt',
+    '@unocss/nuxt'
   ],
   vuetify: {
     moduleOptions: {
     },
     vuetifyOptions: {
+      icons: {
+        defaultSet: 'unocss-mdi',
+      },
+      blueprint: md3,
+      theme: {
+        defaultTheme: 'light',
+      }
     }
   }
 })

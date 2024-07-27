@@ -2,17 +2,17 @@
 const menus = [
   {
     title: 'Pengaturan',
-    icon: 'mdi-account-cash-outline',
+    icon: 'i-mdi-account-cash-outline',
     link: '#',
     open: true,
     childs: [
       {
-        title: 'Akun', link: '/accounts', icon: 'mdi-book-account-outline', childs: [
+        title: 'Akun', link: '/accounts', icon: 'i-mdi-book-account-outline', childs: [
           { title: null, link: null }
         ]
       },
       {
-        title: 'Budgeting', icon: 'mdi-wallet-outline', link: '#', childs: [
+        title: 'Budgeting', icon: 'i-mdi-wallet-outline', link: '#', childs: [
           { title: null, link: null }
         ]
       }
@@ -22,7 +22,7 @@ const menus = [
 </script>
 <template>
   <v-list nav>
-    <v-list-item prepend-icon="mdi-home" title="Home" to="/"></v-list-item>
+    <v-list-item prepend-icon="i-mdi:home" title="Home" to="/"></v-list-item>
     <template v-for="parent in menus">
       <template v-if="parent.childs[0].title">
         <v-list-group class="firstlevel" :value="parent.title">

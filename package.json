@@ -21,8 +21,11 @@
     "vuetify-nuxt-module": "^0.14.1"
   },
   "devDependencies": {
+    "@iconify-json/mdi": "^1.1.67",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
+    "@unocss/nuxt": "^0.61.6",
     "sass": "^1.77.6",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "unocss": "^0.61.6"
   }
 }

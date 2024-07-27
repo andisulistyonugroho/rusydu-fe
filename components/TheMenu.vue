@@ -22,7 +22,7 @@ const menus = [
 </script>
 <template>
   <v-list nav>
-    <v-list-item prepend-icon="i-mdi:home" title="Home" to="/"></v-list-item>
+    <v-list-item prepend-icon="i-mdi-home" title="Home" to="/"></v-list-item>
     <template v-for="parent in menus">
       <template v-if="parent.childs[0].title">
         <v-list-group class="firstlevel" :value="parent.title">

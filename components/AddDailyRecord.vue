@@ -6,10 +6,10 @@ const props = defineProps({
   transactiondate: { type: String, default: null }
 })
 const transactionType = [
-  { title: 'Keluar', value: 'D', desc: 'Uang keluar atau pembayaran' },
-  { title: 'Masuk', value: 'C', desc: 'Uang masuk atau pendapatan' },
+  { title: 'Pengeluaran', value: 'D', desc: 'Uang keluar atau pembayaran' },
+  { title: 'Pemasukan', value: 'C', desc: 'Uang masuk atau pendapatan' },
   { title: 'Transfer/mutasi', value: 'M', desc: 'Pindah uang dari satu akun ke akun lain' },
-  { title: 'Hutang', value: 'H', desc: 'Dapat pinjaman' },
+  { title: 'Hutang', value: 'H', desc: 'Dapat pinjaman atau tunggakan' },
   { title: 'Piutang', value: 'P', desc: 'Kasih pinjaman' }
 ]
 const emit = defineEmits(['closeit'])
@@ -46,24 +46,21 @@ const doSubmit = $debounce(async () => {
   <v-dialog v-model="props.dialog">
     <v-card flat>
       <v-toolbar dark color="primary">
-        <v-btn icon dark @click="emit('closeit')">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
+        <v-btn v-if="!payload.tCode" icon="i-mdi-close" dark @click="emit('closeit')" />
+        <v-btn v-else icon="i-mdi-arrow-left" dark @click="payload.tCode = null" />
         <v-toolbar-title>Pencatatan</v-toolbar-title>
       </v-toolbar>
-      <v-card-text v-if="!payload.tCode">
-        <v-list>
-          <v-list-item v-for="row in transactionType" :value="row.title" @click="payload.tCode = row.value">
-            {{ row.title }}
-            <v-list-item-subtitle>
-              {{ row.desc }}
-            </v-list-item-subtitle>
-            <template v-slot:append>
-              <v-btn color="grey-lighten-1" icon="mdi-chevron-right" variant="text"></v-btn>
-            </template>
-          </v-list-item>
-        </v-list>
-      </v-card-text>
+      <v-list v-if="!payload.tCode">
+        <v-list-item v-for="row in transactionType" :value="row.title" @click="payload.tCode = row.value">
+          {{ row.title }}
+          <v-list-item-subtitle>
+            {{ row.desc }}
+          </v-list-item-subtitle>
+          <template v-slot:append>
+            <v-btn color="grey-lighten-1" icon="i-mdi-chevron-right" variant="text"></v-btn>
+          </template>
+        </v-list-item>
+      </v-list>
       <v-card-text v-else>
         <div class="text-center text-h6">{{ transactiondate }}</div>
         <v-form ref="form">

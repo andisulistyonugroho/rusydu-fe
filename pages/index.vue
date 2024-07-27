@@ -1,10 +1,10 @@
 <script setup>
 definePageMeta({
-  layout: 'default',
+  layout: 'noheader',
   middleware: 'auth'
 })
 
-const { $debounce } = useNuxtApp()
+const { $debounce, $bus } = useNuxtApp()
 const { accounts } = storeToRefs(useAccountStore())
 
 const dayjs = useDayjs()
@@ -30,16 +30,21 @@ const closeIt = () => {
   tDate.value = null
 }
 
-const bottom = ref(false)
+const notif = ref(false)
 
 onMounted(() => {
   if (accounts.value.length === 0) {
-    bottom.value = true
+    notif.value = true
   }
 })
 
 </script>
 <template>
+  <v-app-bar class="border-b">
+    <v-app-bar-nav-icon @click="$bus.$emit('open-drawer')"></v-app-bar-nav-icon>
+    <v-app-bar-title></v-app-bar-title>
+    <v-btn icon="i-mdi-plus" @click="addNew({ text: dayjs().format('ddd, DD MMM YYYY') })" />
+  </v-app-bar>
   <v-container fluid class="fill-height">
     <v-row no-gutters>
       <v-col v-for="row, i in days" cols="12">
@@ -50,7 +55,7 @@ onMounted(() => {
                 {{ row.text }}
               </v-col>
               <v-col cols="2" class="text-right">
-                <v-icon>mdi-file-document-plus</v-icon>
+                <v-icon>i-mdi-file-document-plus</v-icon>
               </v-col>
               <template v-if="i === 10 || i === 4">
                 <v-col cols="8" class="mt-2 mb-2">
@@ -79,7 +84,7 @@ onMounted(() => {
       </v-col>
     </v-row>
     <LazyAddDailyRecord :dialog="dNewRecord" :transactiondate="tDate" @closeit="closeIt" />
-    <v-bottom-sheet v-model="bottom">
+    <v-bottom-sheet v-model="notif">
       <v-card height="80vh">
         <v-card-text>
           <v-alert type="warning" color="primary" variant="tonal" class="mt-2">

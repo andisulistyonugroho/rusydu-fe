@@ -1,5 +1,7 @@
 <script setup>
-const { $debounce } = useNuxtApp()
+const { $debounce, $bus } = useNuxtApp()
+const { addRecord } = useRecordStore()
+const { accounts } = storeToRefs(useAccountStore())
 
 const props = defineProps({
   dialog: { type: Boolean, default: false },
@@ -15,13 +17,6 @@ const transactionType = [
 const emit = defineEmits(['closeit'])
 const dayjs = useDayjs()
 
-const payload = ref({
-  title: null,
-  tCode: null,
-  amount: 0,
-  fromFinancialAccountId: null,
-  toFinancialAccountId: null
-})
 const transactionDate = computed(() => dayjs(props.transactiondate).format('YYYY-MM-DD HH:mm:ss'))
 const hintType = computed(() => { return transactionType.find(obj => obj.value === payload.value.tCode)?.desc })
 const options = {
@@ -31,11 +26,22 @@ const options = {
   }
 }
 const form = ref()
+const payload = ref({
+  title: null,
+  tCode: null,
+  amount: 0,
+  fromFinancialAccountId: null,
+  toFinancialAccountId: null,
+  tDate: transactionDate
+})
+
 const doSubmit = $debounce(async () => {
   try {
     $bus.$emit('wait-dialog', true)
-
+    await addRecord(payload.value)
     $bus.$emit('wait-dialog', false)
+    $bus.$emit('eat-snackbar', 'Catatan berhasil disimpan')
+    payload.value.tCode = null
   } catch (error) {
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', error)
@@ -71,9 +77,9 @@ const doSubmit = $debounce(async () => {
           <v-text-field prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']" label="Nominal"
             variant="underlined" clearable />
           <v-select v-model="payload.fromFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'D'"
-            label="Akun Asal" :items="['CIMB', 'Dompet']" variant="underlined" />
+            label="Akun Asal" :items="accounts" item-value="id" variant="underlined" />
           <v-select v-model="payload.toFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'C'"
-            label="Akun Tujuan" :items="['CIMB', 'Dompet']" variant="underlined" />
+            label="Akun Tujuan" :items="accounts" item-value="id" variant="underlined" />
         </v-form>
         payload: {{ payload }}
         tdate: {{ transactiondate }}

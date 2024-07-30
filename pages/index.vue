@@ -13,8 +13,9 @@ const startDate = dayjs().subtract(7, 'days')
 const dNewRecord = ref(false)
 const tDate = ref()
 const days = []
+const numOfDays = 37
 
-for (let i = 1; i <= 37; i++) {
+for (let i = 1; i <= numOfDays; i++) {
   const theDay = startDate.add(i, 'days')
   days.push({
     text: theDay.format('ddd, DD MMM YYYY')

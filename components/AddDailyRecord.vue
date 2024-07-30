@@ -1,6 +1,7 @@
 <script setup>
 const { $debounce, $bus } = useNuxtApp()
 const { addRecord } = useRecordStore()
+const { getTotalBalance } = useAccountStore()
 const { accounts } = storeToRefs(useAccountStore())
 
 const props = defineProps({
@@ -39,6 +40,7 @@ const doSubmit = $debounce(async () => {
   try {
     $bus.$emit('wait-dialog', true)
     await addRecord(payload.value)
+    getTotalBalance()
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', 'Catatan berhasil disimpan')
     payload.value.tCode = null

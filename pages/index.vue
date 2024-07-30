@@ -5,7 +5,8 @@ definePageMeta({
 })
 
 const { $debounce, $bus } = useNuxtApp()
-const { accounts } = storeToRefs(useAccountStore())
+const { getTotalBalance } = useAccountStore()
+const { accounts, totalBalance } = storeToRefs(useAccountStore())
 
 const dayjs = useDayjs()
 const startDate = dayjs().subtract(7, 'days')
@@ -36,6 +37,8 @@ onMounted(() => {
   if (accounts.value.length === 0) {
     notif.value = true
   }
+
+  getTotalBalance()
 })
 
 </script>
@@ -45,6 +48,7 @@ onMounted(() => {
     <v-app-bar-title></v-app-bar-title>
     <v-btn icon="i-mdi-plus" @click="addNew({ text: dayjs().format('ddd, DD MMM YYYY') })" />
   </v-app-bar>
+
   <v-container fluid class="fill-height">
     <v-row no-gutters>
       <v-col v-for="row, i in days" cols="12">
@@ -100,10 +104,10 @@ onMounted(() => {
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
-    <!-- <v-footer app class="bg-indigo-lighten-1 text-center d-flex flex-column">
+    <v-footer app class="bg-indigo-lighten-1 text-center d-flex flex-column">
       <div>
-        Saldo: 10.000.00
+        Saldo: {{ toMoney(totalBalance) }}
       </div>
-    </v-footer> -->
+    </v-footer>
   </v-container>
 </template>

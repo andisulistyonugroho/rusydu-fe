@@ -14,6 +14,8 @@ export const useAccountStore = defineStore('account', () => {
   }
   const accounts = ref<Account[]>([])
 
+  const totalBalance = ref(0)
+
   const getMyAccounts = (async () => {
     try {
       const { data } = await $api.get('/FinancialAccounts', {
@@ -45,13 +47,17 @@ export const useAccountStore = defineStore('account', () => {
       return Promise.reject(error)
     }
   })
+  const getTotalBalance = (async () => {
+    try {
+      const { data } = await $api.post('/FinancialAccounts/totalBalance')
+      totalBalance.value = data.amount
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
 
-  // onBeforeMount(async () => {
-  // alert('a')
-  // getMyAccounts()
-  // })
-
-  return { getMyAccounts, addMyAccounts, accounts }
+  return { getMyAccounts, addMyAccounts, getTotalBalance, accounts, totalBalance }
 }, {
   persist: {
     storage: persistedState.localStorage,

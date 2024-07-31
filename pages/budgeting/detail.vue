@@ -31,7 +31,7 @@ if (thePeriod) {
       </v-list-item>
     </v-list>
     <div class="text-center pt-5">
-      <v-btn variant="tonal" to="/budgeting/form" class="text-capitalize">tambah</v-btn>
+      <v-btn variant="tonal" :to="`/budgeting/form?theperiod=${thePeriod}`" class="text-capitalize">tambah</v-btn>
     </div>
   </div>
 </template>

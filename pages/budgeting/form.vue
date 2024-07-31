@@ -1,12 +1,16 @@
 <script setup>
-const { $bus, $debounce } = useNuxtApp()
-const { addMyBudget } = useBudgetingStore()
-const dayjs = useDayjs()
-
 definePageMeta({
   layout: 'secondlayer',
   middleware: 'auth'
 })
+
+const { $bus, $debounce } = useNuxtApp()
+const { addMyBudget } = useBudgetingStore()
+const dayjs = useDayjs()
+const route = useRoute()
+
+const thePeriod = route.query.theperiod
+
 $bus.$emit('set-header', 'Buat Budget')
 const data = ref({
   title: null,
@@ -31,6 +35,12 @@ const checkbox = ref(false)
 const form = ref()
 const year = ref(dayjs().format('YYYY'))
 const month = ref(dayjs().format('MM'))
+
+if (thePeriod) {
+  year.value = dayjs(thePeriod.toString()).format('YYYY')
+  month.value = dayjs(thePeriod.toString()).format('MM')
+}
+
 const years = computed(() => {
   const y = dayjs().format('YYYY')
   return [y, parseInt(y) + 1]

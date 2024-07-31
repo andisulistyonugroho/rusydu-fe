@@ -42,6 +42,14 @@ export function toDate(string: string) {
   return $dayjs(string).format('DD MMM YYYY')
 }
 
+export function toMonth(string: string) {
+  if (!string) {
+    return
+  }
+  const { $dayjs } = useNuxtApp()
+  return $dayjs(string).format('MMMM YYYY')
+}
+
 export function ytID(string: string) {
   if (!string) {
     return ''

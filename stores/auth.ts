@@ -4,8 +4,6 @@
 // function()s become actions
 
 export const useAuthStore = defineStore('auth', () => {
-
-
   type ProfileType = {
     [key: string]: any
   }

@@ -48,4 +48,9 @@ export const useRecordStore = defineStore('record', () => {
   })
 
   return { addRecord, getRecordInBetween, transactionLog }
+}, {
+  persist: {
+    storage: persistedState.localStorage,
+    key: 'r00sydoo_record'
+  }
 })

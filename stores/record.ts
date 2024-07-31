@@ -9,7 +9,7 @@ export const useRecordStore = defineStore('record', () => {
     tDate: string,
   }) => {
     try {
-      const { data } = await $api.post('/FinancialRecords', {
+      await $api.post('/FinancialRecords', {
         title: payload.title,
         amountIn: payload.tCode === 'C' ? payload.amount : 0,
         amountOut: payload.tCode === 'D' ? payload.amount : 0,
@@ -26,6 +26,7 @@ export const useRecordStore = defineStore('record', () => {
 
   const getRecordInBetween = (async (payload: { startDate: string, endDate: string }) => {
     try {
+      console.log('get record in between')
       const { data } = await $api.get('/FinancialRecords', {
         params: {
           filter: {

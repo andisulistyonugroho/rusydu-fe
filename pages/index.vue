@@ -28,29 +28,37 @@ const closeIt = () => {
   tDate.value = null
 }
 
-getRecordInBetween({
+await getRecordInBetween({
   startDate: startDate.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
   endDate: startDate.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
 })
 
-getTotalBalance()
+await getTotalBalance()
 
 const generateCalendar = () => {
-
   days.value = []
   for (let i = 1; i <= numOfDays; i++) {
     const theDay = startDate.add(i, 'days')
+    const logs = showLogs(theDay.format('YYYY-MM-DD'))
 
     days.value.push({
       text: theDay.format('ddd, DD MMM YYYY'),
-      logs: showLogs(theDay.format('YYYY-MM-DD'))
+      logs: logs.list,
+      totalIn: logs.totalIn,
+      totalOut: logs.totalOut
     })
   }
 }
 
 const showLogs = (theDate) => {
   const logs = transactionLog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
-  return logs
+  const totalIn = logs.reduce((total, obj) => (
+    total + obj.amountIn
+  ), 0)
+  const totalOut = logs.reduce((total, obj) => (
+    total + obj.amountOut
+  ), 0)
+  return { list: logs, totalIn: totalIn, totalOut: totalOut }
 }
 
 const refreshParent = (async () => {
@@ -65,7 +73,6 @@ onMounted(() => {
   if (accounts.value.length === 0) {
     notif.value = true
   }
-
   generateCalendar()
 })
 
@@ -94,8 +101,19 @@ onMounted(() => {
                   {{ log.title }}
                 </v-col>
                 <v-col cols="4"
-                  :class="`mt-4 text-right ${log.tCode === 'C' ? `text-green-darken-3` : `text-red`} font-weight-bold`">
+                  :class="`mt-4 text-right ${log.tCode === 'C' ? `text-green-darken-3` : `text-red-darken-1`} font-weight-bold`">
                   {{ toMoney(log.tCode === 'D' ? log.amountOut : log.tCode === 'C' ? log.amountIn : '') }}
+                </v-col>
+              </template>
+              <template v-if="row.totalIn || row.totalOut">
+                <v-col cols="6" class="mt-4 text-center">
+                  <v-chip rounded class=" text-green-darken-3 font-weight-bold">Masuk: {{ toMoney(row.totalIn)
+                    }}</v-chip>
+                </v-col>
+                <v-col cols="6" class="mt-4 text-center">
+                  <v-chip rounded class="text-red-darken-1 font-weight-bold">
+                    Keluar: {{ toMoney(row.totalOut) }}
+                  </v-chip>
                 </v-col>
               </template>
             </v-row>

@@ -25,9 +25,9 @@ export function simpananTypeToText(val: number) {
   return 'Unknown'
 }
 
-export function toMoney(val: string) {
+export function toMoney(val: number) {
   if (val) {
-    const x = parseFloat(val)
+    const x = val
     return x.toLocaleString('id-ID')
   } else {
     return '-'

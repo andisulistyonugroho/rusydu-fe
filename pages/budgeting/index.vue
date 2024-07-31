@@ -20,7 +20,7 @@ const alert = ref(true)
         <div class="font-weight-bold">{{ toMonth(row.thePeriod) }}</div>
         <div class="text-caption">{{ toMoney(row.amount) }}</div>
         <template v-slot:append>
-          <v-btn icon="i-mdi-chevron-right" variant="text"></v-btn>
+          <v-btn icon="i-mdi-chevron-right" variant="text" :to="`/budgeting/detail?theperiod=${row.thePeriod}`" />
         </template>
       </v-list-item>
     </v-list>

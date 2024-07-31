@@ -3,7 +3,8 @@ const { $bus, $debounce } = useNuxtApp()
 const { addMyAccounts, getTotalBalance } = useAccountStore()
 
 definePageMeta({
-  layout: 'secondlayer'
+  layout: 'secondlayer',
+  middleware: 'auth'
 })
 $bus.$emit('set-header', 'Buat Akun')
 const data = ref({

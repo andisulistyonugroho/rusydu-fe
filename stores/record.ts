@@ -1,5 +1,7 @@
 export const useRecordStore = defineStore('record', () => {
   const { $api } = useNuxtApp()
+  const { user } = useAuthStore()
+  const transactionLog = ref([])
 
   const addRecord = (async (payload: {
     title: string, tCode: string, amount: number,
@@ -13,7 +15,8 @@ export const useRecordStore = defineStore('record', () => {
         amountOut: payload.tCode === 'D' ? payload.amount : 0,
         tCode: payload.tCode,
         tDate: payload.tDate,
-        financialAccountId: payload.tCode === 'C' ? payload.toFinancialAccountId : payload.fromFinancialAccountId
+        financialAccountId: payload.tCode === 'C' ? payload.toFinancialAccountId : payload.fromFinancialAccountId,
+        userId: user.userId
       })
       return Promise.resolve(true)
     } catch (error) {
@@ -21,5 +24,27 @@ export const useRecordStore = defineStore('record', () => {
     }
   })
 
-  return { addRecord }
+  const getRecordInBetween = (async (payload: { startDate: string, endDate: string }) => {
+    try {
+      const { data } = await $api.get('/FinancialRecords', {
+        params: {
+          filter: {
+            where: {
+              isActive: 1,
+              tDate: {
+                between: [payload.startDate, payload.endDate]
+              },
+              userId: user.userId
+            }
+          }
+        }
+      })
+      transactionLog.value = data
+      return Promise.resolve(data)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
+  return { addRecord, getRecordInBetween, transactionLog }
 })

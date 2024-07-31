@@ -15,7 +15,7 @@ const transactionType = [
   { title: 'Hutang', value: 'H', desc: 'Dapat pinjaman atau tunggakan' },
   { title: 'Piutang', value: 'P', desc: 'Kasih pinjaman' }
 ]
-const emit = defineEmits(['closeit'])
+const emit = defineEmits(['closeit', 'refreshparent'])
 const dayjs = useDayjs()
 
 const transactionDate = computed(() => dayjs(props.transactiondate).format('YYYY-MM-DD HH:mm:ss'))
@@ -41,6 +41,7 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', true)
     await addRecord(payload.value)
     getTotalBalance()
+    emit('refreshparent')
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', 'Catatan berhasil disimpan')
     payload.value.tCode = null
@@ -75,7 +76,7 @@ const doSubmit = $debounce(async () => {
           <v-select v-model="payload.tCode" label="Jenis transaksi" :rules="[(v) => !!v || 'Harus diisi']"
             :items="transactionType" variant="underlined" :hint="hintType" persistent-hint class="py-2" />
           <v-text-field v-model="payload.title" label="Title" :rules="[(v) => !!v || 'Harus diisi']"
-            variant="underlined" placeholder="Pembelian bensin" persistent-placeholder />
+            variant="underlined" placeholder="Pembelian bensin" persistent-placeholder clearable />
           <v-text-field prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']" label="Nominal"
             variant="underlined" clearable />
           <v-select v-model="payload.fromFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'D'"
@@ -83,9 +84,6 @@ const doSubmit = $debounce(async () => {
           <v-select v-model="payload.toFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'C'"
             label="Akun Tujuan" :items="accounts" item-value="id" variant="underlined" />
         </v-form>
-        payload: {{ payload }}
-        tdate: {{ transactiondate }}
-        tdd: {{ transactionDate }}
       </v-card-text>
       <v-card-actions v-if="payload.tCode">
         <v-btn variant="tonal" color="error" @click="form.reset()">batal</v-btn>

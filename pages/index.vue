@@ -6,21 +6,17 @@ definePageMeta({
 
 const { $debounce, $bus } = useNuxtApp()
 const { getTotalBalance } = useAccountStore()
+const { getRecordInBetween } = useRecordStore()
 const { accounts, totalBalance } = storeToRefs(useAccountStore())
+const { transactionLog } = storeToRefs(useRecordStore())
 
 const dayjs = useDayjs()
 const startDate = dayjs().subtract(7, 'days')
 const dNewRecord = ref(false)
 const tDate = ref()
-const days = []
+const days = ref([])
 const numOfDays = 37
-
-for (let i = 1; i <= numOfDays; i++) {
-  const theDay = startDate.add(i, 'days')
-  days.push({
-    text: theDay.format('ddd, DD MMM YYYY')
-  })
-}
+const notif = ref(false)
 
 const addNew = $debounce((data) => {
   dNewRecord.value = true
@@ -32,21 +28,52 @@ const closeIt = () => {
   tDate.value = null
 }
 
-const notif = ref(false)
+getRecordInBetween({
+  startDate: startDate.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
+  endDate: startDate.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
+})
+
+getTotalBalance()
+
+const generateCalendar = () => {
+
+  days.value = []
+  for (let i = 1; i <= numOfDays; i++) {
+    const theDay = startDate.add(i, 'days')
+
+    days.value.push({
+      text: theDay.format('ddd, DD MMM YYYY'),
+      logs: showLogs(theDay.format('YYYY-MM-DD'))
+    })
+  }
+}
+
+const showLogs = (theDate) => {
+  const logs = transactionLog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
+  return logs
+}
+
+const refreshParent = (async () => {
+  await getRecordInBetween({
+    startDate: startDate.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
+    endDate: startDate.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
+  })
+  generateCalendar()
+})
 
 onMounted(() => {
   if (accounts.value.length === 0) {
     notif.value = true
   }
 
-  getTotalBalance()
+  generateCalendar()
 })
 
 </script>
 <template>
   <v-app-bar class="border-b">
     <v-app-bar-nav-icon @click="$bus.$emit('open-drawer')"></v-app-bar-nav-icon>
-    <v-app-bar-title></v-app-bar-title>
+    <v-app-bar-title>Buku Kas</v-app-bar-title>
     <v-btn icon="i-mdi-plus" @click="addNew({ text: dayjs().format('ddd, DD MMM YYYY') })" />
   </v-app-bar>
 
@@ -60,26 +87,15 @@ onMounted(() => {
                 {{ row.text }}
               </v-col>
               <v-col cols="2" class="text-right">
-                <v-icon>i-mdi-file-document-plus</v-icon>
+                <v-icon class="i-mdi:chevron-right"></v-icon>
               </v-col>
-              <template v-if="i === 10 || i === 4">
-                <v-col cols="8" class="mt-2 mb-2">
-                  Kredit
+              <template v-for="log in row.logs">
+                <v-col cols="8" class="mt-4">
+                  {{ log.title }}
                 </v-col>
-                <v-col cols="4" class="mt-2 text-right mb-2">
-                  10.000.000
-                </v-col>
-                <v-col cols="8">
-                  Debit
-                </v-col>
-                <v-col cols="4" class="text-right mb-2">
-                  1.000.000
-                </v-col>
-                <v-col cols="8">
-                  Saldo
-                </v-col>
-                <v-col cols="4" class="text-right">
-                  9.000.000
+                <v-col cols="4"
+                  :class="`mt-4 text-right ${log.tCode === 'C' ? `text-green-darken-3` : `text-red`} font-weight-bold`">
+                  {{ toMoney(log.tCode === 'D' ? log.amountOut : log.tCode === 'C' ? log.amountIn : '') }}
                 </v-col>
               </template>
             </v-row>
@@ -88,7 +104,8 @@ onMounted(() => {
         <v-divider></v-divider>
       </v-col>
     </v-row>
-    <LazyAddDailyRecord :dialog="dNewRecord" :transactiondate="tDate" @closeit="closeIt" />
+    <LazyAddDailyRecord :dialog="dNewRecord" :transactiondate="tDate" @closeit="closeIt"
+      @refreshparent="refreshParent" />
     <v-bottom-sheet v-model="notif">
       <v-card height="80vh">
         <v-card-text>

@@ -28,7 +28,7 @@ onBeforeUnmount(() => {
 <template>
   <v-app>
     <v-app-bar class="border-b">
-      <v-btn icon @click="navigateTo()"><v-icon>i-mdi-arrow-left</v-icon></v-btn>
+      <v-btn icon @click="$router.go(-1)"><v-icon>i-mdi-arrow-left</v-icon></v-btn>
       <v-app-bar-title>{{ title }}</v-app-bar-title>
     </v-app-bar>
 

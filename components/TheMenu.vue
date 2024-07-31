@@ -12,7 +12,7 @@ const menus = [
         ]
       },
       {
-        title: 'Budgeting', icon: 'i-mdi-wallet-outline', link: '#', childs: [
+        title: 'Budgeting', icon: 'i-mdi-wallet-outline', link: '/budgeting', childs: [
           { title: null, link: null }
         ]
       }

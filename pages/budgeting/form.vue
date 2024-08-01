@@ -63,7 +63,6 @@ const doSubmit = $debounce(async () => {
     data.value.thePeriod = periode
     await addMyBudget(data.value)
     $router.back()
-    // navigateTo('/budgeting/detail?theperiod=' + thePeriod)
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', 'Budget berhasil disimpan')
   } catch (error) {

@@ -56,7 +56,8 @@ export default defineNuxtConfig({
       blueprint: md3,
       theme: {
         defaultTheme: 'light',
-      }
+      },
+      labComponents: ['VDateInput']
     }
   }
 })

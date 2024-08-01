@@ -7,6 +7,7 @@ const { $bus } = useNuxtApp()
 const route = useRoute()
 const dayjs = useDayjs()
 const thePeriod = route.query.theperiod
+const dialog = ref(false)
 
 if (!thePeriod) {
   navigateTo('/budgeting')
@@ -19,7 +20,14 @@ const periodeString = ref('Budgeting')
 if (thePeriod) {
   await getBudgetInPeriod(thePeriod.toString())
   periodeString.value = dayjs(thePeriod.toString()).format('YYYY/MM')
+}
 
+const closeIt = () => {
+  dialog.value = false
+}
+
+const openDialog = () => {
+  dialog.value = true
 }
 
 
@@ -33,6 +41,10 @@ if (thePeriod) {
   <v-list lines="one">
     <v-list-item v-for="row in budgets" :title="row.title">
       <div class="text-caption">{{ toMoney(row.amount) }}</div>
+      <template v-slot:append>
+        <v-btn icon="i-mdi-chevron-right" variant="text" @click="openDialog()" />
+      </template>
     </v-list-item>
   </v-list>
+  <LazyInputBudgetRealisation :dialog="dialog" @closeit="closeIt" />
 </template>

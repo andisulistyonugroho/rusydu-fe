@@ -1,6 +1,6 @@
 <script setup>
 const { $bus, $debounce } = useNuxtApp()
-const { addMyAccounts, getTotalBalance } = useAccountStore()
+const { addMyAccounts } = useAccountStore()
 
 definePageMeta({
   layout: 'secondlayer',

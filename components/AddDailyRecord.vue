@@ -1,5 +1,5 @@
 <script setup>
-const { $debounce, $bus } = useNuxtApp()
+const { $debounce, $bus, $dayjs } = useNuxtApp()
 const { addRecord } = useRecordStore()
 const { getTotalBalance } = useAccountStore()
 const { accounts } = storeToRefs(useAccountStore())
@@ -16,9 +16,8 @@ const transactionType = [
   { title: 'Piutang', value: 'P', desc: 'Kasih pinjaman' }
 ]
 const emit = defineEmits(['closeit', 'refreshparent'])
-const dayjs = useDayjs()
 
-const transactionDate = computed(() => dayjs(props.transactiondate).format('YYYY-MM-DD HH:mm:ss'))
+const transactionDate = computed(() => $dayjs(props.transactiondate).format('YYYY-MM-DD HH:mm:ss'))
 const hintType = computed(() => { return transactionType.find(obj => obj.value === payload.value.tCode)?.desc })
 const options = {
   number: { locale: 'id' },

@@ -33,6 +33,7 @@ export const useBudgetingStore = defineStore('budgeting', () => {
         userId: user.userId,
         title: payload.title,
         amount: payload.amount,
+        amountLeft: payload.amount,
         thePeriod: payload.thePeriod
       })
       return Promise.resolve(data)

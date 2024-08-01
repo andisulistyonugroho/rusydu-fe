@@ -6,7 +6,7 @@ export const useRecordStore = defineStore('record', () => {
   const addRecord = (async (payload: {
     title: string, tCode: string, amount: number,
     fromFinancialAccountId: number, toFinancialAccountId: number,
-    tDate: string,
+    tDate: string, monthlyBudgetId: number | undefined
   }) => {
     try {
       await $api.post('/FinancialRecords', {
@@ -16,7 +16,8 @@ export const useRecordStore = defineStore('record', () => {
         tCode: payload.tCode,
         tDate: payload.tDate,
         financialAccountId: payload.tCode === 'C' ? payload.toFinancialAccountId : payload.fromFinancialAccountId,
-        userId: user.userId
+        userId: user.userId,
+        monthlyBudgetId: payload.monthlyBudgetId
       })
       return Promise.resolve(true)
     } catch (error) {

@@ -46,7 +46,8 @@ export const useBudgetingStore = defineStore('budgeting', () => {
       const { data } = await $api.get('/MonthlyBudgets', {
         params: {
           filter: {
-            where: { thePeriod: thePeriod }
+            where: { thePeriod: thePeriod },
+            include: 'financialRecords'
           }
         }
       })
@@ -56,8 +57,27 @@ export const useBudgetingStore = defineStore('budgeting', () => {
       return Promise.reject(error)
     }
   })
+  const payBudget = (async (payload: {
+    title: String, amountOut: Number, tCode: String, tDate: String,
+    fromFinancialAccountId: Number, monthlyBudgetId: Number
+  }) => {
+    try {
+      await $api.post('/MonthlyBudgets/payment', {
+        title: payload.title,
+        amountOut: payload.amountOut,
+        tCode: payload.tCode,
+        tDate: payload.tDate,
+        financialAccountId: payload.fromFinancialAccountId,
+        userId: user.userId,
+        monthlyBudgetId: payload.monthlyBudgetId
+      })
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
 
-  return { getAvailableMonth, addMyBudget, getBudgetInPeriod, availableMonths, budgets }
+  return { getAvailableMonth, addMyBudget, getBudgetInPeriod, payBudget, availableMonths, budgets }
 }, {
   persist: {
     storage: persistedState.localStorage,

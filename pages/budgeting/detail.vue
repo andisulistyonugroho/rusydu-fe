@@ -3,9 +3,8 @@ definePageMeta({
   layout: 'secondlayernohead',
   middleware: 'auth'
 })
-const { $bus } = useNuxtApp()
+const { $bus, $dayjs } = useNuxtApp()
 const route = useRoute()
-const dayjs = useDayjs()
 const thePeriod = route.query.theperiod
 const dialog = ref(false)
 
@@ -16,18 +15,28 @@ if (!thePeriod) {
 const { getBudgetInPeriod } = useBudgetingStore()
 const { budgets } = storeToRefs(useBudgetingStore())
 const periodeString = ref('Budgeting')
+const selectedData = ref({
+  budgetId: null,
+  selectedTitle: null,
+  selectedAmount: null
+})
 
 if (thePeriod) {
+  $bus.$emit('wait-dialog', true)
   await getBudgetInPeriod(thePeriod.toString())
-  periodeString.value = dayjs(thePeriod.toString()).format('YYYY/MM')
+  $bus.$emit('wait-dialog', false)
+  periodeString.value = $dayjs(thePeriod.toString()).format('YYYY/MM')
 }
 
 const closeIt = () => {
   dialog.value = false
 }
 
-const openDialog = () => {
+const openDialog = (id, title, amount) => {
   dialog.value = true
+  selectedData.value.budgetId = id
+  selectedData.value.selectedTitle = title
+  selectedData.value.selectedAmount = amount
 }
 
 
@@ -42,9 +51,23 @@ const openDialog = () => {
     <v-list-item v-for="row in budgets" :title="row.title">
       <div class="text-caption">{{ toMoney(row.amount) }}</div>
       <template v-slot:append>
-        <v-btn icon="i-mdi-chevron-right" variant="text" @click="openDialog()" />
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn icon="i-mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item v-if="row.amountLeft > 0" @click="openDialog(row.id, row.title, row.amount)">
+              <v-list-item-title>Bayar</v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title>History</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
     </v-list-item>
   </v-list>
-  <LazyInputBudgetRealisation :dialog="dialog" @closeit="closeIt" />
+  <LazyInputBudgetRealisation :budgetid="selectedData.budgetId" :budgettitle="selectedData.selectedTitle"
+    :dialog="dialog" :amount="selectedData.selectedAmount" @closeit="closeIt" />
 </template>

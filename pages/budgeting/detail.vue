@@ -1,6 +1,6 @@
 <script setup>
 definePageMeta({
-  layout: 'secondlayer',
+  layout: 'secondlayernohead',
   middleware: 'auth'
 })
 const { $bus } = useNuxtApp()
@@ -14,24 +14,25 @@ if (!thePeriod) {
 
 const { getBudgetInPeriod } = useBudgetingStore()
 const { budgets } = storeToRefs(useBudgetingStore())
+const periodeString = ref('Budgeting')
 
 if (thePeriod) {
   await getBudgetInPeriod(thePeriod.toString())
-  const periodeString = dayjs(thePeriod.toString()).format('MMMM YYYY')
-  $bus.$emit('set-header', `Budgeting ${periodeString}`)
+  periodeString.value = dayjs(thePeriod.toString()).format('YYYY/MM')
+
 }
 
 
 </script>
 <template>
-  <div>
-    <v-list lines="one">
-      <v-list-item v-for="row in budgets" :title="row.title">
-        <div class="text-caption">{{ toMoney(row.amount) }}</div>
-      </v-list-item>
-    </v-list>
-    <div class="text-center pt-5">
-      <v-btn variant="tonal" :to="`/budgeting/form?theperiod=${thePeriod}`" class="text-capitalize">tambah</v-btn>
-    </div>
-  </div>
+  <v-app-bar class="border-b">
+    <v-btn icon="i-mdi-arrow-left" @click="$router.back()" />
+    <v-app-bar-title>Budgeting {{ periodeString }}</v-app-bar-title>
+    <v-btn icon="i-mdi-plus" :to="`/budgeting/form?theperiod=${thePeriod}`" />
+  </v-app-bar>
+  <v-list lines="one">
+    <v-list-item v-for="row in budgets" :title="row.title">
+      <div class="text-caption">{{ toMoney(row.amount) }}</div>
+    </v-list-item>
+  </v-list>
 </template>

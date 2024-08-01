@@ -50,7 +50,6 @@ export const useBudgetingStore = defineStore('budgeting', () => {
         }
       })
       budgets.value = data
-      console.log(budgets)
       return Promise.resolve(true)
     } catch (error) {
       return Promise.reject(error)

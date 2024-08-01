@@ -4,13 +4,11 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { $bus, $debounce } = useNuxtApp()
+const { $bus, $debounce, $dayjs, $router } = useNuxtApp()
 const { addMyBudget } = useBudgetingStore()
-const dayjs = useDayjs()
 const route = useRoute()
 
 const thePeriod = route.query.theperiod
-
 $bus.$emit('set-header', 'Buat Budget')
 const data = ref({
   title: null,
@@ -33,16 +31,16 @@ const months = [
 ]
 const checkbox = ref(false)
 const form = ref()
-const year = ref(dayjs().format('YYYY'))
-const month = ref(dayjs().format('MM'))
+const year = ref($dayjs().format('YYYY'))
+const month = ref($dayjs().format('MM'))
 
 if (thePeriod) {
-  year.value = dayjs(thePeriod.toString()).format('YYYY')
-  month.value = dayjs(thePeriod.toString()).format('MM')
+  year.value = $dayjs(thePeriod.toString()).format('YYYY')
+  month.value = $dayjs(thePeriod.toString()).format('MM')
 }
 
 const years = computed(() => {
-  const y = dayjs().format('YYYY')
+  const y = $dayjs().format('YYYY')
   return [y, parseInt(y) + 1]
 })
 const options = {
@@ -64,8 +62,8 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', true)
     data.value.thePeriod = periode
     await addMyBudget(data.value)
-    console.log('periode:', periode.value)
-    navigateTo('/budgeting/detail?theperiod=' + periode.value, { replace: true })
+    $router.back()
+    // navigateTo('/budgeting/detail?theperiod=' + thePeriod)
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', 'Budget berhasil disimpan')
   } catch (error) {

@@ -1,22 +1,20 @@
 <script setup>
 const menus = [
   {
+    title: 'Akun', link: '/accounts', icon: 'i-mdi-book-account-outline', childs: [
+      { title: null, link: null }
+    ]
+  },
+  {
+    title: 'Budgeting', icon: 'i-mdi-wallet-outline', link: '/budgeting', childs: [
+      { title: null, link: null }
+    ]
+  },
+  {
     title: 'Pengaturan',
     icon: 'i-mdi-account-cash-outline',
     link: '#',
-    open: true,
-    childs: [
-      {
-        title: 'Akun', link: '/accounts', icon: 'i-mdi-book-account-outline', childs: [
-          { title: null, link: null }
-        ]
-      },
-      {
-        title: 'Budgeting', icon: 'i-mdi-wallet-outline', link: '/budgeting', childs: [
-          { title: null, link: null }
-        ]
-      }
-    ]
+    open: true
   }
 ]
 </script>
@@ -24,7 +22,7 @@ const menus = [
   <v-list nav>
     <v-list-item prepend-icon="i-mdi-home" title="Home" to="/"></v-list-item>
     <template v-for="parent in menus">
-      <template v-if="parent.childs[0].title">
+      <template v-if="parent.childs && parent.childs[0].title">
         <v-list-group class="firstlevel" :value="parent.title">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" :prepend-icon="parent.icon" :value="parent.title" :title="parent.title" />

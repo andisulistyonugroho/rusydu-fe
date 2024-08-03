@@ -49,14 +49,16 @@ const openDialog = (id, title, amount) => {
   </v-app-bar>
   <v-list lines="one">
     <v-list-item v-for="row in budgets" :title="row.title">
-      <div class="text-caption">{{ toMoney(row.amount) }}</div>
+      <div :class="`text-caption ${row.amountLeft === 0 ? `text-green-darken-1` : ``}`">
+        {{ toMoney(row.amountLeft ? row.amountLeft : row.amount) }}
+      </div>
       <template v-slot:append>
         <v-menu>
           <template v-slot:activator="{ props }">
             <v-btn icon="i-mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
           </template>
 
-          <v-list>
+          <v-list dense>
             <v-list-item v-if="row.amountLeft > 0" @click="openDialog(row.id, row.title, row.amount)">
               <v-list-item-title>Bayar</v-list-item-title>
             </v-list-item>
@@ -69,5 +71,5 @@ const openDialog = (id, title, amount) => {
     </v-list-item>
   </v-list>
   <LazyInputBudgetRealisation :budgetid="selectedData.budgetId" :budgettitle="selectedData.selectedTitle"
-    :dialog="dialog" :amount="selectedData.selectedAmount" @closeit="closeIt" />
+    :dialog="dialog" :amount="selectedData.selectedAmount" :period="thePeriod" @closeit="closeIt" />
 </template>

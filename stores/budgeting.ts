@@ -58,14 +58,14 @@ export const useBudgetingStore = defineStore('budgeting', () => {
     }
   })
   const payBudget = (async (payload: {
-    title: String, amountOut: Number, tCode: String, tDate: String,
+    title: String, tCode: String, amount: Number, tDate: String,
     fromFinancialAccountId: Number, monthlyBudgetId: Number
   }) => {
     try {
       await $api.post('/MonthlyBudgets/payment', {
         title: payload.title,
-        amountOut: payload.amountOut,
         tCode: payload.tCode,
+        amountOut: payload.amount,
         tDate: payload.tDate,
         financialAccountId: payload.fromFinancialAccountId,
         userId: user.userId,

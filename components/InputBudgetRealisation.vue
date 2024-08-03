@@ -3,21 +3,20 @@ const props = defineProps({
   dialog: { type: Boolean, default: false },
   budgettitle: { type: String, default: null },
   budgetid: { type: Number, default: null },
-  amount: { type: Number, default: null }
+  amount: { type: Number, default: null },
+  period: { type: String, default: null }
 })
 const { $dayjs, $debounce, $bus } = useNuxtApp()
 const { getMyAccounts, getTotalBalance } = useAccountStore()
-const { addRecord } = useRecordStore()
+const { payBudget, getBudgetInPeriod } = useBudgetingStore()
 const { accounts } = storeToRefs(useAccountStore())
 const emit = defineEmits(['closeit'])
-const transactionDate = $dayjs().format('YYYY-MM-DD')
 const payload = ref({
   title: null,
   tCode: 'D',
   amount: 0,
-  fromFinancialAccountId: null,
-  toFinancialAccountId: null,
   tDate: null,
+  fromFinancialAccountId: null,
   monthlyBudgetId: null
 })
 const unmaskedamount = ref()
@@ -25,10 +24,12 @@ const form = ref()
 
 watch(props, (o, n) => {
   if (n.dialog) {
+    console.log(new Date())
+    console.log($dayjs().toDate())
     payload.value.title = props.budgettitle
     payload.value.monthlyBudgetId = props.budgetid
     payload.value.amount = props.amount
-    payload.value.tDate = transactionDate
+    payload.value.tDate = $dayjs().toDate()
     unmaskedamount.value = props.amount
   }
 })
@@ -47,7 +48,8 @@ const doSubmit = $debounce(async () => {
       return
     }
     $bus.$emit('wait-dialog', true)
-    await addRecord(payload.value)
+    await payBudget(payload.value)
+    await getBudgetInPeriod(props.period)
     getTotalBalance()
     emit('closeit')
     $bus.$emit('wait-dialog', false)
@@ -61,7 +63,7 @@ await getMyAccounts()
 
 </script>
 <template>
-  <v-dialog v-model="props.dialog">
+  <v-bottom-sheet v-model="props.dialog">
     <v-card variant="flat" style="border-radius:0 !important;">
       <v-toolbar dark color="primary" flat>
         <v-btn icon="i-mdi-close" dark @click="emit('closeit')" />
@@ -75,7 +77,8 @@ await getMyAccounts()
             label="Nominal" variant="underlined" clearable />
           <v-select v-model="payload.fromFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'D'"
             label="Akun Asal" :items="accounts" item-value="id" variant="underlined" />
-          <v-date-input v-model="payload.tDate" prepend-icon="" variant="underlined" label="Tanggal Transaksi" />
+          <v-date-input v-model="payload.tDate" :model-value="payload.tDate" prepend-icon="" variant="underlined"
+            label="Tanggal Transaksi" />
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -83,5 +86,5 @@ await getMyAccounts()
         <v-btn variant="tonal" color="primary" @click="doSubmit()">simpan</v-btn>
       </v-card-actions>
     </v-card>
-  </v-dialog>
+  </v-bottom-sheet>
 </template>

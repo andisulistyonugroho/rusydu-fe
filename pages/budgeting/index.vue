@@ -17,8 +17,11 @@ const alert = ref(true)
   <div>
     <v-list>
       <v-list-item v-for="row in availableMonths" :title="row.title">
-        <div class="font-weight-bold">{{ toMonth(row.thePeriod) }}</div>
-        <div class="text-caption">{{ toMoney(row.amount) }}</div>
+        <div class="font-weight-bold">{{ toMonth(row.thePeriod) }} : {{ toMoney(row.amount) }}</div>
+        <div class="text-body-2">
+          Terpakai: {{ toMoney(row.amountUsed) }},
+          Sisa: {{ toMoney(row.amountLeft) }}
+        </div>
         <template v-slot:append>
           <v-btn icon="i-mdi-chevron-right" variant="text" :to="`/budgeting/detail?theperiod=${row.thePeriod}`" />
         </template>

@@ -4,18 +4,18 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { $debounce, $bus } = useNuxtApp()
+const { $debounce, $bus, $router } = useNuxtApp()
 const { getTotalBalance } = useAccountStore()
 const { getRecordInBetween } = useRecordStore()
 const { accounts, totalBalance } = storeToRefs(useAccountStore())
 const { transactionLog } = storeToRefs(useRecordStore())
 
 const dayjs = useDayjs()
-const startDate = dayjs().subtract(7, 'days')
+const startDate = dayjs().subtract(1, 'month').startOf('month').subtract(7, 'hours')
 const dNewRecord = ref(false)
 const tDate = ref()
 const days = ref([])
-const numOfDays = 37
+const numOfDays = 62
 const notif = ref(false)
 
 const addNew = $debounce((data) => {
@@ -42,12 +42,14 @@ const generateCalendar = () => {
     const logs = showLogs(theDay.format('YYYY-MM-DD'))
 
     days.value.push({
+      id: theDay.format('YYYYMMDD'),
       text: theDay.format('ddd, DD MMM YYYY'),
       logs: logs.list,
       totalIn: logs.totalIn,
       totalOut: logs.totalOut
     })
   }
+  $router.replace({ hash: `#${dayjs().subtract(1, 'day').format('YYYYMMDD')}` })
 }
 
 const showLogs = (theDate) => {
@@ -87,7 +89,7 @@ onMounted(() => {
   <v-container fluid class="fill-height">
     <v-row no-gutters>
       <v-col v-for="row, i in days" cols="12">
-        <v-card variant="plain" class="mt-1">
+        <v-card variant="plain" class="mt-1" :id="row.id">
           <v-card-text>
             <v-row no-gutters>
               <v-col cols="10" class="font-weight-bold" @click="addNew(row)">

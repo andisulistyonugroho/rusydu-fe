@@ -32,8 +32,9 @@ const alert = ref(true)
         title="Budgeting" type="info" variant="tonal" class="text-caption" closable />
 
     </div>
-    <div class="text-center pt-5">
-      <v-btn variant="tonal" to="/budgeting/form" class="text-capitalize">tambah</v-btn>
+    <div class="mx-4 pt-5">
+      <v-btn variant="tonal" to="/budgeting/form" block>tambah</v-btn>
+      <v-btn variant="tonal" to="/budgeting/copy" class="mt-2" block>Salin budget</v-btn>
     </div>
   </div>
 </template>

@@ -41,7 +41,7 @@ export const useRecordStore = defineStore('record', () => {
           amountOut: 0,
           tCode: 'C',
           tDate: payload.tDate,
-          financialAccountId: financialAccountId,
+          financialAccountId: payload.toFinancialAccountId,
           userId: user.userId,
           monthlyBudgetId: payload.monthlyBudgetId
         }

@@ -9,16 +9,46 @@ export const useRecordStore = defineStore('record', () => {
     tDate: string, monthlyBudgetId: number | undefined
   }) => {
     try {
-      await $api.post('/FinancialRecords', {
-        title: payload.title,
-        amountIn: payload.tCode === 'C' ? payload.amount : 0,
-        amountOut: payload.tCode === 'D' ? payload.amount : 0,
-        tCode: payload.tCode,
+      let amountIn = 0
+      let amountOut = 0
+      let financialAccountId = payload.toFinancialAccountId
+
+      if (payload.tCode === 'C') {
+        amountIn = payload.amount
+      } else if (payload.tCode === 'D' || payload.tCode === 'M') {
+        amountOut = payload.amount
+        financialAccountId = payload.fromFinancialAccountId
+      }
+
+      const data = {
+        title: payload.tCode === 'M' ? `M: ${payload.title}` : payload.title,
+        amountIn: amountIn,
+        amountOut: amountOut,
+        tCode: payload.tCode === 'M' ? 'D' : payload.tCode,
         tDate: payload.tDate,
-        financialAccountId: payload.tCode === 'C' ? payload.toFinancialAccountId : payload.fromFinancialAccountId,
+        financialAccountId: financialAccountId,
         userId: user.userId,
         monthlyBudgetId: payload.monthlyBudgetId
-      })
+      }
+
+      await $api.post('/FinancialRecords', data)
+
+      if (payload.tCode === 'M') {
+        // masuk terima mutasi
+        const data = {
+          title: `M: ${payload.title}`,
+          amountIn: payload.amount,
+          amountOut: 0,
+          tCode: 'C',
+          tDate: payload.tDate,
+          financialAccountId: financialAccountId,
+          userId: user.userId,
+          monthlyBudgetId: payload.monthlyBudgetId
+        }
+
+        await $api.post('/FinancialRecords', data)
+      }
+
       return Promise.resolve(true)
     } catch (error) {
       return Promise.reject(error)

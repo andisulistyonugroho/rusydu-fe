@@ -22,7 +22,7 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Biar gampang dilihat lagi' }
       ],
       link: [
-        { rel: 'icon', href: '/favicon.ico' },
+        { rel: 'icon', href: '/192x192.png' },
         {
           rel: 'preconnect',
           href: 'https://fonts.googleapis.com'
@@ -50,9 +50,9 @@ export default defineNuxtConfig({
   pwa: {
     manifest: {
       name: 'RUSDU',
-      short_name: 'rsd',
+      short_name: 'Rusdu',
       description: 'Jaga kelola harta',
-      theme_color: '#ffffff',
+      theme_color: '#000000',
       icons: [
         {
           src: '192x192.png',
@@ -67,10 +67,10 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/'
+      navigateFallback: '/',
     },
     devOptions: {
-      enabled: true,
+      enabled: false,
       type: 'module'
     }
   },

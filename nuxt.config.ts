@@ -17,7 +17,7 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-16',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'RUSYDU',
+      title: 'RUSDU',
       meta: [
         { name: 'description', content: 'Biar gampang dilihat lagi' }
       ],
@@ -44,8 +44,36 @@ export default defineNuxtConfig({
     'dayjs-nuxt',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
-    '@unocss/nuxt'
+    '@unocss/nuxt',
+    '@vite-pwa/nuxt'
   ],
+  pwa: {
+    manifest: {
+      name: 'RUSDU',
+      short_name: 'rsd',
+      description: 'Jaga kelola harta',
+      theme_color: '#ffffff',
+      icons: [
+        {
+          src: '192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: '512x512.png',
+          sizes: '512x512',
+          type: 'image/png'
+        }
+      ]
+    },
+    workbox: {
+      navigateFallback: '/'
+    },
+    devOptions: {
+      enabled: true,
+      type: 'module'
+    }
+  },
   vuetify: {
     moduleOptions: {
     },

@@ -23,6 +23,7 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
+  <NuxtPwaManifest />
   <v-app>
     <v-navigation-drawer v-model="drawer">
       <LazyTheMenu />

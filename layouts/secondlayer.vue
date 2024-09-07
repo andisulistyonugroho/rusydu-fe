@@ -1,7 +1,7 @@
 <script setup>
 const { $bus } = useNuxtApp()
 const waitDialog = ref(false)
-const title = ref('Rusydu')
+const title = ref('RUSDU')
 const snacko = ref({
   message: null,
   color: null,
@@ -26,6 +26,7 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
+  <NuxtPwaManifest />
   <v-app>
     <v-app-bar class="border-b">
       <v-btn icon @click="$router.go(-1)"><v-icon>i-mdi-arrow-left</v-icon></v-btn>

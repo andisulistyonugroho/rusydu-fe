@@ -82,8 +82,8 @@ const doLogin = (async () => {
     <v-row style="height:100vh;">
       <v-col align-self="start" cols="12" md="4" offset-md="4">
         <div class="text-center ma-12">
-          <h1>Rusydu</h1>
-          <div class="text-caption">Jaga dan kelola hartamu</div>
+          <div class="text-h2">Rusdu</div>
+          <div class="text-caption">Jaga Harta Kelola Dunia</div>
         </div>
       </v-col>
       <v-col align-self="end" cols="12" md="4" offset-md="4" class="mb-3">

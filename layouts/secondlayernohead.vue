@@ -27,8 +27,8 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
+  <NuxtPwaManifest />
   <v-app>
-
     <v-main>
       <slot />
     </v-main>

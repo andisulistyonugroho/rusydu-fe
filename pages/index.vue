@@ -35,6 +35,8 @@ await getRecordInBetween({
 
 await getTotalBalance()
 
+let tlog = JSON.parse(JSON.stringify(transactionLog.value))
+
 const generateCalendar = () => {
   days.value = []
   for (let i = 1; i <= numOfDays; i++) {
@@ -49,17 +51,25 @@ const generateCalendar = () => {
       totalOut: logs.totalOut
     })
   }
-  $router.replace({ hash: `#${dayjs().subtract(1, 'day').format('YYYYMMDD')}` })
+  $router.replace({ hash: `#${dayjs().subtract(8, 'day').format('YYYYMMDD')}` })
 }
 
 const showLogs = (theDate) => {
-  const logs = transactionLog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
+  const logs = tlog.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
   const totalIn = logs.reduce((total, obj) => (
     total + obj.amountIn
   ), 0)
   const totalOut = logs.reduce((total, obj) => (
     total + obj.amountOut
   ), 0)
+
+  const idx = logs.map(obj => obj.id)
+
+  for (let i = 0; i < idx.length; i++) {
+    const index = tlog.findIndex(obj => obj.id === idx[i])
+    tlog.splice(index, 1)
+  }
+
   return { list: logs, totalIn: totalIn, totalOut: totalOut }
 }
 

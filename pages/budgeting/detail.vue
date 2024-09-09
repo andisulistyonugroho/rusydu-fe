@@ -62,7 +62,7 @@ const openDialog = (id, title, amount) => {
             <v-list-item v-if="row.amountLeft > 0" @click="openDialog(row.id, row.title, row.amount)">
               <v-list-item-title>Bayar</v-list-item-title>
             </v-list-item>
-            <v-list-item>
+            <v-list-item :to="`/budgeting/history?budgetid=${row.id}`">
               <v-list-item-title>History</v-list-item-title>
             </v-list-item>
           </v-list>

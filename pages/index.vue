@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: 'noheader',
   middleware: 'auth'
@@ -131,7 +131,7 @@ onMounted(() => {
         <v-card-text>
           <v-alert type="warning" color="primary" variant="tonal" class="mt-2">
             Sepertinya kamu belum bikin akun harta, yuk bikin dulu!<br>
-            <NuxtLink to="/accounts/form">
+            <NuxtLink to="/accounts">
               Klik disini
             </NuxtLink><br><br>
             <div>

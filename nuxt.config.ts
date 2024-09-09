@@ -52,6 +52,7 @@ export default defineNuxtConfig({
       name: 'RUSDU',
       short_name: 'Rusdu',
       description: 'Jaga kelola harta',
+      background_color: '#000000',
       theme_color: '#000000',
       icons: [
         {
@@ -70,7 +71,7 @@ export default defineNuxtConfig({
       navigateFallback: '/',
     },
     devOptions: {
-      enabled: false,
+      enabled: true,
       type: 'module'
     }
   },

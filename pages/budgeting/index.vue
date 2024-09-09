@@ -16,7 +16,8 @@ const alert = ref(true)
 <template>
   <div>
     <v-list>
-      <v-list-item v-for="row in availableMonths" :title="row.title">
+      <v-list-item v-for="row in availableMonths" :title="row.title"
+        :to="`/budgeting/detail?theperiod=${row.thePeriod}`">
         <div class="font-weight-bold">{{ toMonth(row.thePeriod) }} : {{ toMoney(row.amount) }}</div>
         <div class="text-body-2">
           Terpakai: {{ toMoney(row.amountUsed) }},

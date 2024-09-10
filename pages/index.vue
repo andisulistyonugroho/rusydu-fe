@@ -11,12 +11,14 @@ const { accounts, totalBalance } = storeToRefs(useAccountStore())
 const { transactionLog } = storeToRefs(useRecordStore())
 
 const dayjs = useDayjs()
-const startDate = dayjs().subtract(1, 'month').startOf('month').subtract(7, 'hours')
+// const startLayout = dayjs().subtract(1, 'month').startOf('month').subtract(7, 'hours')
+const startDate = ref(dayjs().subtract(8, 'days').startOf('day'))
 const dNewRecord = ref(false)
 const tDate = ref()
 const days = ref([])
-const numOfDays = 62
+const numOfDays = 8
 const notif = ref(false)
+const tlog = ref([])
 
 const addNew = $debounce((data) => {
   dNewRecord.value = true
@@ -29,33 +31,46 @@ const closeIt = () => {
 }
 
 await getRecordInBetween({
-  startDate: startDate.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-  endDate: startDate.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
+  startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
+  endDate: startDate.value.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
 })
 
 await getTotalBalance()
 
-let tlog = JSON.parse(JSON.stringify(transactionLog.value))
-
-const generateCalendar = () => {
-  days.value = []
+const generateCalendar = (position?: string) => {
+  tlog.value = JSON.parse(JSON.stringify(transactionLog.value))
+  const backdate = []
   for (let i = 1; i <= numOfDays; i++) {
-    const theDay = startDate.add(i, 'days')
+    const theDay = startDate.value.add(i, 'days')
     const logs = showLogs(theDay.format('YYYY-MM-DD'))
 
-    days.value.push({
-      id: theDay.format('YYYYMMDD'),
-      text: theDay.format('ddd, DD MMM YYYY'),
-      logs: logs.list,
-      totalIn: logs.totalIn,
-      totalOut: logs.totalOut
-    })
+    if (position === 'start') {
+      backdate.push({
+        id: theDay.format('YYYYMMDD'),
+        text: theDay.format('ddd, DD MMM YYYY'),
+        logs: logs.list,
+        totalIn: logs.totalIn,
+        totalOut: logs.totalOut
+      })
+    } else {
+      days.value.push({
+        id: theDay.format('YYYYMMDD'),
+        text: theDay.format('ddd, DD MMM YYYY'),
+        logs: logs.list,
+        totalIn: logs.totalIn,
+        totalOut: logs.totalOut
+      })
+    }
   }
-  $router.replace({ hash: `#${dayjs().subtract(8, 'day').format('YYYYMMDD')}` })
+  if (backdate.length > 0) {
+    days.value.unshift(...backdate)
+  }
+
+  $router.replace({ hash: `#${startDate.value.add(7, 'day').format('YYYYMMDD')}` })
 }
 
 const showLogs = (theDate) => {
-  const logs = tlog.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
+  const logs = tlog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
   const totalIn = logs.reduce((total, obj) => (
     total + obj.amountIn
   ), 0)
@@ -66,8 +81,8 @@ const showLogs = (theDate) => {
   const idx = logs.map(obj => obj.id)
 
   for (let i = 0; i < idx.length; i++) {
-    const index = tlog.findIndex(obj => obj.id === idx[i])
-    tlog.splice(index, 1)
+    const index = tlog.value.findIndex(obj => obj.id === idx[i])
+    tlog.value.splice(index, 1)
   }
 
   return { list: logs, totalIn: totalIn, totalOut: totalOut }
@@ -75,17 +90,37 @@ const showLogs = (theDate) => {
 
 const refreshParent = (async () => {
   await getRecordInBetween({
-    startDate: startDate.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-    endDate: startDate.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
+    startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
+    endDate: startDate.value.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
   })
+  days.value = []
   generateCalendar()
 })
+
+const onScroll = $debounce(async () => {
+  if (window.scrollY <= 2) {
+    // alert('do get older data')
+    startDate.value = startDate.value.subtract(numOfDays, 'days').startOf('date')
+    await getRecordInBetween({
+      startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
+      endDate: startDate.value.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
+    })
+    generateCalendar('start')
+  }
+}, 1000, { leading: false, trailing: true })
 
 onMounted(() => {
   if (accounts.value.length === 0) {
     notif.value = true
   }
+  days.value = []
   generateCalendar()
+
+  document.addEventListener("scroll", onScroll)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener("scroll", onScroll)
 })
 
 </script>
@@ -97,6 +132,7 @@ onMounted(() => {
   </v-app-bar>
 
   <v-container fluid class="fill-height">
+    <v-skeleton-loader type="list-item-two-line" width="100%"></v-skeleton-loader>
     <v-row no-gutters>
       <v-col v-for="row, i in days" cols="12">
         <v-card variant="plain" class="mt-1" :id="row.id">

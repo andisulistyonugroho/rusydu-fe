@@ -17,7 +17,7 @@ const transactionType = [
 ]
 const emit = defineEmits(['closeit', 'refreshparent'])
 
-const transactionDate = computed(() => $dayjs(props.transactiondate).format('YYYY-MM-DD HH:mm:ss'))
+const transactionDate = computed(() => $dayjs(props.transactiondate).subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'))
 const hintType = computed(() => { return transactionType.find(obj => obj.value === payload.value.tCode)?.desc })
 const options = {
   number: { locale: 'id' },

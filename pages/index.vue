@@ -89,6 +89,7 @@ const showLogs = (theDate) => {
 }
 
 const refreshParent = (async () => {
+  startDate.value = dayjs().subtract(8, 'days').startOf('day')
   await getRecordInBetween({
     startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
     endDate: startDate.value.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
@@ -98,6 +99,10 @@ const refreshParent = (async () => {
 })
 
 const onScroll = $debounce(async () => {
+  if (dNewRecord.value || window.scrollY > 2) {
+    return
+  }
+
   if (window.scrollY <= 2) {
     // alert('do get older data')
     startDate.value = startDate.value.subtract(numOfDays, 'days').startOf('date')

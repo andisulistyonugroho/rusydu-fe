@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 definePageMeta({
   layout: 'noheader',
   middleware: 'auth'
@@ -32,12 +32,12 @@ const closeIt = () => {
 
 await getRecordInBetween({
   startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-  endDate: startDate.value.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
+  endDate: startDate.value.add(numOfDays, 'days').format('YYYY-MM-DD 16:59:59')
 })
 
 await getTotalBalance()
 
-const generateCalendar = (position?: string) => {
+const generateCalendar = (position) => {
   tlog.value = JSON.parse(JSON.stringify(transactionLog.value))
   const backdate = []
   for (let i = 1; i <= numOfDays; i++) {
@@ -92,7 +92,7 @@ const refreshParent = (async () => {
   startDate.value = dayjs().subtract(8, 'days').startOf('day')
   await getRecordInBetween({
     startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-    endDate: startDate.value.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
+    endDate: startDate.value.add(numOfDays, 'days').format('YYYY-MM-DD 16:59:59')
   })
   days.value = []
   generateCalendar()
@@ -108,7 +108,7 @@ const onScroll = $debounce(async () => {
     startDate.value = startDate.value.subtract(numOfDays, 'days').startOf('date')
     await getRecordInBetween({
       startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-      endDate: startDate.value.add(numOfDays, 'days').subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
+      endDate: startDate.value.add(numOfDays, 'days').format('YYYY-MM-DD 16:59:59')
     })
     generateCalendar('start')
   }

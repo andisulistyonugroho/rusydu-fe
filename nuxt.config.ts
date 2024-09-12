@@ -22,7 +22,7 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Biar gampang dilihat lagi' }
       ],
       link: [
-        { rel: 'icon', href: '/192x192.png' },
+        { rel: 'icon', href: '/64x64.png' },
         {
           rel: 'preconnect',
           href: 'https://fonts.googleapis.com'
@@ -34,6 +34,9 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Poppins&display=swap'
+        }, {
+          rel: "apple-touch-icon",
+          href: "/apple-touch-icon.png"
         }
       ]
     }
@@ -56,6 +59,11 @@ export default defineNuxtConfig({
       theme_color: '#000000',
       icons: [
         {
+          src: '64x64.png',
+          sizes: '64x64',
+          type: 'image/png'
+        },
+        {
           src: '192x192.png',
           sizes: '192x192',
           type: 'image/png'
@@ -63,7 +71,14 @@ export default defineNuxtConfig({
         {
           src: '512x512.png',
           sizes: '512x512',
-          type: 'image/png'
+          type: 'image/png',
+          purpose: 'any'
+        },
+        {
+          src: '512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable'
         }
       ]
     },

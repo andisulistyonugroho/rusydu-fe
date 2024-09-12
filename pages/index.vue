@@ -19,6 +19,7 @@ const days = ref([])
 const numOfDays = 8
 const notif = ref(false)
 const tlog = ref([])
+const startIndex = ref(0)
 
 const addNew = $debounce((data) => {
   dNewRecord.value = true
@@ -77,13 +78,23 @@ const showLogs = (theDate) => {
   const totalOut = logs.reduce((total, obj) => (
     total + obj.amountOut
   ), 0)
+  const logS = []
 
-  const idx = logs.map(obj => obj.id)
-
-  for (let i = 0; i < idx.length; i++) {
-    const index = tlog.value.findIndex(obj => obj.id === idx[i])
-    tlog.value.splice(index, 1)
+  for (let i = startIndex.value; i < tlog.value.length; i++) {
+    const obj = tlog.value[i]
+    const found = theDate === dayjs(obj.tDate).format('YYYY-MM-DD')
+    if (found) {
+      logS.push(obj)
+      startIndex.value = i + 1
+    }
   }
+
+  // const idx = logs.map(obj => obj.id)
+
+  // for (let i = 0; i < idx.length; i++) {
+  //   const index = tlog.value.findIndex(obj => obj.id === idx[i])
+  //   tlog.value.splice(index, 1)
+  // }
 
   return { list: logs, totalIn: totalIn, totalOut: totalOut }
 }

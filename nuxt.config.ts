@@ -71,6 +71,7 @@ export default defineNuxtConfig({
       navigateFallback: '/',
     },
     devOptions: {
+      suppressWarnings: true,
       enabled: true,
       type: 'module'
     }

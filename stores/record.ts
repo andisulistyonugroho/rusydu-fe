@@ -66,7 +66,8 @@ export const useRecordStore = defineStore('record', () => {
                 between: [payload.startDate, payload.endDate]
               },
               userId: user.userId
-            }
+            },
+            order: 'tDate ASC'
           }
         }
       })

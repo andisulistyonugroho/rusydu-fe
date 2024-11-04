@@ -63,7 +63,7 @@ await getMyAccounts()
 
 </script>
 <template>
-  <v-bottom-sheet v-model="props.dialog">
+  <v-dialog v-model="props.dialog">
     <v-card variant="flat" style="border-radius:0 !important;">
       <v-toolbar dark color="primary" flat>
         <v-btn icon="i-mdi-close" dark @click="emit('closeit')" />
@@ -86,5 +86,5 @@ await getMyAccounts()
         <v-btn variant="tonal" color="primary" @click="doSubmit()">simpan</v-btn>
       </v-card-actions>
     </v-card>
-  </v-bottom-sheet>
+  </v-dialog>
 </template>

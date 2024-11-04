@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "debug-prod": "NUXT_PUBLIC_API_BASE=https://apirusdu.islamizy.com/api nuxt dev",
+    "debug-prod": "NUXT_PUBLIC_API_BASE=https://apirusdu.kompilasi.in/api nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

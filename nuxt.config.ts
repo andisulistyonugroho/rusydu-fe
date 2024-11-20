@@ -19,7 +19,9 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1',
       title: 'RUSDU',
       meta: [
-        { name: 'description', content: 'Biar gampang dilihat lagi' }
+        { name: 'description', content: 'Biar gampang dilihat lagi' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'mobile-web-app-capable', content: 'yes' }
       ],
       link: [
         { rel: 'icon', href: '/64x64.png' },
@@ -34,8 +36,13 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Poppins&display=swap'
-        }, {
+        },
+        {
           rel: "apple-touch-icon",
+          href: "/apple-touch-icon.png"
+        },
+        {
+          rel: "apple-touch-startup-image",
           href: "/apple-touch-icon.png"
         }
       ]

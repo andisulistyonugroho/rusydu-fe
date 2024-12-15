@@ -16,11 +16,11 @@ const alert = ref(true)
 <template>
   <div>
     <v-list>
-      <v-list-item v-for="row in accounts" :title="row.title">
+      <v-list-item v-for="row in accounts" :title="row.title" :to="`/accounts/history?accountId=${row.id}`">
         <div class="font-weight-bold">{{ toMoney(row.eBalance) }}</div>
         <div class="text-caption">{{ formatDate(row.updatedAt) }}</div>
         <template v-slot:append>
-          <v-btn icon="mdi-chevron-right" variant="text"></v-btn>
+          <v-btn icon="i-mdi-chevron-right" variant="text" :to="`/accounts/history?accountId=${row.id}`" />
         </template>
       </v-list-item>
     </v-list>

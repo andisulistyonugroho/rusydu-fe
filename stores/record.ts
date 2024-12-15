@@ -78,7 +78,31 @@ export const useRecordStore = defineStore('record', () => {
     }
   })
 
-  return { addRecord, getRecordInBetween, transactionLog }
+  const getAccountRecordInBetween = (async (payload: { startDate: string, endDate: string, accountId: number }) => {
+    try {
+      const { data } = await $api.get('/FinancialRecords', {
+        params: {
+          filter: {
+            where: {
+              isActive: 1,
+              financialAccountId: payload.accountId,
+              tDate: {
+                between: [payload.startDate, payload.endDate]
+              },
+              userId: user.userId
+            },
+            order: 'tDate ASC'
+          }
+        }
+      })
+      transactionLog.value = data
+      return Promise.resolve(data)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
+  return { addRecord, getRecordInBetween, getAccountRecordInBetween, transactionLog }
 }, {
   persist: {
     storage: persistedState.localStorage,

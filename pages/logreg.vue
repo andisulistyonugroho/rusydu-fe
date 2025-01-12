@@ -101,7 +101,7 @@ const doLogin = (async () => {
               <v-text-field v-model="payload.wa_number" :rules="[v => !!v || 'item required']" rounded="lg"
                 variant="underlined" label="No WA*" clearable type="number" />
               <v-text-field v-model="payload.password" :rules="[v => !!v || 'item required']" rounded="lg"
-                variant="underlined" label="Password*" :append-inner-icon="passType ? 'mdi-eye-off' : 'mdi-eye'"
+                variant="underlined" label="Password*" :append-inner-icon="passType ? 'i-mdi-eye-off' : 'i-mdi-eye'"
                 :type="passType ? 'password' : 'text'" @click:append-inner="passType = !passType" clearable />
             </v-form>
           </v-window-item>

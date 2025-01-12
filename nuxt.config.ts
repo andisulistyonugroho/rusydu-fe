@@ -1,10 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config"
 import { md3 } from 'vuetify/blueprints'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   devServer: {
-    // host: '0.0.0.0',
+    host: '0.0.0.0',
     port: 8080
   },
   ssr: false,
@@ -24,9 +25,11 @@ export default defineNuxtConfig({
         { name: 'mobile-web-app-capable', content: 'yes' }
       ],
       link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Poppins&display=swap' },
+        { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
+        { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
+        { rel: 'preconnect', crossorigin: 'anonymous', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', crossorigin: 'anonymous', href: 'https://fonts.gstatic.com' },
+        { rel: 'stylesheet', crossorigin: 'anonymous', href: 'https://fonts.googleapis.com/css2?family=Poppins&display=swap' },
         { rel: 'icon', href: 'splash_screens/icon.png' },
         { rel: 'apple-touch-startup-image', media: 'screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)', href: 'splash_screens/iPhone_16_Pro_Max_landscape.png' },
         { rel: 'apple-touch-startup-image', media: 'screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)', href: 'splash_screens/iPhone_16_Pro_landscape.png' },
@@ -83,6 +86,8 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt'
   ],
   pwa: {
+    strategies: 'generateSW',
+    registerType: 'autoUpdate',
     manifest: {
       name: 'RUSDU',
       short_name: 'Rusdu',
@@ -116,12 +121,49 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
+      cacheId: 'rusdu',
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'google-fonts-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+            },
+            cacheableResponse: {
+              statuses: [0, 200]
+            }
+          }
+        },
+        {
+          urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'gstatic-fonts-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+            },
+            cacheableResponse: {
+              statuses: [0, 200]
+            },
+          }
+        }
+      ],
       navigateFallback: '/',
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+    },
+    client: {
+      installPrompt: true,
     },
     devOptions: {
       suppressWarnings: true,
       enabled: true,
-      type: 'module'
+      type: 'module',
+      navigateFallback: '/',
+      navigateFallbackAllowlist: [/^\/$/],
     }
   },
   vuetify: {

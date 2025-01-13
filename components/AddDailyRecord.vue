@@ -72,8 +72,9 @@ const doSubmit = $debounce(async () => {
       <v-card-text v-else>
         <div class="text-center text-h6">{{ transactiondate }}</div>
         <v-form ref="form">
-          <v-select v-model="payload.tCode" label="Jenis transaksi" :rules="[(v) => !!v || 'Harus diisi']"
-            :items="transactionType" variant="underlined" :hint="hintType" persistent-hint class="py-2" />
+          <div class="text-center pb-2">
+            {{ hintType }}
+          </div>
           <v-text-field v-model="payload.title" label="Title" :rules="[(v) => !!v || 'Harus diisi']"
             variant="underlined" placeholder="Pembelian bensin" persistent-placeholder clearable />
           <v-text-field prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']" label="Nominal"

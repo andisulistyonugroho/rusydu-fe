@@ -12,7 +12,7 @@ let accountId = 0
 if (typeof accountIdRoute === 'string') {
   accountId = parseInt(accountIdRoute)
 }
-const startDate = ref(dayjs().subtract(31, 'days').startOf('day'))
+const startDate = ref(dayjs().startOf('day'))
 const dNewRecord = ref(false)
 const days = ref([])
 const numOfDays = 31
@@ -32,8 +32,8 @@ const data = ref({
 const generateCalendar = (position) => {
   tlog.value = JSON.parse(JSON.stringify(transactionLog.value))
   const backdate = []
-  for (let i = 1; i <= numOfDays; i++) {
-    const theDay = startDate.value.add(i, 'days')
+  for (let i = 0; i <= numOfDays; i++) {
+    const theDay = startDate.value.subtract(i, 'days')
     const logs = showLogs(theDay.format('YYYY-MM-DD'))
     if (logs.totalIn === 0 && logs.totalOut === 0) {
       continue
@@ -75,8 +75,8 @@ const showLogs = (theDate) => {
 }
 
 await getAccountRecordInBetween({
-  startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-  endDate: startDate.value.add(numOfDays, 'days').format('YYYY-MM-DD 16:59:59'),
+  startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
+  endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59'),
   accountId: accountId
 })
 

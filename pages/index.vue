@@ -40,7 +40,7 @@ await getTotalBalance()
 const generateCalendar = (position) => {
   tlog.value = JSON.parse(JSON.stringify(transactionLog.value))
   const backdate = []
-  for (let i = 1; i <= numOfDays; i++) {
+  for (let i = 0; i <= numOfDays; i++) {
     const theDay = startDate.value.subtract(i, 'days')
     const logs = showLogs(theDay.format('YYYY-MM-DD'))
 

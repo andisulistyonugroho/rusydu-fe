@@ -4,15 +4,14 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { $debounce, $bus, $router } = useNuxtApp()
+const { $debounce, $bus } = useNuxtApp()
 const { getTotalBalance } = useAccountStore()
 const { getRecordInBetween } = useRecordStore()
 const { accounts, totalBalance } = storeToRefs(useAccountStore())
 const { transactionLog } = storeToRefs(useRecordStore())
 
 const dayjs = useDayjs()
-// const startLayout = dayjs().subtract(1, 'month').startOf('month').subtract(7, 'hours')
-const startDate = ref(dayjs().subtract(8, 'days').startOf('day'))
+const startDate = ref(dayjs().startOf('day'))
 const dNewRecord = ref(false)
 const tDate = ref()
 const days = ref([])
@@ -32,8 +31,8 @@ const closeIt = () => {
 }
 
 await getRecordInBetween({
-  startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-  endDate: startDate.value.add(numOfDays, 'days').format('YYYY-MM-DD 16:59:59')
+  startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
+  endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59')
 })
 
 await getTotalBalance()
@@ -42,7 +41,7 @@ const generateCalendar = (position) => {
   tlog.value = JSON.parse(JSON.stringify(transactionLog.value))
   const backdate = []
   for (let i = 1; i <= numOfDays; i++) {
-    const theDay = startDate.value.add(i, 'days')
+    const theDay = startDate.value.subtract(i, 'days')
     const logs = showLogs(theDay.format('YYYY-MM-DD'))
 
     if (position === 'start') {
@@ -66,8 +65,6 @@ const generateCalendar = (position) => {
   if (backdate.length > 0) {
     days.value.unshift(...backdate)
   }
-
-  $router.replace({ hash: `#${startDate.value.add(7, 'day').format('YYYYMMDD')}` })
 }
 
 const showLogs = (theDate) => {
@@ -89,13 +86,6 @@ const showLogs = (theDate) => {
     }
   }
 
-  // const idx = logs.map(obj => obj.id)
-
-  // for (let i = 0; i < idx.length; i++) {
-  //   const index = tlog.value.findIndex(obj => obj.id === idx[i])
-  //   tlog.value.splice(index, 1)
-  // }
-
   return { list: logs, totalIn: totalIn, totalOut: totalOut }
 }
 
@@ -110,18 +100,23 @@ const refreshParent = (async () => {
 })
 
 const onScroll = $debounce(async () => {
-  if (dNewRecord.value || window.scrollY > 2) {
+  const ih = window.innerHeight
+  const ls = document.getElementById('loader-skeleton')
+  let rect = ls.getBoundingClientRect()
+  const posy = rect.height + rect.y
+
+  if (dNewRecord.value || posy > ih) {
     return
   }
 
-  if (window.scrollY <= 2) {
+  if (posy <= ih) {
     // alert('do get older data')
     startDate.value = startDate.value.subtract(numOfDays, 'days').startOf('date')
     await getRecordInBetween({
-      startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-      endDate: startDate.value.add(numOfDays, 'days').format('YYYY-MM-DD 16:59:59')
+      startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
+      endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59')
     })
-    generateCalendar('start')
+    generateCalendar()
   }
 }, 1000, { leading: false, trailing: true })
 
@@ -147,8 +142,7 @@ onBeforeUnmount(() => {
     <v-btn icon="i-mdi-plus" @click="addNew({ text: dayjs().format('ddd, DD MMM YYYY') })" />
   </v-app-bar>
 
-  <v-container fluid class="fill-height">
-    <v-skeleton-loader type="list-item-two-line" width="100%"></v-skeleton-loader>
+  <v-container fluid>
     <v-row no-gutters>
       <v-col v-for="row, i in days" cols="12">
         <v-card variant="plain" class="mt-1" :id="row.id">
@@ -186,6 +180,7 @@ onBeforeUnmount(() => {
         <v-divider></v-divider>
       </v-col>
     </v-row>
+    <v-skeleton-loader id="loader-skeleton" type="list-item-two-line" width="100%"></v-skeleton-loader>
     <LazyAddDailyRecord :dialog="dNewRecord" :transactiondate="tDate" @closeit="closeIt"
       @refreshparent="refreshParent" />
     <v-bottom-sheet v-model="notif">
@@ -204,10 +199,5 @@ onBeforeUnmount(() => {
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
-    <v-footer app class="bg-indigo-lighten-1 text-center d-flex flex-column">
-      <div>
-        Saldo: {{ toMoney(totalBalance) }}
-      </div>
-    </v-footer>
   </v-container>
 </template>

@@ -136,10 +136,15 @@ onBeforeUnmount(() => {
 
 </script>
 <template>
-  <v-app-bar class="border-b">
+  <v-app-bar extended class="border-b bg-primary">
     <v-app-bar-nav-icon @click="$bus.$emit('open-drawer')"></v-app-bar-nav-icon>
     <v-app-bar-title>Buku Kas</v-app-bar-title>
     <v-btn icon="i-mdi-plus" @click="addNew({ text: dayjs().format('ddd, DD MMM YYYY') })" />
+    <template v-slot:extension>
+      <div class="w-100 text-center">
+        Saldo: {{ toMoney(totalBalance) }}
+      </div>
+    </template>
   </v-app-bar>
 
   <v-container fluid>

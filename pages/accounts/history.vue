@@ -4,7 +4,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { $bus } = useNuxtApp()
+const { $bus, $debounce } = useNuxtApp()
 const dayjs = useDayjs()
 const route = useRoute()
 const accountIdRoute = route.query.accountId
@@ -80,7 +80,37 @@ await getAccountRecordInBetween({
   accountId: accountId
 })
 
-generateCalendar()
+const onScroll = $debounce(async () => {
+  const ih = window.innerHeight
+  const ls = document.getElementById('loader-skeleton')
+  let rect = ls.getBoundingClientRect()
+  const posy = rect.height + rect.y
+
+  if (posy > ih) {
+    return
+  }
+
+  if (posy <= ih) {
+    // alert('do get older data')
+    startDate.value = startDate.value.subtract(numOfDays + 1, 'days').startOf('date')
+    await getAccountRecordInBetween({
+      startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
+      endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59'),
+      accountId: accountId
+    })
+
+    generateCalendar()
+  }
+}, 1000, { leading: false, trailing: true })
+
+onMounted(() => {
+  generateCalendar()
+  document.addEventListener("scroll", onScroll)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener("scroll", onScroll)
+})
 </script>
 <template>
   <v-container fluid class="fill-height">
@@ -120,5 +150,6 @@ generateCalendar()
         <v-divider></v-divider>
       </v-col>
     </v-row>
+    <v-skeleton-loader id="loader-skeleton" type="list-item-two-line" width="100%"></v-skeleton-loader>
   </v-container>
 </template>

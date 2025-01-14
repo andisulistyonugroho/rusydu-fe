@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: 'noheader',
   middleware: 'auth'
@@ -111,7 +111,7 @@ const onScroll = $debounce(async () => {
 
   if (posy <= ih) {
     // alert('do get older data')
-    startDate.value = startDate.value.subtract(numOfDays, 'days').startOf('date')
+    startDate.value = startDate.value.subtract(numOfDays + 1, 'days').startOf('date')
     await getRecordInBetween({
       startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
       endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59')
@@ -133,15 +133,14 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("scroll", onScroll)
 })
-
 </script>
 <template>
-  <v-app-bar extended class="border-b bg-primary">
+  <v-app-bar extended class="border-b">
     <v-app-bar-nav-icon @click="$bus.$emit('open-drawer')"></v-app-bar-nav-icon>
     <v-app-bar-title>Buku Kas</v-app-bar-title>
     <v-btn icon="i-mdi-plus" @click="addNew({ text: dayjs().format('ddd, DD MMM YYYY') })" />
     <template v-slot:extension>
-      <div class="w-100 text-center">
+      <div class="w-100 text-center font-weight-bold">
         Saldo: {{ toMoney(totalBalance) }}
       </div>
     </template>

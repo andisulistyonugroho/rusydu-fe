@@ -96,24 +96,24 @@ export default defineNuxtConfig({
       theme_color: '#FFFFFF',
       icons: [
         {
-          src: 'splash_screens/icon.png',
+          src: '/splash_screens/icon.png',
           sizes: '512x512',
           type: 'image/png',
           purpose: ['any']
         }
       ],
-      id: '/?source=pwa',
+      id: 'rusdu/v0.1',
       start_url: '/?source=pwa',
       display: 'fullscreen',
       scope: '/',
       screenshots: [
         {
-          src: 'splash_screens/4__iPhone_SE__iPod_touch_5th_generation_and_later_portrait.png',
+          src: '/splash_screens/4__iPhone_SE__iPod_touch_5th_generation_and_later_portrait.png',
           type: 'image/png',
           sizes: '640x1136'
         },
         {
-          src: 'splash_screens/iPhone_11__iPhone_XR_landscape.png',
+          src: '/splash_screens/iPhone_11__iPhone_XR_landscape.png',
           type: 'image/png',
           sizes: '1792x828',
           form_factor: 'wide'

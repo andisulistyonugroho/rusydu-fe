@@ -1,7 +1,18 @@
 export const useRecordStore = defineStore('record', () => {
   const { $api } = useNuxtApp()
   const { user } = useAuthStore()
-  const transactionLog = ref([])
+
+  type FinancialRecord = {
+    id: number,
+    title: string,
+    amountIn: number,
+    amountOut: number,
+    tCode: string,
+    tDate: string,
+    createdAt: string
+  }
+
+  const transactionLog = ref<FinancialRecord[]>([])
 
   const addRecord = (async (payload: {
     title: string, tCode: string, amount: number,

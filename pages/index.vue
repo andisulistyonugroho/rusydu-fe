@@ -10,15 +10,31 @@ const { getRecordInBetween } = useRecordStore()
 const { accounts, totalBalance } = storeToRefs(useAccountStore())
 const { transactionLog } = storeToRefs(useRecordStore())
 
+type FinancialRec = {
+  id: number,
+  title: string,
+  amountIn: number,
+  amountOut: number,
+  tCode: string,
+  tDate: string,
+  createdAt: string
+}
+
+type DailyRec = {
+  id: string,
+  text: string,
+  logs: FinancialRec[],
+  totalIn: number,
+  totalOut: number
+}
+
 const dayjs = useDayjs()
 const startDate = ref(dayjs().startOf('day'))
 const dNewRecord = ref(false)
 const tDate = ref()
-const days = ref([])
+const days = ref<DailyRec[]>([])
 const numOfDays = 8
 const notif = ref(false)
-const tlog = ref([])
-const startIndex = ref(0)
 
 const addNew = $debounce((data) => {
   dNewRecord.value = true
@@ -32,15 +48,14 @@ const closeIt = () => {
 
 await getRecordInBetween({
   startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
-  endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59')
+  endDate: startDate.value.format('YYYY-MM-DD 16:59:59')
 })
 
 await getTotalBalance()
 
-const generateCalendar = (position) => {
-  tlog.value = JSON.parse(JSON.stringify(transactionLog.value))
+const generateCalendar = (position?: string) => {
   const backdate = []
-  for (let i = 0; i <= numOfDays; i++) {
+  for (let i = 0; i < numOfDays; i++) {
     const theDay = startDate.value.subtract(i, 'days')
     const logs = showLogs(theDay.format('YYYY-MM-DD'))
 
@@ -67,24 +82,14 @@ const generateCalendar = (position) => {
   }
 }
 
-const showLogs = (theDate) => {
-  const logs = tlog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
+const showLogs = (theDate: string) => {
+  const logs = transactionLog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
   const totalIn = logs.reduce((total, obj) => (
     total + obj.amountIn
   ), 0)
   const totalOut = logs.reduce((total, obj) => (
     total + obj.amountOut
   ), 0)
-  const logS = []
-
-  for (let i = startIndex.value; i < tlog.value.length; i++) {
-    const obj = tlog.value[i]
-    const found = theDate === dayjs(obj.tDate).format('YYYY-MM-DD')
-    if (found) {
-      logS.push(obj)
-      startIndex.value = i + 1
-    }
-  }
 
   return { list: logs, totalIn: totalIn, totalOut: totalOut }
 }
@@ -102,7 +107,14 @@ const refreshParent = (async () => {
 const onScroll = $debounce(async () => {
   const ih = window.innerHeight
   const ls = document.getElementById('loader-skeleton')
-  let rect = ls.getBoundingClientRect()
+  let rect = {
+    height: 0,
+    y: 0
+  }
+
+  if (ls) {
+    rect = ls.getBoundingClientRect()
+  }
   const posy = rect.height + rect.y
 
   if (dNewRecord.value || posy > ih) {
@@ -111,10 +123,10 @@ const onScroll = $debounce(async () => {
 
   if (posy <= ih) {
     // alert('do get older data')
-    startDate.value = startDate.value.subtract(numOfDays + 1, 'days').startOf('date')
+    startDate.value = startDate.value.subtract(numOfDays, 'days').startOf('date')
     await getRecordInBetween({
       startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
-      endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59')
+      endDate: startDate.value.format('YYYY-MM-DD 16:59:59')
     })
     generateCalendar()
   }
@@ -164,7 +176,7 @@ onBeforeUnmount(() => {
                 </v-col>
                 <v-col cols="4"
                   :class="`mt-4 text-right ${log.tCode === 'C' ? `text-green-darken-3` : `text-red-darken-1`} font-weight-bold`">
-                  {{ toMoney(log.tCode === 'D' ? log.amountOut : log.tCode === 'C' ? log.amountIn : '') }}
+                  {{ toMoney(log.tCode === 'D' ? log.amountOut : log.tCode === 'C' ? log.amountIn : 0) }}
                 </v-col>
               </template>
               <template v-if="row.totalIn || row.totalOut">

@@ -23,7 +23,7 @@ const { getAccountRecordInBetween } = useRecordStore()
 const { transactionLog } = storeToRefs(useRecordStore())
 
 
-$bus.$emit('set-header', 'Transaksi Akun')
+$bus.$emit('set-header', 'Histori Akun')
 const data = ref({
   title: null,
   sBalance: null
@@ -92,10 +92,10 @@ const onScroll = $debounce(async () => {
 
   if (posy <= ih) {
     // alert('do get older data')
-    startDate.value = startDate.value.subtract(numOfDays + 1, 'days').startOf('date')
+    startDate.value = startDate.value.subtract(numOfDays, 'days').startOf('date')
     await getAccountRecordInBetween({
       startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
-      endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59'),
+      endDate: startDate.value.format('YYYY-MM-DD 16:59:59'),
       accountId: accountId
     })
 

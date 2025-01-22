@@ -95,10 +95,10 @@ const showLogs = (theDate: string) => {
 }
 
 const refreshParent = (async () => {
-  startDate.value = dayjs().subtract(8, 'days').startOf('day')
+  startDate.value = dayjs().startOf('day')
   await getRecordInBetween({
-    startDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-    endDate: startDate.value.add(numOfDays, 'days').format('YYYY-MM-DD 16:59:59')
+    startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
+    endDate: startDate.value.format('YYYY-MM-DD 16:59:59')
   })
   days.value = []
   generateCalendar()

@@ -28,7 +28,6 @@ onBeforeUnmount(() => {
 </script>
 <template>
   <NuxtPwaManifest />
-  <PwaAppleSplashScreenImage />
   <v-app>
     <v-navigation-drawer v-model="drawer">
       <LazyTheMenu />

@@ -22,7 +22,6 @@ const startIndex = ref(0)
 const { getAccountRecordInBetween } = useRecordStore()
 const { transactionLog } = storeToRefs(useRecordStore())
 
-
 $bus.$emit('set-header', 'Histori Akun')
 const data = ref({
   title: null,
@@ -74,12 +73,6 @@ const showLogs = (theDate) => {
   return { list: logs, totalIn: totalIn, totalOut: totalOut }
 }
 
-await getAccountRecordInBetween({
-  startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
-  endDate: startDate.value.subtract(7, 'hours').format('YYYY-MM-DD 16:59:59'),
-  accountId: accountId
-})
-
 const onScroll = $debounce(async () => {
   const ih = window.innerHeight
   const ls = document.getElementById('loader-skeleton')
@@ -111,6 +104,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("scroll", onScroll)
 })
+
+await getAccountRecordInBetween({
+  startDate: startDate.value.subtract(numOfDays, 'days').format('YYYY-MM-DD 17:00:00'),
+  endDate: startDate.value.format('YYYY-MM-DD 16:59:59'),
+  accountId: accountId
+})
 </script>
 <template>
   <v-container fluid class="fill-height">
@@ -136,7 +135,7 @@ onBeforeUnmount(() => {
               <template v-if="row.totalIn || row.totalOut">
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class=" text-green-darken-3 font-weight-bold">Masuk: {{ toMoney(row.totalIn)
-                    }}</v-chip>
+                  }}</v-chip>
                 </v-col>
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class="text-red-darken-1 font-weight-bold">

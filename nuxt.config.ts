@@ -4,16 +4,20 @@ import { md3 } from 'vuetify/blueprints'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   devServer: {
     host: '0.0.0.0',
     port: 8080
   },
+
   ssr: false,
+
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000/api'
     }
   },
+
   app: {
     head: {
       charset: 'utf-16',
@@ -76,7 +80,9 @@ export default defineNuxtConfig({
       ]
     }
   },
+
   css: ['@/assets/main.scss'],
+
   modules: [
     'vuetify-nuxt-module',
     'dayjs-nuxt',
@@ -85,6 +91,7 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
     '@vite-pwa/nuxt'
   ],
+
   pwa: {
     strategies: 'generateSW',
     registerType: 'autoUpdate',
@@ -166,6 +173,8 @@ export default defineNuxtConfig({
       navigateFallbackAllowlist: [/^\/$/],
     }
   },
+
+  // compatibilityDate: '2024-04-03'
   vuetify: {
     moduleOptions: {
     },
@@ -180,5 +189,6 @@ export default defineNuxtConfig({
       labComponents: ['VDateInput']
     }
   },
-  compatibilityDate: '2024-04-03'
+
+  compatibilityDate: '2025-03-29'
 })

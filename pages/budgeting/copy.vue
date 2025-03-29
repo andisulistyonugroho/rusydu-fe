@@ -48,8 +48,12 @@ if (thePeriod) {
 }
 
 const years = computed(() => {
+  const result = []
   const y = $dayjs().format('YYYY')
-  return [y, parseInt(y) + 1]
+  for (let year = 2023; year < y; year++) {
+    result.push(year + 1)
+  }
+  return result
 })
 const periode = computed(() => {
   return `${year.value}-${month.value}-01 00:00:00`

@@ -102,7 +102,7 @@ export default defineNuxtConfig({
           purpose: ['any']
         }
       ],
-      id: 'rusdu/v0.3',
+      id: 'rusdu/v0.4',
       start_url: '/?source=pwa',
       display: 'fullscreen',
       scope: '/',
@@ -179,5 +179,6 @@ export default defineNuxtConfig({
       },
       labComponents: ['VDateInput']
     }
-  }
+  },
+  compatibilityDate: '2024-04-03'
 })

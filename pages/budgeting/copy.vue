@@ -143,7 +143,6 @@ const getBudget = $debounce(async () => {
             </v-col>
           </v-row>
         </v-form>
-        {{ selectedBudget }}
         <div v-if="selectedBudget.length" class="text-right">
           <v-btn variant="tonal" @click="doSubmit()">simpan</v-btn>
         </div>

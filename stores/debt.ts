@@ -11,7 +11,8 @@ export const useDebtStore = defineStore('debt', () => {
     tDate: string,
     isActive: boolean,
     createdAt: string,
-    updatedAt: string
+    updatedAt: string,
+    financialRecords?: FinancialRecord[]
   }
 
   type DebtPayment = {
@@ -23,7 +24,18 @@ export const useDebtStore = defineStore('debt', () => {
     debtId: number
   }
 
+  type FinancialRecord = {
+    id: number,
+    title: string,
+    amountIn: number,
+    amountOut: number,
+    tCode: string,
+    tDate: string,
+    createdAt: string
+  }
+
   const debts = ref<Debt[]>([])
+  const debt = ref<Debt>()
 
   const addDebt = (async (payload: {
     title: string, amount: number, debtType: string, tDate: string,
@@ -71,8 +83,24 @@ export const useDebtStore = defineStore('debt', () => {
     }
   })
 
+  const getDebtHistory = (async (id: number) => {
+    try {
+      const { data } = await $api.get(`/Debts/${id}`, {
+        params: {
+          filter: {
+            include: 'financialRecords'
+          }
+        }
+      })
+      debt.value = data
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
   return {
-    addDebt, getDebt, payDebt,
-    debts
+    addDebt, getDebt, payDebt, getDebtHistory,
+    debts, debt
   }
 })

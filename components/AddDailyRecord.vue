@@ -10,17 +10,18 @@ const props = defineProps({
   transactiondate: { type: String, default: null }
 })
 const transactionType = [
-  { title: 'Pengeluaran', value: 'D', desc: 'Uang keluar atau pembayaran' },
-  { title: 'Pemasukan', value: 'C', desc: 'Uang masuk atau pendapatan' },
-  { title: 'Transfer/mutasi', value: 'M', desc: 'Pindah uang dari satu akun ke akun lain' },
-  { title: 'Hutang', value: 'H', desc: 'Dapat pinjaman atau tunggakan' },
-  { title: 'Piutang', value: 'P', desc: 'Kasih pinjaman' }
+  { title: 'Pengeluaran', value: 'D', desc: 'Uang keluar atau pembayaran', color: 'red' },
+  { title: 'Pemasukan', value: 'C', desc: 'Uang masuk atau pendapatan', color: 'green' },
+  { title: 'Transfer/mutasi', value: 'M', desc: 'Pindah uang dari satu akun ke akun lain', color: 'yellow' },
+  { title: 'Hutang', value: 'H', desc: 'Dapat pinjaman atau tunggakan', color: 'brown' },
+  { title: 'Piutang', value: 'P', desc: 'Kasih pinjaman', color: 'info' }
 ]
 const emit = defineEmits(['closeit', 'refreshparent'])
 
 const transactionDate = computed(() => $dayjs(props.transactiondate).subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'))
 const hintType = computed(() => { return transactionType.find(obj => obj.value === payload.value.tCode)?.desc })
 const transactionTypeTitle = computed(() => transactionType.find(obj => obj.value === payload.value.tCode)?.title)
+const dialogColor = computed(() => { return transactionType.find(obj => obj.value === payload.value.tCode)?.color })
 const options = {
   number: { locale: 'id' },
   onMaska: (detail) => {
@@ -65,13 +66,14 @@ const doSubmit = $debounce(async () => {
 <template>
   <v-dialog v-model="props.dialog">
     <v-card flat>
-      <v-toolbar dark color="primary">
+      <v-toolbar dark :color="dialogColor ? dialogColor : `primary`">
         <v-btn v-if="!payload.tCode" icon="i-mdi-close" dark @click="emit('closeit')" />
         <v-btn v-else icon="i-mdi-arrow-left" dark @click="payload.tCode = null" />
         <v-toolbar-title>{{ payload.tCode ? transactionTypeTitle : 'Pencatatan' }}</v-toolbar-title>
       </v-toolbar>
       <v-list v-if="!payload.tCode">
-        <v-list-item v-for="row in transactionType" :value="row.title" @click="payload.tCode = row.value">
+        <v-list-item v-for="row in transactionType" :value="row.title" @click="payload.tCode = row.value"
+          :class="`bg-${row.color}`">
           {{ row.title }}
           <v-list-item-subtitle>
             {{ row.desc }}

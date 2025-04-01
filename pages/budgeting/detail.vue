@@ -58,7 +58,7 @@ const openDialog = (id, title, amount) => {
             <v-btn icon="i-mdi-dots-vertical" variant="text" v-bind="props"></v-btn>
           </template>
 
-          <v-list dense>
+          <v-list density="compact">
             <v-list-item v-if="row.amountLeft > 0" @click="openDialog(row.id, row.title, row.amount)">
               <v-list-item-title>Bayar</v-list-item-title>
             </v-list-item>

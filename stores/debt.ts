@@ -14,6 +14,15 @@ export const useDebtStore = defineStore('debt', () => {
     updatedAt: string
   }
 
+  type DebtPayment = {
+    title: string,
+    tCode: string,
+    amount: number,
+    tDate: string,
+    fromFinancialAccountId: number,
+    debtId: number
+  }
+
   const debts = ref<Debt[]>([])
 
   const addDebt = (async (payload: {
@@ -45,8 +54,25 @@ export const useDebtStore = defineStore('debt', () => {
     }
   })
 
+  const payDebt = (async (payload: DebtPayment) => {
+    try {
+      const data = {
+        title: payload.title,
+        amount: payload.amount,
+        tDate: payload.tDate,
+        financialAccountId: payload.fromFinancialAccountId,
+        debtId: payload.debtId
+      }
+
+      await $api.post('/Debts/PayDebt', data)
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
   return {
-    addDebt, getDebt,
+    addDebt, getDebt, payDebt,
     debts
   }
 })

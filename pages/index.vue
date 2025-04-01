@@ -36,7 +36,7 @@ const days = ref<DailyRec[]>([])
 const numOfDays = 8
 const notif = ref(false)
 
-const addNew = $debounce((data) => {
+const addNew = $debounce((data: { text: string }) => {
   dNewRecord.value = true
   tDate.value = data.text
 }, 1000, { leading: true, trailing: false })
@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
               <template v-if="row.totalIn || row.totalOut">
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class=" text-green-darken-3 font-weight-bold">Masuk: {{ toMoney(row.totalIn)
-                    }}</v-chip>
+                  }}</v-chip>
                 </v-col>
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class="text-red-darken-1 font-weight-bold">

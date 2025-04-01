@@ -35,8 +35,18 @@ export const useDebtStore = defineStore('debt', () => {
     }
   })
 
+  const getDebt = (async () => {
+    try {
+      const { data } = await $api.get('/Debts', { params: { filter: { order: 'id DESC' } } })
+      debts.value = data
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
   return {
-    addDebt,
+    addDebt, getDebt,
     debts
   }
 })

@@ -11,9 +11,9 @@ const menus = [
     ]
   },
   {
-    title: 'Pengaturan',
+    title: 'Hutang',
     icon: 'i-mdi-account-cash-outline',
-    link: '#',
+    link: '/debt',
     open: true
   }
 ]

@@ -21,7 +21,8 @@ export const useDebtStore = defineStore('debt', () => {
     amount: number,
     tDate: string,
     fromFinancialAccountId: number,
-    debtId: number
+    debtId: number,
+    monthlyBudgetId: number | null
   }
 
   type FinancialRecord = {
@@ -73,7 +74,8 @@ export const useDebtStore = defineStore('debt', () => {
         amount: payload.amount,
         tDate: payload.tDate,
         financialAccountId: payload.fromFinancialAccountId,
-        debtId: payload.debtId
+        debtId: payload.debtId,
+        monthlyBudgetId: payload.monthlyBudgetId,
       }
 
       await $api.post('/Debts/PayDebt', data)

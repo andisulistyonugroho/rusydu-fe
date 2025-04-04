@@ -8,6 +8,8 @@ const { $dayjs, $debounce, $bus } = useNuxtApp()
 const { getMyAccounts } = useAccountStore()
 const { accounts } = storeToRefs(useAccountStore())
 const { payDebt } = useDebtStore()
+const { getBudgetInPeriod } = useBudgetingStore()
+const { budgets } = storeToRefs(useBudgetingStore())
 
 const emit = defineEmits(['refreshparent', 'closeit'])
 const form = ref()
@@ -18,7 +20,8 @@ const payload = ref({
   amount: 0,
   tDate: $dayjs().format(),
   fromFinancialAccountId: 0,
-  debtId: props.debtid
+  debtId: props.debtid,
+  monthlyBudgetId: null,
 })
 
 const options = {
@@ -45,7 +48,20 @@ const doSubmit = $debounce(async () => {
   }
 }, 1000, { leading: true, trailing: false })
 
+const getBudget = async () => {
+  try {
+    $bus.$emit('wait-dialog', true)
+    const period = `${$dayjs().format('YYYY-MM')}-01 00:00:00`
+    await getBudgetInPeriod(period)
+    $bus.$emit('wait-dialog', false)
+  } catch (error) {
+    $bus.$emit('wait-dialog', false)
+    $bus.$emit('eat-snackbar', error)
+  }
+}
+
 await getMyAccounts()
+await getBudget()
 </script>
 <template>
   <v-card variant="flat">
@@ -62,14 +78,21 @@ await getMyAccounts()
       </div>
       <v-divider class="my-3"></v-divider>
       <v-form ref="form">
-        <v-text-field v-model="payload.title" label="Title" :rules="[(v) => !!v || 'Harus diisi']" variant="underlined"
+        <v-text-field v-model="payload.title" label="Title*" :rules="[(v) => !!v || 'Harus diisi']" variant="underlined"
           placeholder="Bayar-bayar" persistent-placeholder clearable />
         <v-text-field prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']" label="Nominal"
           variant="underlined" placeholder="0" persistent-placeholder clearable />
-        <v-select v-model="payload.fromFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'D'"
-          label="Akun Asal" :items="accounts" item-value="id" variant="underlined" />
-        <v-date-input v-model="payload.tDate" prepend-icon="" variant="underlined" label="Tanggal Transaksi" />
+        <v-select v-model="payload.fromFinancialAccountId" label="Akun Asal*" :items="accounts" item-value="id"
+          variant="underlined" />
+        <v-date-input v-model="payload.tDate" prepend-icon="" variant="underlined" label="Tanggal Transaksi*" />
+        <v-select v-model="payload.monthlyBudgetId" label="Ambil dari budget" :items="budgets" item-value="id"
+          variant="underlined" clearable>
+          <template v-slot:item="{ props: itemProps, item }">
+            <v-list-item v-bind="itemProps" :subtitle="toMoney(item.raw.amountLeft)"></v-list-item>
+          </template>
+        </v-select>
       </v-form>
+      {{ payload }}
     </v-card-text>
     <v-card-actions>
       <v-btn variant="tonal" color="error" @click="form.reset()">batal</v-btn>

@@ -92,7 +92,6 @@ await getBudget()
           </template>
         </v-select>
       </v-form>
-      {{ payload }}
     </v-card-text>
     <v-card-actions>
       <v-btn variant="tonal" color="error" @click="form.reset()">batal</v-btn>

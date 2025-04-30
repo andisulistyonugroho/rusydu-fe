@@ -1,5 +1,7 @@
 <script setup>
 const { $bus } = useNuxtApp()
+const { getTotalBalance } = useAccountStore()
+const { totalBalance } = storeToRefs(useAccountStore())
 const waitDialog = ref(false)
 const title = ref('RUSDU')
 const snacko = ref({
@@ -24,13 +26,20 @@ onBeforeUnmount(() => {
   $bus.$off('eat-snackbar')
   $bus.$off('set-header')
 })
+
+getTotalBalance()
 </script>
 <template>
   <NuxtPwaManifest />
   <v-app>
-    <v-app-bar class="border-b">
+    <v-app-bar extended class="border-b">
       <v-btn icon @click="$router.go(-1)"><v-icon>i-mdi-arrow-left</v-icon></v-btn>
       <v-app-bar-title>{{ title }}</v-app-bar-title>
+      <template v-slot:extension>
+        <div class="w-100 text-center font-weight-bold">
+          Saldo: {{ toMoney(totalBalance) }}
+        </div>
+      </template>
     </v-app-bar>
 
     <v-main>

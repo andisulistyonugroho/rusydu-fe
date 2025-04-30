@@ -1,7 +1,7 @@
 <script setup>
 const menus = [
   {
-    title: 'Akun', link: '/accounts', icon: 'i-mdi-book-account-outline', childs: [
+    title: 'Buku Kas', link: '/cashbook', icon: 'i-mdi-book-account-outline', childs: [
       { title: null, link: null }
     ]
   },

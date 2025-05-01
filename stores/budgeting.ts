@@ -1,5 +1,5 @@
 export const useBudgetingStore = defineStore('budgeting', () => {
-  const { $api, $dayjs } = useNuxtApp()
+  const { $api } = useNuxtApp()
   const { user } = useAuthStore()
 
   type Budget = {
@@ -76,8 +76,19 @@ export const useBudgetingStore = defineStore('budgeting', () => {
       return Promise.reject(error)
     }
   })
+  const setAsCompleted = (async (id: number) => {
+    try {
+      await $api.post('/MonthlyBudgets/setAsCompleted', { id: id })
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
 
-  return { getAvailableMonth, addMyBudget, getBudgetInPeriod, payBudget, availableMonths, budgets }
+  return {
+    getAvailableMonth, addMyBudget, getBudgetInPeriod, payBudget, setAsCompleted,
+    availableMonths, budgets
+  }
 }, {
   persist: {
     storage: persistedState.localStorage,

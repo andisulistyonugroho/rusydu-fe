@@ -3,7 +3,7 @@ definePageMeta({
   layout: 'secondlayernohead',
   middleware: 'auth'
 })
-const { $bus, $dayjs } = useNuxtApp()
+const { $bus, $dayjs, $debounce } = useNuxtApp()
 const route = useRoute()
 const thePeriod = route.query.theperiod
 const dialog = ref(false)
@@ -12,7 +12,7 @@ if (!thePeriod) {
   navigateTo('/budgeting')
 }
 
-const { getBudgetInPeriod } = useBudgetingStore()
+const { getBudgetInPeriod, setAsCompleted } = useBudgetingStore()
 const { budgets } = storeToRefs(useBudgetingStore())
 const periodeString = ref('Budgeting')
 const selectedData = ref({
@@ -39,6 +39,18 @@ const openDialog = (id, title, amount) => {
   selectedData.value.selectedAmount = amount
 }
 
+const setAsComplete = $debounce(async (id) => {
+  try {
+    $bus.$emit('wait-dialog', true)
+    await setAsCompleted(id)
+    await getBudgetInPeriod(thePeriod.toString())
+    $bus.$emit('wait-dialog', false)
+  } catch (error) {
+    $bus.$emit('wait-dialog', false)
+    $bus.$emit('eat-snackbar', error)
+  }
+}, 1000, { leading: true, trailing: false })
+
 
 </script>
 <template>
@@ -61,6 +73,15 @@ const openDialog = (id, title, amount) => {
           <v-list density="compact">
             <v-list-item v-if="row.amountLeft > 0" @click="openDialog(row.id, row.title, row.amount)">
               <v-list-item-title>Bayar</v-list-item-title>
+            </v-list-item>
+            <v-list-item v-if="row.amountLeft > 0" @click="setAsComplete(row.id)">
+              <v-list-item-title>Cukupkan</v-list-item-title>
+            </v-list-item>
+            <v-list-item v-if="row.amountLeft > 0">
+              <v-list-item-title>Batalkan</v-list-item-title>
+            </v-list-item>
+            <v-list-item v-if="row.amountLeft > 0">
+              <v-list-item-title>Pindahkan</v-list-item-title>
             </v-list-item>
             <v-list-item :to="`/budgeting/history?budgetid=${row.id}`">
               <v-list-item-title>History</v-list-item-title>

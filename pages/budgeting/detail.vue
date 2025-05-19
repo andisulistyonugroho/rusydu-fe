@@ -41,10 +41,12 @@ const openDialog = (id, title, amount) => {
 
 const setAsComplete = $debounce(async (id) => {
   try {
-    $bus.$emit('wait-dialog', true)
-    await setAsCompleted(id)
-    await getBudgetInPeriod(thePeriod.toString())
-    $bus.$emit('wait-dialog', false)
+    if (window.confirm("Alokasi budget akan dicukupkan, anda yakin?")) {
+      $bus.$emit('wait-dialog', true)
+      await setAsCompleted(id)
+      await getBudgetInPeriod(thePeriod.toString())
+      $bus.$emit('wait-dialog', false)
+    }
   } catch (error) {
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', error)

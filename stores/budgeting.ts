@@ -17,6 +17,7 @@ export const useBudgetingStore = defineStore('budgeting', () => {
 
   const availableMonths = ref([])
   const budgets = ref<Budget[]>([])
+  const availableBudgets = ref<Budget[]>([])
 
   const getAvailableMonth = (async () => {
     try {
@@ -84,10 +85,25 @@ export const useBudgetingStore = defineStore('budgeting', () => {
       return Promise.reject(error)
     }
   })
+  const getBudgetAvailableInPeriod = (async (thePeriod: string) => {
+    try {
+      const { data } = await $api.get('/MonthlyBudgets', {
+        params: {
+          filter: {
+            where: { thePeriod: thePeriod, isActive: true, amountLeft: { gt: 0 } }
+          }
+        }
+      })
+      availableBudgets.value = data
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
 
   return {
-    getAvailableMonth, addMyBudget, getBudgetInPeriod, payBudget, setAsCompleted,
-    availableMonths, budgets
+    getAvailableMonth, addMyBudget, getBudgetInPeriod, payBudget, setAsCompleted, getBudgetAvailableInPeriod,
+    availableMonths, budgets, availableBudgets
   }
 }, {
   persist: {

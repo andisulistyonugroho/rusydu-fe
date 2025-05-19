@@ -4,6 +4,8 @@ const { addRecord } = useRecordStore()
 const { getTotalBalance } = useAccountStore()
 const { accounts } = storeToRefs(useAccountStore())
 const { addDebt } = useDebtStore()
+const { getBudgetAvailableInPeriod } = useBudgetingStore()
+const { availableBudgets } = storeToRefs(useBudgetingStore())
 
 const props = defineProps({
   dialog: { type: Boolean, default: false },
@@ -36,7 +38,8 @@ const payload = ref({
   fromFinancialAccountId: null,
   toFinancialAccountId: null,
   tDate: transactionDate,
-  debtType: null
+  debtType: null,
+  monthlyBudgetId: null
 })
 
 const doSubmit = $debounce(async () => {
@@ -62,6 +65,21 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('eat-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
+
+const getBudget = (async () => {
+  const period = $dayjs(transactionDate.value).format('YYYY-MM-01 00:00:00')
+  await getBudgetAvailableInPeriod(period)
+})
+
+const setTcode = ((code) => {
+  payload.value.tCode = code
+  if (code === 'D') {
+    getBudget()
+  }
+})
+
+
+
 </script>
 <template>
   <v-dialog v-model="props.dialog">
@@ -72,7 +90,7 @@ const doSubmit = $debounce(async () => {
         <v-toolbar-title>{{ payload.tCode ? transactionTypeTitle : 'Pencatatan' }}</v-toolbar-title>
       </v-toolbar>
       <v-list v-if="!payload.tCode">
-        <v-list-item v-for="row in transactionType" :value="row.title" @click="payload.tCode = row.value"
+        <v-list-item v-for="row in transactionType" :value="row.title" @click="setTcode(row.value)"
           :class="`bg-${row.color}`">
           {{ row.title }}
           <v-list-item-subtitle>
@@ -114,6 +132,12 @@ const doSubmit = $debounce(async () => {
               label="Akun Asal" :items="accounts" item-value="id" variant="underlined" />
             <v-select v-model="payload.toFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'C'"
               label="Akun Tujuan" :items="accounts" item-value="id" variant="underlined" />
+            <v-select v-model="payload.monthlyBudgetId" v-show="payload.tCode === 'D'" label="Ambil dari budget"
+              :items="availableBudgets" item-value="id" variant="underlined" clearable>
+              <template v-slot:item="{ props: itemProps, item }">
+                <v-list-item v-bind="itemProps" :subtitle="toMoney(item.raw.amountLeft)"></v-list-item>
+              </template>
+            </v-select>
           </template>
         </v-form>
       </v-card-text>

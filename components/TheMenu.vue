@@ -15,6 +15,12 @@ const menus = [
     icon: 'i-mdi-account-cash-outline',
     link: '/debt',
     open: true
+  },
+  {
+    title: 'Profile',
+    icon: 'i-mdi-account-circle-outline',
+    link: '/profile',
+    open: true
   }
 ]
 </script>

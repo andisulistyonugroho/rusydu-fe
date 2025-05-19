@@ -5,8 +5,9 @@ definePageMeta({
   middleware: 'auth'
 })
 $bus.$emit('set-header', 'My Profile')
-const { getUsername } = useProfileStore()
+const { getUsername, changePassword, doLogout } = useProfileStore()
 const { username } = storeToRefs(useProfileStore())
+const { logout } = useAuthStore()
 
 const form = ref()
 const changeP = ref(false)
@@ -21,15 +22,33 @@ const checkbox = ref(false)
 
 const doChangePassword = $debounce(async () => {
   try {
+    $bus.$emit('wait-dialog', true)
     const validate = await form.value.validate()
     if (!validate.valid) {
       return
     }
+    await changePassword(oldPass.value, newPass.value)
+    logout()
+    navigateTo('/')
+    $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)
     $bus.$emit('eat-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
+
+const loggingOut = (async () => {
+  try {
+    $bus.$emit('wait-dialog', true)
+    await doLogout()
+    logout()
+    navigateTo('/')
+    $bus.$emit('wait-dialog', false)
+  } catch (error) {
+    $bus.$emit('wait-dialog', false)
+    $bus.$emit('eat-snackbar', error)
+  }
+})
 
 getUsername()
 </script>
@@ -42,7 +61,7 @@ getUsername()
         </v-col>
         <v-col cols="12" class="text-center">
           <v-btn variant="tonal" block @click="changeP = true">ganti password</v-btn>
-          <v-btn color="error" block class="mt-3">logout</v-btn>
+          <v-btn color="error" block class="mt-3" @click="loggingOut()">logout</v-btn>
         </v-col>
       </template>
       <template v-else>

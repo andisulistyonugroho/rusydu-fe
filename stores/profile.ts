@@ -19,8 +19,30 @@ export const useProfileStore = defineStore('profile', () => {
     }
   })
 
+  const doLogout = (async () => {
+    try {
+      await $api.post('/Users/logout')
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
+  const changePassword = (async (oldPassword: string, newPassword: string) => {
+    try {
+      await $api.post('/Users/change-password', {
+        oldPassword: oldPassword,
+        newPassword: newPassword
+      })
+      await doLogout()
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
   return {
-    getUsername,
+    getUsername, changePassword, doLogout,
     username
   }
 })

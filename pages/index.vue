@@ -4,7 +4,7 @@ definePageMeta({
   layout: 'noheader',
   middleware: 'auth'
 })
-const { getMyAccounts, getTotalBalance } = useAccountStore()
+const { getMyAccounts } = useAccountStore()
 const { accounts, totalBalance } = storeToRefs(useAccountStore())
 
 getMyAccounts()

@@ -28,7 +28,7 @@ const doSubmit = $debounce(async () => {
     }
     $bus.$emit('wait-dialog', true)
     await addMyAccounts(data.value)
-    navigateTo('/accounts', { replace: true })
+    navigateTo('/', { replace: true })
     $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)

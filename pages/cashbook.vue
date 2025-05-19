@@ -81,12 +81,22 @@ const generateCalendar = (position?: string) => {
 
 const showLogs = (theDate: string) => {
   const logs = transactionLog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
-  const totalIn = logs.reduce((total, obj) => (
-    total + obj.amountIn
-  ), 0)
-  const totalOut = logs.reduce((total, obj) => (
-    total + obj.amountOut
-  ), 0)
+  const totalIn = logs.reduce((total, obj) => {
+    const objTitle = obj.title
+    let amountIn = obj.amountIn
+    if (objTitle.indexOf('M: ') === 0) {
+      amountIn = 0
+    }
+    return total + amountIn
+  }, 0)
+  const totalOut = logs.reduce((total, obj) => {
+    const objTitle = obj.title
+    let amountOut = obj.amountOut
+    if (objTitle.indexOf('M: ') === 0) {
+      amountOut = 0
+    }
+    return total + amountOut
+  }, 0)
 
   return { list: logs, totalIn: totalIn, totalOut: totalOut }
 }
@@ -168,7 +178,7 @@ onBeforeUnmount(() => {
               <template v-if="row.totalIn || row.totalOut">
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class=" text-green-darken-3 font-weight-bold">Masuk: {{ toMoney(row.totalIn)
-                    }}</v-chip>
+                  }}</v-chip>
                 </v-col>
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class="text-red-darken-1 font-weight-bold">

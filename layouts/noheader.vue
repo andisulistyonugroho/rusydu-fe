@@ -9,16 +9,19 @@ const snacko = ref({
   open: false,
 })
 
-$bus.$on('wait-dialog', (dialogValue) => {
-  waitDialog.value = dialogValue
-})
-$bus.$on('eat-snackbar', (theSnack) => {
-  snacko.value.color = theSnack instanceof Error ? 'error' : 'success'
-  snacko.value.message = theSnack instanceof Error ? theSnack.response ? `${theSnack.response.data.error.statusCode}: ${theSnack.response.data.error.message}` : theSnack : theSnack
-  snacko.value.open = true
-})
-$bus.$on('open-drawer', () => {
-  drawer.value = !drawer.value
+
+onMounted(() => {
+  $bus.$on('wait-dialog', (dialogValue) => {
+    waitDialog.value = dialogValue
+  })
+  $bus.$on('eat-snackbar', (theSnack) => {
+    snacko.value.color = theSnack instanceof Error ? 'error' : 'success'
+    snacko.value.message = theSnack instanceof Error ? theSnack.response ? `${theSnack.response.data.error.statusCode}: ${theSnack.response.data.error.message}` : theSnack : theSnack
+    snacko.value.open = true
+  })
+  $bus.$on('open-drawer', () => {
+    drawer.value = !drawer.value
+  })
 })
 onBeforeUnmount(() => {
   $bus.$off('wait-dialog')

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'secondlayer',
+  layout: 'secondlayernohead',
   middleware: 'auth'
 })
 
@@ -154,6 +154,11 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
+  <v-app-bar class="border-b">
+    <v-btn icon="i-mdi-arrow-left" @click="$router.back()" />
+    <v-app-bar-title>RUSDU</v-app-bar-title>
+    <v-btn icon="i-mdi-filter-outline" />
+  </v-app-bar>
   <v-container fluid>
     <v-row no-gutters>
       <v-col v-for="row, i in days" cols="12">
@@ -178,7 +183,7 @@ onBeforeUnmount(() => {
               <template v-if="row.totalIn || row.totalOut">
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class=" text-green-darken-3 font-weight-bold">Masuk: {{ toMoney(row.totalIn)
-                  }}</v-chip>
+                    }}</v-chip>
                 </v-col>
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class="text-red-darken-1 font-weight-bold">

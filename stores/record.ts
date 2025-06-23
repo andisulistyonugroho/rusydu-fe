@@ -113,7 +113,27 @@ export const useRecordStore = defineStore('record', () => {
     }
   })
 
-  return { addRecord, getRecordInBetween, getAccountRecordInBetween, transactionLog }
+  const findRecord = async (payload: { title: string }) => {
+    try {
+      const { data } = await $api.get('/FinancialRecords', {
+        params: {
+          filter: {
+            where: {
+              userId: user.userId,
+              isActive: 1,
+              title: { like: `%${payload.title}%` }
+            }
+          }
+        }
+      })
+      transactionLog.value = data
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
+
+  return { addRecord, getRecordInBetween, getAccountRecordInBetween, findRecord, transactionLog }
 }, {
   persist: {
     storage: persistedState.localStorage,

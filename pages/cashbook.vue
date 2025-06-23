@@ -4,10 +4,13 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { $debounce, $bus } = useNuxtApp()
+const { $debounce } = useNuxtApp()
 const { getRecordInBetween } = useRecordStore()
 const { accounts } = storeToRefs(useAccountStore())
 const { transactionLog } = storeToRefs(useRecordStore())
+const { getTotalBalance } = useAccountStore()
+const { totalBalance } = storeToRefs(useAccountStore())
+
 
 type FinancialRec = {
   id: number,
@@ -32,7 +35,7 @@ const startDate = ref(dayjs().startOf('day'))
 const dNewRecord = ref(false)
 const tDate = ref()
 const days = ref<DailyRec[]>([])
-const numOfDays = 8
+const numOfDays = 12
 const notif = ref(false)
 
 const addNew = $debounce((data: { text: string }) => {
@@ -152,11 +155,18 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("scroll", onScroll)
 })
+
+getTotalBalance()
 </script>
 <template>
   <v-app-bar class="border-b">
     <v-btn icon="i-mdi-arrow-left" @click="$router.back()" />
-    <v-app-bar-title>RUSDU</v-app-bar-title>
+    <v-app-bar-title>Buku Kas </v-app-bar-title>
+    <template v-slot:extension>
+      <div class="w-100 text-center font-weight-bold">
+        Saldo: {{ toMoney(totalBalance) }}
+      </div>
+    </template>
     <v-btn icon="i-mdi-filter-outline" />
   </v-app-bar>
   <v-container fluid>

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "start": "nuxt start",
     "dev": "nuxt dev",
     "debug-prod": "NUXT_PUBLIC_API_BASE=https://apirusdu.nginep.in/api nuxt dev",
     "generate": "nuxt generate",
@@ -18,7 +19,7 @@
     "lodash.debounce": "^4.0.8",
     "maska": "^3.0.0",
     "mitt": "^3.0.1",
-    "nuxt": "latest",
+    "nuxt": "3.17.5",
     "vue": "^3.5.13",
     "vuetify-nuxt-module": "^0.14.1"
   },

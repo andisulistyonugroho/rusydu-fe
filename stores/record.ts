@@ -13,6 +13,7 @@ export const useRecordStore = defineStore('record', () => {
   }
 
   const transactionLog = ref<FinancialRecord[]>([])
+  const searchResult = ref<FinancialRecord[]>([])
 
   const addRecord = (async (payload: {
     title: string, tCode: string, amount: number,
@@ -122,18 +123,22 @@ export const useRecordStore = defineStore('record', () => {
               userId: user.userId,
               isActive: 1,
               title: { like: `%${payload.title}%` }
-            }
+            },
+            order: "tDate DESC"
           }
         }
       })
-      transactionLog.value = data
+      searchResult.value = data
       return Promise.resolve(true)
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  return { addRecord, getRecordInBetween, getAccountRecordInBetween, findRecord, transactionLog }
+  return {
+    addRecord, getRecordInBetween, getAccountRecordInBetween, findRecord,
+    transactionLog, searchResult
+  }
 }, {
   persist: {
     storage: persistedState.localStorage,

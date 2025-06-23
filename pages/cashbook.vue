@@ -167,7 +167,7 @@ getTotalBalance()
         Saldo: {{ toMoney(totalBalance) }}
       </div>
     </template>
-    <v-btn icon="i-mdi-filter-outline" />
+    <v-btn icon="i-mdi-search" to="/search" />
   </v-app-bar>
   <v-container fluid>
     <v-row no-gutters>

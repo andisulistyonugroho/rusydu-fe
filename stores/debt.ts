@@ -12,7 +12,8 @@ export const useDebtStore = defineStore('debt', () => {
     isActive: boolean,
     createdAt: string,
     updatedAt: string,
-    financialRecords?: FinancialRecord[]
+    financialRecords?: FinancialRecord[],
+    childs?: Debt[]
   }
 
   type DebtPayment = {
@@ -96,7 +97,7 @@ export const useDebtStore = defineStore('debt', () => {
       const { data } = await $api.get(`/Debts/${id}`, {
         params: {
           filter: {
-            include: 'financialRecords'
+            include: ['financialRecords', 'childs']
           }
         }
       })

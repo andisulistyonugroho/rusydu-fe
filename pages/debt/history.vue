@@ -33,8 +33,19 @@ await getDebtHistory(debtId)
       <v-divider class="mt-3 mb-0" />
     </v-col>
     <v-col v-if="debt.financialRecords" v-for="row in debt.financialRecords" cols="12" class="">
-      <div :class="row.tCode === 'D' ? `text-red-darken-1` : `text-green-darken-1`">
+      <div :class="row.tCode === 'D' ? `text-green-darken-1` : `text-red-darken-1`">
         {{ toMoney(row.tCode === 'D' ? row.amountOut : row.tCode === 'C' ? row.amountIn : 0) }}
+      </div>
+      <div class="text-caption">
+        {{ row.title }}
+      </div>
+      <div class="text-caption text-grey-darken-2">
+        {{ formatDate(row.tDate) }}
+      </div>
+    </v-col>
+    <v-col v-if="debt.childs" v-for="row in debt.childs" cols="12" class="">
+      <div class="text-red-darken-1">
+        {{ toMoney(row.sBalance) }}
       </div>
       <div class="text-caption">
         {{ row.title }}

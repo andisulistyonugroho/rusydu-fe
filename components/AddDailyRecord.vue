@@ -3,7 +3,8 @@ const { $debounce, $bus, $dayjs } = useNuxtApp()
 const { addRecord } = useRecordStore()
 const { getTotalBalance } = useAccountStore()
 const { accounts } = storeToRefs(useAccountStore())
-const { addDebt } = useDebtStore()
+const { addDebt, getParents } = useDebtStore()
+const { parents } = storeToRefs(useDebtStore())
 const { getBudgetAvailableInPeriod } = useBudgetingStore()
 const { availableBudgets } = storeToRefs(useBudgetingStore())
 
@@ -39,7 +40,8 @@ const payload = ref({
   toFinancialAccountId: null,
   tDate: transactionDate,
   debtType: null,
-  monthlyBudgetId: null
+  monthlyBudgetId: null,
+  parentId: null
 })
 
 const doSubmit = $debounce(async () => {
@@ -78,7 +80,7 @@ const setTcode = ((code) => {
   }
 })
 
-
+getParents()
 
 </script>
 <template>
@@ -115,11 +117,12 @@ const setTcode = ((code) => {
               <v-radio label="Tagihan" value="bill" />
               <v-radio label="Modal" value="capital" />
             </v-radio-group>
-
             <v-text-field v-model="payload.title" label="Title" :rules="[(v) => !!v || 'Harus diisi']"
               variant="underlined" placeholder="Pembelian bensin" persistent-placeholder clearable />
             <v-text-field prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']" label="Nominal"
               variant="underlined" clearable placeholder="0" persistent-placeholder />
+            <v-select label="Induk" v-model="payload.parentId" :items="parents" item-value="id"
+              variant="underlined"></v-select>
             <v-select v-if="payload.debtType === 'capital'" v-model="payload.toFinancialAccountId" label="Akun Tujuan"
               :items="accounts" item-value="id" variant="underlined" />
           </template>

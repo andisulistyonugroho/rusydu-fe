@@ -37,10 +37,11 @@ export const useDebtStore = defineStore('debt', () => {
 
   const debts = ref<Debt[]>([])
   const debt = ref<Debt>()
+  const parents = ref<Debt[]>([])
 
   const addDebt = (async (payload: {
     title: string, amount: number, debtType: string, tDate: string,
-    toFinancialAccountId: number
+    toFinancialAccountId: number, parentId?: number
   }) => {
     try {
       await $api.post('/Debts', {
@@ -49,7 +50,8 @@ export const useDebtStore = defineStore('debt', () => {
         eBalance: payload.amount,
         debtType: payload.debtType,
         tDate: payload.tDate,
-        financialAccountId: payload.toFinancialAccountId
+        financialAccountId: payload.toFinancialAccountId,
+        parentId: payload.parentId
       })
       Promise.resolve(true)
     } catch (error) {
@@ -101,8 +103,28 @@ export const useDebtStore = defineStore('debt', () => {
     }
   })
 
+  const getParents = (async () => {
+    try {
+      const { data } = await $api.get('/Debts', {
+        params: {
+          filter: {
+            where: {
+              isActive: 1,
+              parentId: { eq: null }
+            },
+            order: 'id DESC'
+          }
+        }
+      })
+      parents.value = data
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
   return {
-    addDebt, getDebt, payDebt, getDebtHistory,
-    debts, debt
+    addDebt, getDebt, payDebt, getDebtHistory, getParents,
+    debts, debt, parents
   }
 })

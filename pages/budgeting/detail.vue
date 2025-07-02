@@ -7,6 +7,12 @@ const { $bus, $dayjs, $debounce } = useNuxtApp()
 const route = useRoute()
 const thePeriod = route.query.theperiod
 const dialog = ref(false)
+const debtDialog = ref({
+  dialog: false,
+  budgetId: 0,
+  title: "",
+  amountLeft: 0
+})
 
 if (!thePeriod) {
   navigateTo('/budgeting')
@@ -30,6 +36,7 @@ if (thePeriod) {
 
 const closeIt = () => {
   dialog.value = false
+  debtDialog.value.dialog = false
 }
 
 const openDialog = (id, title, amount) => {
@@ -37,6 +44,20 @@ const openDialog = (id, title, amount) => {
   selectedData.value.budgetId = id
   selectedData.value.selectedTitle = title
   selectedData.value.selectedAmount = amount
+}
+
+const openBudgetDebt = (id, title, amountLeft) => {
+  debtDialog.value.dialog = true
+  debtDialog.value.budgetId = id
+  debtDialog.value.title = title
+  debtDialog.value.amountLeft = amountLeft
+}
+
+const budgetDebtReloadParent = async (id) => {
+  $bus.$emit('wait-dialog', true)
+  await setAsCompleted(id)
+  await getBudgetInPeriod(thePeriod.toString())
+  $bus.$emit('wait-dialog', false)
 }
 
 const setAsComplete = $debounce(async (id) => {
@@ -52,7 +73,6 @@ const setAsComplete = $debounce(async (id) => {
     $bus.$emit('eat-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
-
 
 </script>
 <template>
@@ -82,8 +102,8 @@ const setAsComplete = $debounce(async (id) => {
             <v-list-item v-if="row.amountLeft > 0">
               <v-list-item-title>Batalkan</v-list-item-title>
             </v-list-item>
-            <v-list-item v-if="row.amountLeft > 0">
-              <v-list-item-title>Pindahkan</v-list-item-title>
+            <v-list-item v-if="row.amountLeft > 0" @click="openBudgetDebt(row.id, row.title, row.amountLeft)">
+              <v-list-item-title>Hutang</v-list-item-title>
             </v-list-item>
             <v-list-item :to="`/budgeting/history?budgetid=${row.id}`">
               <v-list-item-title>History</v-list-item-title>
@@ -95,4 +115,6 @@ const setAsComplete = $debounce(async (id) => {
   </v-list>
   <LazyInputBudgetRealisation :budgetid="selectedData.budgetId" :budgettitle="selectedData.selectedTitle"
     :dialog="dialog" :amount="selectedData.selectedAmount" :period="thePeriod" @closeit="closeIt" />
+  <LazyBudgetDebt :dialog="debtDialog.dialog" :budgetid="debtDialog.budgetId" :title="debtDialog.title"
+    :amountleft="debtDialog.amountLeft" @closeit="closeIt" @reloadparent="budgetDebtReloadParent" />
 </template>

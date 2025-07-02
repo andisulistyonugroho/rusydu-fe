@@ -62,7 +62,8 @@ export const useDebtStore = defineStore('debt', () => {
   const getDebt = (async () => {
     try {
       const params = {
-        where: { isActive: 1, parentId: { eq: null } }
+        where: { isActive: 1, parentId: { eq: null } },
+        order: 'id DESC'
       }
       const { data } = await $api.get('/Debts?filter=' + encodeURI(JSON.stringify(params)))
       debts.value = data
@@ -108,17 +109,11 @@ export const useDebtStore = defineStore('debt', () => {
 
   const getParents = (async () => {
     try {
-      const { data } = await $api.get('/Debts', {
-        params: {
-          filter: {
-            where: {
-              isActive: 1,
-              parentId: { eq: null }
-            },
-            order: 'id DESC'
-          }
-        }
-      })
+      const params = {
+        where: { isActive: 1, parentId: { eq: null } },
+        order: 'id DESC'
+      }
+      const { data } = await $api.get('/Debts?filter=' + encodeURI(JSON.stringify(params)))
       parents.value = data
       return Promise.resolve(true)
     } catch (error) {

@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+import type { MaskInputOptions } from 'maska'
+
 const props = defineProps({
   dialog: { type: Boolean, default: false },
   budgettitle: { type: String, default: null },
@@ -11,11 +13,10 @@ const { getMyAccounts, getTotalBalance } = useAccountStore()
 const { payBudget, getBudgetInPeriod } = useBudgetingStore()
 const { accounts } = storeToRefs(useAccountStore())
 const emit = defineEmits(['closeit'])
-const payload = ref({
-  title: null,
-  tCode: 'D',
+const payload = ref<SpendingBudget>({
+  title: '',
   amount: 0,
-  tDate: null,
+  tDate: $dayjs().format(),
   fromFinancialAccountId: null,
   monthlyBudgetId: null
 })
@@ -24,22 +25,19 @@ const form = ref()
 
 watch(props, (o, n) => {
   if (n.dialog) {
-    console.log(new Date())
-    console.log($dayjs().toDate())
     payload.value.title = props.budgettitle
     payload.value.monthlyBudgetId = props.budgetid
     payload.value.amount = props.amount
-    payload.value.tDate = $dayjs().toDate()
     unmaskedamount.value = props.amount
   }
 })
 
-const options = {
+const options = reactive<MaskInputOptions>({
   number: { locale: 'id' },
   onMaska: (detail) => {
-    payload.value.amount = detail.unmasked
+    payload.value.amount = parseFloat(detail.unmasked)
   }
-}
+})
 
 const doSubmit = $debounce(async () => {
   try {
@@ -55,7 +53,7 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
 
@@ -64,7 +62,7 @@ await getMyAccounts()
 </script>
 <template>
   <v-dialog v-model="props.dialog">
-    <v-card variant="flat" style="border-radius:0 !important;">
+    <v-card variant="flat">
       <v-toolbar dark color="primary" flat>
         <v-btn icon="i-mdi-close" dark @click="emit('closeit')" />
         <v-toolbar-title>Realisasi</v-toolbar-title>
@@ -75,10 +73,9 @@ await getMyAccounts()
             variant="underlined" placeholder="Pembelian bensin" persistent-placeholder clearable />
           <v-text-field v-model="unmaskedamount" prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']"
             label="Nominal" variant="underlined" clearable />
-          <v-select v-model="payload.fromFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'D'"
-            label="Akun Asal" :items="accounts" item-value="id" variant="underlined" />
-          <v-date-input v-model="payload.tDate" :model-value="payload.tDate" prepend-icon="" variant="underlined"
-            label="Tanggal Transaksi" />
+          <v-select v-model="payload.fromFinancialAccountId" label="Akun Asal" :items="accounts" item-value="id"
+            variant="underlined" />
+          <v-date-input v-model="payload.tDate" prepend-icon="" variant="underlined" label="Tanggal Transaksi" />
         </v-form>
       </v-card-text>
       <v-card-actions>

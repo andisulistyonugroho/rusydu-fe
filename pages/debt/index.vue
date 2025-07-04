@@ -5,6 +5,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
+const { getTotalBalance } = useAccountStore()
 const { getDebt } = useDebtStore()
 const { debts } = storeToRefs(useDebtStore())
 
@@ -36,6 +37,7 @@ const closeIt = () => {
 
 const refreshParent = async () => {
   await getDebt()
+  getTotalBalance()
 }
 
 refreshParent()
@@ -43,14 +45,12 @@ refreshParent()
 <template>
   <v-list>
     <v-list-item>
-      <v-btn block variant="tonal" color="red" class="font-weight-black text-capitalize">sisa: {{
+      <v-btn block variant="tonal" color="black" class="text-capitalize">hutang: {{ toMoney(total) }}</v-btn>
+      <v-btn block variant="tonal" color="success" class="text-capitalize mt-2">lunas: {{ toMoney(paid)
+      }}</v-btn>
+      <v-btn block variant="tonal" color="red" class="font-weight-black text-capitalize my-2">sisa: {{
         toMoney(unpaid)
-        }}</v-btn>
-      <div class="mt-3 d-flex justify-space-between">
-        <v-btn variant="flat" color="black" class="text-capitalize">hutang: {{ toMoney(total) }}</v-btn>
-        <v-btn variant="flat" color="success" class="text-capitalize">lunas: {{ toMoney(paid)
-        }}</v-btn>
-      </div>
+      }}</v-btn>
     </v-list-item>
     <v-divider></v-divider>
     <v-list-item v-for="row in debts" :title="row.title">

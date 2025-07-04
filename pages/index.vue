@@ -17,7 +17,7 @@ const alert = ref(true)
   <v-app-bar extended class="border-b">
     <v-app-bar-nav-icon @click="$bus.$emit('open-drawer')"></v-app-bar-nav-icon>
     <v-app-bar-title>Akun</v-app-bar-title>
-    <v-btn icon="i-mdi-plus" @click="addNew({ text: $dayjs().format('ddd, DD MMM YYYY') })" />
+    <v-btn icon="i-mdi-plus" to="/accounts/form" />
     <template v-slot:extension>
       <div class="w-100 text-center font-weight-bold">
         Saldo: {{ toMoney(totalBalance) }}

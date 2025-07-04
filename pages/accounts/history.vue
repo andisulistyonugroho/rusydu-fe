@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: 'secondlayer',
   middleware: 'auth'
@@ -14,7 +14,7 @@ if (typeof accountIdRoute === 'string') {
 }
 const startDate = ref(dayjs().startOf('day'))
 const dNewRecord = ref(false)
-const days = ref([])
+const days = ref<DailyRec[]>([])
 const numOfDays = 31
 const tlog = ref([])
 const startIndex = ref(0)
@@ -28,7 +28,7 @@ const data = ref({
   sBalance: null
 })
 
-const generateCalendar = (position) => {
+const generateCalendar = (position?: string) => {
   tlog.value = JSON.parse(JSON.stringify(transactionLog.value))
   const backdate = []
   for (let i = 0; i <= numOfDays; i++) {
@@ -61,8 +61,9 @@ const generateCalendar = (position) => {
   }
 }
 
-const showLogs = (theDate) => {
-  const logs = tlog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
+const showLogs = (theDate: string) => {
+  // const logs = tlog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
+  const logs = transactionLog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
   const totalIn = logs.reduce((total, obj) => (
     total + obj.amountIn
   ), 0)
@@ -76,7 +77,15 @@ const showLogs = (theDate) => {
 const onScroll = $debounce(async () => {
   const ih = window.innerHeight
   const ls = document.getElementById('loader-skeleton')
-  let rect = ls.getBoundingClientRect()
+  let rect = {
+    height: 0,
+    y: 0
+  }
+
+  if (ls) {
+    rect = ls.getBoundingClientRect()
+  }
+
   const posy = rect.height + rect.y
 
   if (posy > ih) {
@@ -129,13 +138,13 @@ await getAccountRecordInBetween({
                 </v-col>
                 <v-col cols="4"
                   :class="`mt-4 text-right ${log.tCode === 'C' ? `text-green-darken-3` : `text-red-darken-1`} font-weight-bold`">
-                  {{ toMoney(log.tCode === 'D' ? log.amountOut : log.tCode === 'C' ? log.amountIn : '') }}
+                  {{ toMoney(log.tCode === 'D' ? log.amountOut : log.tCode === 'C' ? log.amountIn : 0) }}
                 </v-col>
               </template>
               <template v-if="row.totalIn || row.totalOut">
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class=" text-green-darken-3 font-weight-bold">Masuk: {{ toMoney(row.totalIn)
-                  }}</v-chip>
+                    }}</v-chip>
                 </v-col>
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class="text-red-darken-1 font-weight-bold">

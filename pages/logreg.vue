@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: 'empty',
   middleware: 'auth'
@@ -12,9 +12,9 @@ const passType = ref(true)
 const loginF = ref()
 const regisF = ref()
 const payload = ref({
-  email: null,
-  wa_number: null,
-  password: null
+  email: '',
+  wa_number: '',
+  password: ''
 })
 const tab = ref(1)
 const checkbox = ref(false)
@@ -45,13 +45,12 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
 
 const doRegis = (async () => {
   try {
-    payload.value.username = payload.value.wa_number
     const { data } = await $api.post('/Users', {
       realm: 'member',
       username: payload.value.wa_number,

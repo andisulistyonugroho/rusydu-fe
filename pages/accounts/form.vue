@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+import type { MaskInputOptions } from 'maska'
+
 const { $bus, $debounce } = useNuxtApp()
 const { addMyAccounts } = useAccountStore()
 
@@ -8,17 +10,17 @@ definePageMeta({
 })
 $bus.$emit('set-header', 'Buat Akun')
 const data = ref({
-  title: null,
-  sBalance: null
+  title: '',
+  sBalance: 0
 })
 const checkbox = ref(false)
 const form = ref()
-const options = {
+const options = reactive<MaskInputOptions>({
   number: { locale: 'id' },
   onMaska: (detail) => {
-    data.value.sBalance = detail.unmasked
+    data.value.sBalance = parseFloat(detail.unmasked)
   }
-}
+})
 
 const doSubmit = $debounce(async () => {
   try {
@@ -32,7 +34,7 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
 </script>

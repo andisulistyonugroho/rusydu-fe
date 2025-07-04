@@ -1,30 +1,44 @@
-<script setup>
+<script setup lang="ts">
 const { $bus } = useNuxtApp()
 
 const waitDialog = ref(false)
 const drawer = ref(false)
 const snacko = ref({
-  message: null,
-  color: null,
+  message: '',
+  color: 'error',
   open: false,
 })
 
 onMounted(() => {
-
-
-  $bus.$on('wait-dialog', (dialogValue) => {
-    waitDialog.value = dialogValue
+  $bus.$on('wait-dialog', (dialog: boolean) => {
+    waitDialog.value = dialog
   })
-  $bus.$on('eat-snackbar', (theSnack) => {
-    snacko.value.color = theSnack instanceof Error ? 'error' : 'success'
-    snacko.value.message = theSnack instanceof Error ? theSnack.response ? `${theSnack.response.data.error.statusCode}: ${theSnack.response.data.error.message}` : theSnack : theSnack
+  $bus.$on('error-snackbar', (error: unknown) => {
+    let message = 'unknown error'
+
+    if (typeof error === 'object' && error !== null) {
+      const err: any = error
+      if (err.response && err.response.data && err.response.data.error) {
+        message = err.response.data.error.message
+      } else if (err.message) {
+        message = err.message
+      }
+    }
+
+    snacko.value.message = message
+    snacko.value.open = true
+  })
+  $bus.$on('success-snackbar', (message: string) => {
+    snacko.value.color = 'success'
+    snacko.value.message = message
     snacko.value.open = true
   })
 })
 
 onBeforeUnmount(() => {
   $bus.$off('wait-dialog')
-  $bus.$off('eat-snackbar')
+  $bus.$off('error-snackbar')
+  $bus.$off('success-snackbar')
 })
 </script>
 <template>
@@ -41,6 +55,8 @@ onBeforeUnmount(() => {
 
     <v-main>
       <slot />
+      <v-progress-linear :active="waitDialog" :indeterminate="waitDialog" absolute bottom
+        color="primary"></v-progress-linear>
     </v-main>
 
     <v-snackbar v-model="snacko.open" :color="snacko.color" multi-line>

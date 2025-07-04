@@ -1,11 +1,15 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: 'secondlayernohead',
   middleware: 'auth'
 })
 const { $bus, $dayjs, $debounce } = useNuxtApp()
 const route = useRoute()
-const thePeriod = route.query.theperiod
+let thePeriod = $dayjs().format()
+if (route.query.theperiod) {
+  thePeriod = route.query.theperiod.toString()
+}
+
 const dialog = ref(false)
 const debtDialog = ref({
   dialog: false,
@@ -22,14 +26,14 @@ const { getBudgetInPeriod, setAsCompleted } = useBudgetingStore()
 const { budgets } = storeToRefs(useBudgetingStore())
 const periodeString = ref('Budgeting')
 const selectedData = ref({
-  budgetId: null,
-  selectedTitle: null,
-  selectedAmount: null
+  budgetId: 0,
+  selectedTitle: '',
+  selectedAmount: 0
 })
 
 if (thePeriod) {
   $bus.$emit('wait-dialog', true)
-  await getBudgetInPeriod(thePeriod.toString())
+  await getBudgetInPeriod(thePeriod)
   $bus.$emit('wait-dialog', false)
   periodeString.value = $dayjs(thePeriod.toString()).format('YYYY/MM')
 }
@@ -39,24 +43,24 @@ const closeIt = () => {
   debtDialog.value.dialog = false
 }
 
-const openDialog = (id, title, amount) => {
+const openDialog = (id: number, title: string, amount: number) => {
   dialog.value = true
   selectedData.value.budgetId = id
   selectedData.value.selectedTitle = title
   selectedData.value.selectedAmount = amount
 }
 
-const openBudgetDebt = (id, title, amountLeft) => {
+const openBudgetDebt = (id: number, title: string, amountLeft: number) => {
   debtDialog.value.dialog = true
   debtDialog.value.budgetId = id
   debtDialog.value.title = title
   debtDialog.value.amountLeft = amountLeft
 }
 
-const budgetDebtReloadParent = async (id) => {
+const budgetDebtReloadParent = async (id: number) => {
   $bus.$emit('wait-dialog', true)
   await setAsCompleted(id)
-  await getBudgetInPeriod(thePeriod.toString())
+  await getBudgetInPeriod(thePeriod)
   $bus.$emit('wait-dialog', false)
 }
 
@@ -65,12 +69,12 @@ const setAsComplete = $debounce(async (id) => {
     if (window.confirm("Alokasi budget akan dicukupkan, anda yakin?")) {
       $bus.$emit('wait-dialog', true)
       await setAsCompleted(id)
-      await getBudgetInPeriod(thePeriod.toString())
+      await getBudgetInPeriod(thePeriod)
       $bus.$emit('wait-dialog', false)
     }
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
 

@@ -1,7 +1,15 @@
 import mitt from 'mitt';
+import type { Emitter } from 'mitt';
 
 export default defineNuxtPlugin(() => {
-    const emitter = mitt();
+    type Events = {
+        'wait-dialog': boolean;
+        'error-snackbar': unknown;
+        'success-snackbar': string;
+        'open-drawer': undefined;
+        'set-header': string;
+    };
+    const emitter: Emitter<Events> = mitt<Events>();
 
     return {
         provide: {

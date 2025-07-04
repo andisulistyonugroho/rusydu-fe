@@ -2,64 +2,70 @@ export const useRecordStore = defineStore('record', () => {
   const { $api } = useNuxtApp()
   const { user } = useAuthStore()
 
-  type FinancialRecord = {
-    id: number,
-    title: string,
-    amountIn: number,
-    amountOut: number,
-    tCode: string,
-    tDate: string,
-    createdAt: string
-  }
-
   const transactionLog = ref<FinancialRecord[]>([])
   const searchResult = ref<FinancialRecord[]>([])
 
-  const addRecord = (async (payload: {
-    title: string, tCode: string, amount: number,
-    fromFinancialAccountId: number, toFinancialAccountId: number,
-    tDate: string, monthlyBudgetId: number | undefined
-  }) => {
+  const addIncome = (async (payload: Income) => {
     try {
-      let amountIn = 0
-      let amountOut = 0
-      let financialAccountId = payload.toFinancialAccountId
-
-      if (payload.tCode === 'C') {
-        amountIn = payload.amount
-      } else if (payload.tCode === 'D' || payload.tCode === 'M') {
-        amountOut = payload.amount
-        financialAccountId = payload.fromFinancialAccountId
-      }
-
       const data = {
-        title: payload.tCode === 'M' ? `M: ${payload.title}` : payload.title,
-        amountIn: amountIn,
-        amountOut: amountOut,
-        tCode: payload.tCode === 'M' ? 'D' : payload.tCode,
+        title: payload.title,
+        amountIn: payload.amountIn,
+        amountOut: 0,
+        tCode: 'C',
         tDate: payload.tDate,
-        financialAccountId: financialAccountId,
-        userId: user.userId,
-        monthlyBudgetId: payload.monthlyBudgetId
+        financialAccountId: payload.financialAccountId,
+        userId: user.userId
       }
-
       await $api.post('/FinancialRecords', data)
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
 
-      if (payload.tCode === 'M') {
-        // masuk terima mutasi
-        const data = {
-          title: `M: ${payload.title}`,
-          amountIn: payload.amount,
-          amountOut: 0,
-          tCode: 'C',
-          tDate: payload.tDate,
-          financialAccountId: payload.toFinancialAccountId,
-          userId: user.userId,
-          monthlyBudgetId: payload.monthlyBudgetId
-        }
-
-        await $api.post('/FinancialRecords', data)
+  const addSpending = (async (payload: Spending) => {
+    try {
+      const data = {
+        title: payload.title,
+        amountIn: 0,
+        amountOut: payload.amountOut,
+        tCode: 'D',
+        tDate: payload.tDate,
+        financialAccountId: payload.financialAccountId,
+        userId: user.userId
       }
+      await $api.post('/FinancialRecords', data)
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+
+  const addMutation = (async (payload: Mutation) => {
+    try {
+      // out
+      const dataOut = {
+        title: `M: ${payload.title}`,
+        amountIn: 0,
+        amountOut: payload.amountOut,
+        tCode: 'D',
+        tDate: payload.tDate,
+        financialAccountId: payload.fromFinancialAccountId,
+        userId: user.userId
+      }
+      await $api.post('/FinancialRecords', dataOut)
+
+      // in
+      const dataIn = {
+        title: `M: ${payload.title}`,
+        amountIn: payload.amountOut,
+        amountOut: 0,
+        tCode: 'C',
+        tDate: payload.tDate,
+        financialAccountId: payload.toFinancialAccountId,
+        userId: user.userId
+      }
+      await $api.post('/FinancialRecords', dataIn)
 
       return Promise.resolve(true)
     } catch (error) {
@@ -136,7 +142,7 @@ export const useRecordStore = defineStore('record', () => {
   }
 
   return {
-    addRecord, getRecordInBetween, getAccountRecordInBetween, findRecord,
+    getRecordInBetween, getAccountRecordInBetween, findRecord, addIncome, addSpending, addMutation,
     transactionLog, searchResult
   }
 }, {

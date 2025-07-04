@@ -2,26 +2,13 @@ export const useBudgetingStore = defineStore('budgeting', () => {
   const { $api } = useNuxtApp()
   const { user } = useAuthStore()
 
-  type Budget = {
-    id: null,
-    title: null,
-    thePeriod: null,
-    amount: 0,
-    amountUsed: 0,
-    amountLeft: 0,
-    isActive: true,
-    createdAt: null,
-    updatedAt: null,
-    userId: null
-  }
-
-  const availableMonths = ref([])
+  const availableMonths = ref<AvailableMonth[]>([])
   const budgets = ref<Budget[]>([])
   const availableBudgets = ref<Budget[]>([])
 
   const getAvailableMonth = (async () => {
     try {
-      const { data } = await $api.post('/MonthlyBudgets/availableMonth')
+      const { data } = await $api.post<AvailableMonth[]>('/MonthlyBudgets/availableMonth')
       availableMonths.value = data
       return Promise.resolve(true)
     } catch (error) {
@@ -58,14 +45,11 @@ export const useBudgetingStore = defineStore('budgeting', () => {
       return Promise.reject(error)
     }
   })
-  const payBudget = (async (payload: {
-    title: String, tCode: String, amount: Number, tDate: String,
-    fromFinancialAccountId: Number, monthlyBudgetId: Number
-  }) => {
+  const payBudget = (async (payload: SpendingBudget) => {
     try {
       await $api.post('/MonthlyBudgets/payment', {
         title: payload.title,
-        tCode: payload.tCode,
+        tCode: 'D',
         amountOut: payload.amount,
         tDate: payload.tDate,
         financialAccountId: payload.fromFinancialAccountId,

@@ -2,7 +2,7 @@
 const emit = defineEmits(['dofilter', 'closeit'])
 
 const payload = ref({
-  title: ""
+  title: ''
 })
 const form = ref()
 

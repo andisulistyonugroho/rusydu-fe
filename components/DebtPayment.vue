@@ -14,14 +14,14 @@ const { budgets } = storeToRefs(useBudgetingStore())
 const emit = defineEmits(['refreshparent', 'closeit'])
 const form = ref()
 
-const payload = ref({
+const payload = ref<DebtPayment>({
   title: '',
   tCode: 'D',
   amount: 0,
   tDate: $dayjs().format(),
   fromFinancialAccountId: 0,
   debtId: props.debtid,
-  monthlyBudgetId: null,
+  monthlyBudgetId: 0,
 })
 
 const options = {
@@ -44,7 +44,7 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
 
@@ -56,7 +56,7 @@ const getBudget = async () => {
     $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }
 

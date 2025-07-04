@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+import type { MaskInputOptions } from 'maska'
+
 definePageMeta({
   layout: 'secondlayer',
   middleware: 'auth'
@@ -11,9 +13,9 @@ const route = useRoute()
 const thePeriod = route.query.theperiod
 $bus.$emit('set-header', 'Buat Budget')
 const data = ref({
-  title: null,
-  thePeriod: null,
-  amount: null
+  title: '',
+  thePeriod: '',
+  amount: 0
 })
 const months = [
   { title: 'Januari', value: '01' },
@@ -43,12 +45,13 @@ const years = computed(() => {
   const y = $dayjs().format('YYYY')
   return [y, parseInt(y) + 1]
 })
-const options = {
+const options = reactive<MaskInputOptions>({
   number: { locale: 'id' },
   onMaska: (detail) => {
-    data.value.amount = detail.unmasked
+    data.value.amount = parseFloat(detail.unmasked)
   }
-}
+})
+
 const periode = computed(() => {
   return `${year.value}-${month.value}-01 00:00:00`
 })
@@ -60,14 +63,14 @@ const doSubmit = $debounce(async () => {
       return
     }
     $bus.$emit('wait-dialog', true)
-    data.value.thePeriod = periode
+    data.value.thePeriod = periode.value
     await addMyBudget(data.value)
     $router.back()
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', 'Budget berhasil disimpan')
+    $bus.$emit('success-snackbar', 'Budget berhasil disimpan')
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
 </script>

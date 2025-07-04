@@ -1,24 +1,12 @@
 export const useAccountStore = defineStore('account', () => {
   const { $api, $dayjs } = useNuxtApp()
   const { user } = useAuthStore()
-
-  type Account = {
-    id: null,
-    title: null,
-    sBalance: 0,
-    eBalance: 0,
-    isActive: true,
-    createdAt: null,
-    userId: null,
-    updatedAt: null
-  }
   const accounts = ref<Account[]>([])
-
   const totalBalance = ref(0)
 
   const getMyAccounts = (async () => {
     try {
-      const { data } = await $api.get('/FinancialAccounts', {
+      const { data } = await $api.get<Account[]>('/FinancialAccounts', {
         params: {
           filter: {
             where: {
@@ -35,7 +23,7 @@ export const useAccountStore = defineStore('account', () => {
   })
   const addMyAccounts = (async (payload: { title: string, sBalance: number }) => {
     try {
-      const { data } = await $api.post('/FinancialAccounts', {
+      const { data } = await $api.post<Account[]>('/FinancialAccounts', {
         userId: user.userId,
         title: payload.title,
         sBalance: payload.sBalance,

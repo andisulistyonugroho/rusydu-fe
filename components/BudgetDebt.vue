@@ -34,7 +34,7 @@ const doSubmit = $debounce(async () => {
     $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 })
 </script>

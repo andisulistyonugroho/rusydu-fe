@@ -1,49 +1,11 @@
 export const useDebtStore = defineStore('debt', () => {
   const { $api } = useNuxtApp()
-  const { user } = useAuthStore()
-
-  type Debt = {
-    id: number,
-    title: string,
-    sBalance: number,
-    eBalance: number,
-    debtType: string,
-    tDate: string,
-    isActive: boolean,
-    createdAt: string,
-    updatedAt: string,
-    financialRecords?: FinancialRecord[],
-    childs?: Debt[]
-  }
-
-  type DebtPayment = {
-    title: string,
-    tCode: string,
-    amount: number,
-    tDate: string,
-    fromFinancialAccountId: number,
-    debtId: number,
-    monthlyBudgetId: number | null
-  }
-
-  type FinancialRecord = {
-    id: number,
-    title: string,
-    amountIn: number,
-    amountOut: number,
-    tCode: string,
-    tDate: string,
-    createdAt: string
-  }
 
   const debts = ref<Debt[]>([])
   const debt = ref<Debt>()
   const parents = ref<Debt[]>([])
 
-  const addDebt = (async (payload: {
-    title: string, amount: number, debtType: string, tDate: string,
-    toFinancialAccountId: number, parentId?: number
-  }) => {
+  const addDebt = (async (payload: NewDebt) => {
     try {
       await $api.post('/Debts', {
         title: payload.title,
@@ -66,7 +28,7 @@ export const useDebtStore = defineStore('debt', () => {
         where: { isActive: 1, parentId: { eq: null } },
         order: 'id DESC'
       }
-      const { data } = await $api.get('/Debts?filter=' + encodeURI(JSON.stringify(params)))
+      const { data } = await $api.get<Debt[]>('/Debts?filter=' + encodeURI(JSON.stringify(params)))
       debts.value = data
       return Promise.resolve(true)
     } catch (error) {
@@ -94,7 +56,7 @@ export const useDebtStore = defineStore('debt', () => {
 
   const getDebtHistory = (async (id: number) => {
     try {
-      const { data } = await $api.get(`/Debts/${id}`, {
+      const { data } = await $api.get<Debt>(`/Debts/${id}`, {
         params: {
           filter: {
             include: ['financialRecords', 'childs']
@@ -111,10 +73,10 @@ export const useDebtStore = defineStore('debt', () => {
   const getParents = (async () => {
     try {
       const params = {
-        where: { isActive: 1, parentId: { eq: null } },
+        where: { parentId: { eq: null } },
         order: 'id DESC'
       }
-      const { data } = await $api.get('/Debts?filter=' + encodeURI(JSON.stringify(params)))
+      const { data } = await $api.get<Debt[]>('/Debts?filter=' + encodeURI(JSON.stringify(params)))
       parents.value = data
       return Promise.resolve(true)
     } catch (error) {

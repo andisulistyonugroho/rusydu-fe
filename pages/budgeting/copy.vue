@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: 'secondlayer',
   middleware: 'auth'
@@ -31,7 +31,7 @@ const yearfrom = ref($dayjs().subtract(1, 'month').format('YYYY'))
 const monthfrom = ref($dayjs().subtract(1, 'month').format('MM'))
 const year = ref($dayjs().format('YYYY'))
 const month = ref($dayjs().format('MM'))
-const selectedBudget = ref([])
+const selectedBudget = ref<number[]>([])
 const selectAll = ref(false)
 
 watch(selectAll, (v) => {
@@ -48,10 +48,11 @@ if (thePeriod) {
 }
 
 const years = computed(() => {
-  const result = []
-  const y = $dayjs().format('YYYY')
+  const result: string[] = []
+  const y = parseInt($dayjs().format('YYYY'))
   for (let year = 2023; year < y; year++) {
-    result.push(year + 1)
+    const nextYear = year + 1
+    result.push(nextYear.toString())
   }
   return result
 })
@@ -62,7 +63,7 @@ const periode = computed(() => {
 const doSubmit = $debounce(async () => {
   try {
     const validate = await form.value.validate()
-    if (!validate.valid || selectedBudget.length <= 0) {
+    if (!validate.valid || selectedBudget.value.length <= 0) {
       return
     }
     $bus.$emit('wait-dialog', true)
@@ -80,10 +81,10 @@ const doSubmit = $debounce(async () => {
     }
     $router.back()
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', 'Budget berhasil disimpan')
+    $bus.$emit('success-snackbar', 'Budget berhasil disimpan')
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
 
@@ -95,7 +96,7 @@ const getBudget = $debounce(async () => {
     $bus.$emit('wait-dialog', false)
   } catch (error) {
     $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
+    $bus.$emit('error-snackbar', error)
   }
 }, 1000, { leading: true, trailing: false })
 </script>

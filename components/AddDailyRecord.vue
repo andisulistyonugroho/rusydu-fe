@@ -1,153 +1,66 @@
-<script setup>
-const { $debounce, $bus, $dayjs } = useNuxtApp()
-const { addRecord } = useRecordStore()
+<script setup lang="ts">
+import type { MaskInputOptions } from 'maska'
+
+const { $dayjs } = useNuxtApp()
 const { getTotalBalance } = useAccountStore()
-const { accounts } = storeToRefs(useAccountStore())
-const { addDebt, getParents } = useDebtStore()
-const { parents } = storeToRefs(useDebtStore())
-const { getBudgetAvailableInPeriod } = useBudgetingStore()
-const { availableBudgets } = storeToRefs(useBudgetingStore())
 
 const props = defineProps({
   dialog: { type: Boolean, default: false },
   transactiondate: { type: String, default: null }
 })
 const transactionType = [
-  { title: 'Pengeluaran', value: 'D', desc: 'Uang keluar atau pembayaran', color: 'red' },
-  { title: 'Pemasukan', value: 'C', desc: 'Uang masuk atau pendapatan', color: 'green' },
-  { title: 'Transfer/mutasi', value: 'M', desc: 'Pindah uang dari satu akun ke akun lain', color: 'yellow' },
-  { title: 'Hutang', value: 'H', desc: 'Dapat pinjaman atau tunggakan', color: 'brown' },
-  { title: 'Piutang', value: 'P', desc: 'Kasih pinjaman', color: 'info' }
+  { title: 'Pengeluaran', value: 'D', desc: 'Uang keluar atau pembayaran', color: 'info', icon: 'i-mdi-clipboard-text' },
+  { title: 'Pemasukan', value: 'C', desc: 'Uang masuk atau pendapatan', color: 'green', icon: 'i-mdi-cash-register' },
+  { title: 'Transfer/mutasi', value: 'M', desc: 'Pindah uang dari satu akun ke akun lain', color: 'yellow', icon: 'i-mdi-swap-horizontal' },
+  { title: 'Hutang', value: 'H', desc: 'Dapat pinjaman atau tunggakan', color: 'red', icon: 'i-mdi-ambulance' }
 ]
 const emit = defineEmits(['closeit', 'refreshparent'])
 
 const transactionDate = computed(() => $dayjs(props.transactiondate).subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss'))
-const hintType = computed(() => { return transactionType.find(obj => obj.value === payload.value.tCode)?.desc })
-const transactionTypeTitle = computed(() => transactionType.find(obj => obj.value === payload.value.tCode)?.title)
-const dialogColor = computed(() => { return transactionType.find(obj => obj.value === payload.value.tCode)?.color })
-const options = {
-  number: { locale: 'id' },
-  onMaska: (detail) => {
-    payload.value.amount = detail.unmasked
-  }
+const hintType = computed(() => { return transactionType.find(obj => obj.value === tCode.value)?.desc })
+const transactionTypeTitle = computed(() => transactionType.find(obj => obj.value === tCode.value)?.title)
+const dialogColor = computed(() => { return transactionType.find(obj => obj.value === tCode.value)?.color })
+
+const tCode = ref()
+
+const saveSuccess = () => {
+  getTotalBalance()
+  emit('refreshparent')
+  tCode.value = null
 }
-const form = ref()
-const payload = ref({
-  title: null,
-  tCode: null,
-  amount: 0,
-  fromFinancialAccountId: null,
-  toFinancialAccountId: null,
-  tDate: transactionDate,
-  debtType: null,
-  monthlyBudgetId: null,
-  parentId: null
-})
-
-const doSubmit = $debounce(async () => {
-  try {
-    const validate = await form.value.validate()
-    if (!validate.valid) {
-      return
-    }
-
-    $bus.$emit('wait-dialog', true)
-    if (payload.value.tCode === 'H') {
-      await addDebt(payload.value)
-    } else {
-      await addRecord(payload.value)
-    }
-    getTotalBalance()
-    emit('refreshparent')
-    $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', 'Catatan berhasil disimpan')
-    payload.value.tCode = null
-  } catch (error) {
-    $bus.$emit('wait-dialog', false)
-    $bus.$emit('eat-snackbar', error)
-  }
-}, 1000, { leading: true, trailing: false })
-
-const getBudget = (async () => {
-  const period = $dayjs(transactionDate.value).format('YYYY-MM-01 00:00:00')
-  await getBudgetAvailableInPeriod(period)
-})
-
-const setTcode = ((code) => {
-  payload.value.tCode = code
-  if (code === 'D') {
-    getBudget()
-  }
-})
-
-getParents()
-
 </script>
 <template>
   <v-dialog v-model="props.dialog">
-    <v-card flat>
-      <v-toolbar dark :color="dialogColor ? dialogColor : `primary`">
-        <v-btn v-if="!payload.tCode" icon="i-mdi-close" dark @click="emit('closeit')" />
-        <v-btn v-else icon="i-mdi-arrow-left" dark @click="payload.tCode = null" />
-        <v-toolbar-title>{{ payload.tCode ? transactionTypeTitle : 'Pencatatan' }}</v-toolbar-title>
-      </v-toolbar>
-      <v-list v-if="!payload.tCode">
-        <v-list-item v-for="row in transactionType" :value="row.title" @click="setTcode(row.value)"
-          :class="`bg-${row.color}`">
+    <v-toolbar class="rounded-t-lg" :color="dialogColor ? dialogColor : ``">
+      <v-btn v-if="!tCode" icon="i-mdi-close" dark @click="emit('closeit')" />
+      <v-btn v-else icon="i-mdi-arrow-left" dark @click="tCode = null" />
+      <v-toolbar-title>{{ tCode ? transactionTypeTitle : 'Pencatatan' }}</v-toolbar-title>
+    </v-toolbar>
+    <div v-if="!tCode">
+      <v-list class="rounded-b-lg">
+        <v-list-item v-for="row in transactionType" :value="row.title" @click="tCode = row.value">
+          <template v-slot:prepend>
+            <v-avatar :color="row.color">
+              <v-icon :icon="row.icon" />
+            </v-avatar>
+          </template>
           {{ row.title }}
           <v-list-item-subtitle>
             {{ row.desc }}
           </v-list-item-subtitle>
           <template v-slot:append>
-            <v-btn color="grey-lighten-1" icon="i-mdi-chevron-right" variant="text"></v-btn>
+            <v-btn icon="i-mdi-chevron-right" variant="text"></v-btn>
           </template>
         </v-list-item>
       </v-list>
-      <v-card-text v-else>
-        <div class="text-center text-h6">{{ transactiondate }}</div>
-        <v-form ref="form">
-          <div class="text-center pb-2">
-            {{ hintType }}
-          </div>
-          <template v-if="payload.tCode === 'H'">
-            <v-radio-group v-model="payload.debtType" inline :rules="[(v) => !!v || 'Harus diisi']" class="mt-6">
-              <template v-slot:label>
-                <div>Jenis hutang</div>
-              </template>
-              <v-radio label="Tagihan" value="bill" />
-              <v-radio label="Modal" value="capital" />
-            </v-radio-group>
-            <v-text-field v-model="payload.title" label="Title" :rules="[(v) => !!v || 'Harus diisi']"
-              variant="underlined" placeholder="Pembelian bensin" persistent-placeholder clearable />
-            <v-text-field prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']" label="Nominal"
-              variant="underlined" clearable placeholder="0" persistent-placeholder />
-            <v-select label="Induk" v-model="payload.parentId" :items="parents" item-value="id"
-              variant="underlined"></v-select>
-            <v-select v-if="payload.debtType === 'capital'" v-model="payload.toFinancialAccountId" label="Akun Tujuan"
-              :items="accounts" item-value="id" variant="underlined" />
-          </template>
-          <template v-else>
-            <v-text-field v-model="payload.title" label="Title" :rules="[(v) => !!v || 'Harus diisi']"
-              variant="underlined" placeholder="Pembelian bensin" persistent-placeholder clearable />
-            <v-text-field prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']" label="Nominal"
-              variant="underlined" clearable />
-            <v-select v-model="payload.fromFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'D'"
-              label="Akun Asal" :items="accounts" item-value="id" variant="underlined" />
-            <v-select v-model="payload.toFinancialAccountId" v-show="payload.tCode === 'M' || payload.tCode === 'C'"
-              label="Akun Tujuan" :items="accounts" item-value="id" variant="underlined" />
-            <v-select v-model="payload.monthlyBudgetId" v-show="payload.tCode === 'D'" label="Ambil dari budget"
-              :items="availableBudgets" item-value="id" variant="underlined" clearable>
-              <template v-slot:item="{ props: itemProps, item }">
-                <v-list-item v-bind="itemProps" :subtitle="toMoney(item.raw.amountLeft)"></v-list-item>
-              </template>
-            </v-select>
-          </template>
-        </v-form>
-      </v-card-text>
-      <v-card-actions v-if="payload.tCode">
-        <v-btn variant="tonal" color="error" @click="form.reset()">batal</v-btn>
-        <v-btn variant="tonal" color="primary" @click="doSubmit()">simpan</v-btn>
-      </v-card-actions>
-    </v-card>
+    </div>
+    <LazyIncomeForm v-if="tCode === 'C'" :transactiondate="transactiondate" :hinttext="hintType"
+      @savesuccess="saveSuccess" />
+    <LazySpendingForm v-else-if="tCode === 'D'" :transactiondate="transactiondate" :hinttext="hintType"
+      @savesuccess="saveSuccess" />
+    <LazyMutationForm v-else-if="tCode === 'M'" :transactiondate="transactiondate" :hinttext="hintType"
+      @savesuccess="saveSuccess" />
+    <LazyDebtForm v-else-if="tCode === 'H'" :transactiondate="transactiondate" :hinttext="hintType"
+      @savesuccess="saveSuccess" />
   </v-dialog>
 </template>

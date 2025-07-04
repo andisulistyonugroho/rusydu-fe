@@ -1,26 +1,26 @@
-<script setup>
-const menus = [
+<script setup lang="ts">
+interface Menu {
+  title: string,
+  link: string,
+  icon: string,
+  childs?: Menu[]
+}
+const menus: Menu[] = [
   {
-    title: 'Buku Kas', link: '/cashbook', icon: 'i-mdi-book-account-outline', childs: [
-      { title: null, link: null }
-    ]
+    title: 'Buku Kas', link: '/cashbook', icon: 'i-mdi-book-account-outline'
   },
   {
-    title: 'Budgeting', icon: 'i-mdi-wallet-outline', link: '/budgeting', childs: [
-      { title: null, link: null }
-    ]
+    title: 'Budgeting', icon: 'i-mdi-wallet-outline', link: '/budgeting'
   },
   {
     title: 'Hutang',
     icon: 'i-mdi-account-cash-outline',
-    link: '/debt',
-    open: true
+    link: '/debt'
   },
   {
     title: 'Profile',
     icon: 'i-mdi-account-circle-outline',
-    link: '/profile',
-    open: true
+    link: '/profile'
   }
 ]
 </script>
@@ -28,14 +28,14 @@ const menus = [
   <v-list nav>
     <v-list-item prepend-icon="i-mdi-home" title="Home" to="/"></v-list-item>
     <template v-for="parent in menus">
-      <template v-if="parent.childs && parent.childs[0].title">
+      <template v-if="parent.childs">
         <v-list-group class="firstlevel" :value="parent.title">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" :prepend-icon="parent.icon" :value="parent.title" :title="parent.title" />
           </template>
 
           <template v-for="child in parent.childs">
-            <template v-if="child.childs[0].title">
+            <template v-if="child.childs">
               <v-list-group class="secondlevel" :value="child.title">
                 <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" :prepend-icon="child.icon" :value="child.title"

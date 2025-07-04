@@ -11,25 +11,6 @@ const { transactionLog } = storeToRefs(useRecordStore())
 const { getTotalBalance } = useAccountStore()
 const { totalBalance } = storeToRefs(useAccountStore())
 
-
-type FinancialRec = {
-  id: number,
-  title: string,
-  amountIn: number,
-  amountOut: number,
-  tCode: string,
-  tDate: string,
-  createdAt: string
-}
-
-type DailyRec = {
-  id: string,
-  text: string,
-  logs: FinancialRec[],
-  totalIn: number,
-  totalOut: number
-}
-
 const dayjs = useDayjs()
 const startDate = ref(dayjs().startOf('day'))
 const dNewRecord = ref(false)
@@ -193,7 +174,7 @@ getTotalBalance()
               <template v-if="row.totalIn || row.totalOut">
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class=" text-green-darken-3 font-weight-bold">Masuk: {{ toMoney(row.totalIn)
-                    }}</v-chip>
+                  }}</v-chip>
                 </v-col>
                 <v-col cols="6" class="mt-4 text-center">
                   <v-chip rounded class="text-red-darken-1 font-weight-bold">

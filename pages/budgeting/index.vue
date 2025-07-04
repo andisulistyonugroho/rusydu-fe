@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 const { $bus } = useNuxtApp()
 definePageMeta({
   layout: 'secondlayer',
@@ -24,7 +24,7 @@ const alert = ref(true)
       <v-btn variant="tonal" to="/budgeting/copy" class="mt-2" block>Salin budget</v-btn>
     </div>
     <v-list>
-      <v-list-item v-for="row in availableMonths" :title="row.title"
+      <v-list-item v-for="row in availableMonths" :title="row.thePeriod"
         :to="`/budgeting/detail?theperiod=${row.thePeriod}`">
         <div class="font-weight-bold">{{ toMonth(row.thePeriod) }} : {{ toMoney(row.amount) }}</div>
         <div class="text-body-2">

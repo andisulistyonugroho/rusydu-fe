@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { $bus } = useNuxtApp()
+const { $bus, $pwa } = useNuxtApp()
 
 const waitDialog = ref(false)
 const snacko = ref({
@@ -43,6 +43,7 @@ onBeforeUnmount(() => {
   <NuxtPwaManifest />
   <v-app>
     <v-main>
+      <v-btn v-if="$pwa?.isPWAInstalled" @click="$pwa?.install()" class="ma-3">install</v-btn>
       <slot />
       <v-progress-linear :active="waitDialog" :indeterminate="waitDialog" absolute bottom
         color="primary"></v-progress-linear>

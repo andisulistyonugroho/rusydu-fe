@@ -109,7 +109,7 @@ export default defineNuxtConfig({
           purpose: ['any']
         }
       ],
-      id: 'rusdu/v0.12',
+      id: 'rusdu/v0.13',
       start_url: '/?source=pwa',
       display: 'fullscreen',
       scope: '/',
@@ -159,7 +159,7 @@ export default defineNuxtConfig({
           }
         }
       ],
-      navigateFallback: '/',
+      navigateFallback: 'null',
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     client: {

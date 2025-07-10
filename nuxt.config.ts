@@ -109,7 +109,7 @@ export default defineNuxtConfig({
           purpose: ['any']
         }
       ],
-      id: 'rusdu/v0.13',
+      id: 'rusdu/v0.14',
       start_url: '/?source=pwa',
       display: 'fullscreen',
       scope: '/',

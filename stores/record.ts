@@ -32,7 +32,8 @@ export const useRecordStore = defineStore('record', () => {
         tCode: 'D',
         tDate: payload.tDate,
         financialAccountId: payload.financialAccountId,
-        userId: user.userId
+        userId: user.userId,
+        monthlyBudgetId: payload.monthlyBudgetId
       }
       await $api.post('/FinancialRecords', data)
       return Promise.resolve(true)

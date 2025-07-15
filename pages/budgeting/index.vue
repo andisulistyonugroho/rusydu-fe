@@ -24,15 +24,14 @@ const alert = ref(true)
       <v-btn variant="tonal" to="/budgeting/copy" class="mt-2" block>Salin budget</v-btn>
     </div>
     <v-list>
-      <v-list-item v-for="row in availableMonths" :title="row.thePeriod"
-        :to="`/budgeting/detail?theperiod=${row.thePeriod}`">
-        <div class="font-weight-bold">{{ toMonth(row.thePeriod) }} : {{ toMoney(row.amount) }}</div>
+      <v-list-item v-for="row in availableMonths" :to="`/budgeting/detail?theperiod=${row.thePeriod}`">
+        <div class="font-weight-bold">{{ toMonth(row.thePeriod) }}: {{ toMoney(row.amount) }}</div>
         <div class="text-body-2">
           Terpakai: {{ toMoney(row.amountUsed) }},
           Sisa: {{ toMoney(row.amountLeft) }}
         </div>
         <template v-slot:append>
-          <v-icon>i-mdi-chevron-right</v-icon>
+          <v-icon icon="i-mdi-chevron-right" />
         </template>
       </v-list-item>
     </v-list>

@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config"
 import { md3 } from 'vuetify/blueprints'
-
+const theVersion = '0.14'
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
@@ -14,7 +14,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000/api'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000/api',
+      theVersion: theVersion
     }
   },
 
@@ -89,7 +90,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@unocss/nuxt',
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
+    '@nuxtjs/device'
   ],
 
   pwa: {
@@ -109,9 +111,9 @@ export default defineNuxtConfig({
           purpose: ['any']
         }
       ],
-      id: 'rusdu/v0.14',
+      id: `rusdu/v${theVersion}`,
       start_url: '/?source=pwa',
-      display: 'fullscreen',
+      display: 'standalone',
       scope: '/',
       screenshots: [
         {

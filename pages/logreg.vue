@@ -1,12 +1,15 @@
 <script setup lang="ts">
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'empty',
   middleware: 'auth'
 })
-const { $debounce, $bus, $api } = useNuxtApp()
+const { $debounce, $bus, $api, $pwa, $device } = useNuxtApp()
 const route = useRoute()
 const { setUser } = useAuthStore()
 
+const onWeb = ref(false)
+const instalationManualIOS = ref(false)
 const action = route.query.action
 const passType = ref(true)
 const loginF = ref()
@@ -75,6 +78,15 @@ const doLogin = (async () => {
     return Promise.reject(error)
   }
 })
+
+const doInstall = () => {
+  onWeb.value = false
+  if ($device.isIos) {
+    instalationManualIOS.value = true
+  } else {
+    $pwa?.install()
+  }
+}
 </script>
 <template>
   <v-container>
@@ -85,7 +97,7 @@ const doLogin = (async () => {
           <div class="text-caption">Jaga Harta Kelola Dunia</div>
         </div>
       </v-col>
-      <v-col align-self="end" cols="12" md="4" offset-md="4" class="mb-3">
+      <v-col v-if="onWeb || $pwa?.isPWAInstalled" align-self="end" cols="12" md="4" offset-md="4" class="mb-3">
         <v-tabs v-model="tab" fixed-tabs class="mb-3">
           <v-tab size="large" variant="plain" :value="1" rounded="0">
             masuk
@@ -123,6 +135,31 @@ const doLogin = (async () => {
         <v-btn size="large" rounded="lg" block variant="tonal" class="text-capitalize" @click="doSubmit">
           Submit&nbsp;
         </v-btn>
+      </v-col>
+      <v-col v-if="instalationManualIOS" cols="12" md="6" offset-md="3">
+        <div class="px-10">
+          Step by step instalasi di iOS
+          <ol>
+            <li>Buka halaman website ini melalui browser Safari.</li>
+            <li>Buka menu berbagi:<br>Tap ikon "Bagikan" yang terletak di bagian bawah layar (berbentuk persegi dengan
+              panah ke
+              atas).</li>
+            <li>Pilih "Tambahkan ke Layar Utama":<br>Di menu berbagi, scroll ke bawah dan pilih opsi "Tambahkan ke Layar
+              Utama".
+            </li>
+            <li>Konfirmasi dan tambahkan:<br>Tap tombol "Tambahkan" di pojok kanan atas untuk menyelesaikan instalasi di
+              iOS.</li>
+          </ol>
+        </div>
+      </v-col>
+      <v-col cols="12" class="text-center text-caption">
+        <template v-if="!$pwa?.isPWAInstalled">
+          <v-btn block @click="doInstall()">install</v-btn>
+          <v-btn block @click="onWeb = true; instalationManualIOS = false;" class="mt-3">tetap di web</v-btn>
+        </template>
+        <div>
+          version:{{ config.public.theVersion }}
+        </div>
       </v-col>
     </v-row>
   </v-container>

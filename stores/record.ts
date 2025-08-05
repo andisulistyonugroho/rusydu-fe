@@ -4,6 +4,8 @@ export const useRecordStore = defineStore('record', () => {
 
   const transactionLog = ref<FinancialRecord[]>([])
   const searchResult = ref<FinancialRecord[]>([])
+  const finRecord = ref<FinancialRecord[]>([])
+  const sBalance = ref(0)
 
   const addIncome = (async (payload: Income) => {
     try {
@@ -142,9 +144,44 @@ export const useRecordStore = defineStore('record', () => {
     }
   }
 
+  const getStartingBalance = async (endDate: string) => {
+    try {
+      const { data } = await $api.post('/FinancialRecords/StartingBalance', {
+        endDate: endDate
+      })
+      sBalance.value = data.amount
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
+
+  const generateReport = async (payload: ReportDate) => {
+    try {
+      const { data } = await $api.get<FinancialRecord[]>('/FinancialRecords', {
+        params: {
+          filter: {
+            where: {
+              title: { nlike: 'M:%' },
+              tDate: {
+                between: [payload.startDate, payload.endDate]
+              }
+            },
+            order: 'tCode, tDate'
+          }
+        }
+      })
+      finRecord.value = data
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
+
   return {
-    getRecordInBetween, getAccountRecordInBetween, findRecord, addIncome, addSpending, addMutation,
-    transactionLog, searchResult
+    getRecordInBetween, getAccountRecordInBetween, findRecord, addIncome,
+    addSpending, addMutation, generateReport, getStartingBalance,
+    transactionLog, searchResult, finRecord, sBalance
   }
 }, {
   persist: {

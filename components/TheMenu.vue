@@ -13,14 +13,13 @@ const menus: Menu[] = [
     title: 'Budgeting', icon: 'i-mdi-wallet-outline', link: '/budgeting'
   },
   {
-    title: 'Hutang',
-    icon: 'i-mdi-account-cash-outline',
-    link: '/debt'
+    title: 'Hutang', icon: 'i-mdi-account-cash-outline', link: '/debt'
   },
   {
-    title: 'Profile',
-    icon: 'i-mdi-account-circle-outline',
-    link: '/profile'
+    title: 'Laporan', icon: 'i-mdi-receipt-text-clock-outline', link: '/report'
+  },
+  {
+    title: 'Profile', icon: 'i-mdi-account-circle-outline', link: '/profile'
   }
 ]
 </script>

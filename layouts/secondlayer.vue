@@ -11,7 +11,7 @@ const snacko = ref({
   open: false,
 })
 
-onMounted(() => {
+onBeforeMount(() => {
   $bus.$on('wait-dialog', (dialog: boolean) => {
     waitDialog.value = dialog
   })

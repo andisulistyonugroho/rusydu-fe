@@ -38,3 +38,8 @@ interface DailyRec {
   totalIn: number,
   totalOut: number
 }
+
+interface ReportDate {
+  startDate: string,
+  endDate: string
+}

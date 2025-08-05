@@ -1,12 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config"
 import { md3 } from 'vuetify/blueprints'
-const theVersion = '0.15'
+const theVersion = '0.16'
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
   devServer: {
-    host: '0.0.0.0',
+    // host: '0.0.0.0',
     port: 8080
   },
 

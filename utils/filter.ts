@@ -34,6 +34,14 @@ export function toMoney(val: number) {
   }
 }
 
+export function simpleDate(string: string) {
+  if (!string) {
+    return '-'
+  }
+  const { $dayjs } = useNuxtApp()
+  return $dayjs(string).format('DD/MM/YYYY')
+}
+
 export function toDate(string: string) {
   if (!string) {
     return '-'

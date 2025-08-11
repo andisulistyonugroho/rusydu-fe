@@ -1,191 +1,227 @@
-export const useRecordStore = defineStore('record', () => {
-  const { $api } = useNuxtApp()
-  const { user } = useAuthStore()
+export const useRecordStore = defineStore(
+  "record",
+  () => {
+    const { $api } = useNuxtApp();
+    const { user } = useAuthStore();
 
-  const transactionLog = ref<FinancialRecord[]>([])
-  const searchResult = ref<FinancialRecord[]>([])
-  const finRecord = ref<FinancialRecord[]>([])
-  const sBalance = ref(0)
+    const transactionLog = ref<FinancialRecord[]>([]);
+    const searchResult = ref<FinancialRecord[]>([]);
+    const finRecord = ref<FinancialRecord[]>([]);
+    const sBalance = ref(0);
 
-  const addIncome = (async (payload: Income) => {
-    try {
-      const data = {
-        title: payload.title,
-        amountIn: payload.amountIn,
-        amountOut: 0,
-        tCode: 'C',
-        tDate: payload.tDate,
-        financialAccountId: payload.financialAccountId,
-        userId: user.userId
+    const addIncome = async (payload: Income) => {
+      try {
+        const data = {
+          title: payload.title,
+          amountIn: payload.amountIn,
+          amountOut: 0,
+          tCode: "C",
+          tDate: payload.tDate,
+          financialAccountId: payload.financialAccountId,
+          userId: user.userId,
+        };
+        await $api.post("/FinancialRecords", data);
+        return Promise.resolve(true);
+      } catch (error) {
+        return Promise.reject(error);
       }
-      await $api.post('/FinancialRecords', data)
-      return Promise.resolve(true)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  })
+    };
 
-  const addSpending = (async (payload: Spending) => {
-    try {
-      const data = {
-        title: payload.title,
-        amountIn: 0,
-        amountOut: payload.amountOut,
-        tCode: 'D',
-        tDate: payload.tDate,
-        financialAccountId: payload.financialAccountId,
-        userId: user.userId,
-        monthlyBudgetId: payload.monthlyBudgetId
+    const addSpending = async (payload: Spending) => {
+      try {
+        const data = {
+          title: payload.title,
+          amountIn: 0,
+          amountOut: payload.amountOut,
+          tCode: "D",
+          tDate: payload.tDate,
+          financialAccountId: payload.financialAccountId,
+          userId: user.userId,
+          monthlyBudgetId: payload.monthlyBudgetId,
+        };
+        await $api.post("/FinancialRecords", data);
+        return Promise.resolve(true);
+      } catch (error) {
+        return Promise.reject(error);
       }
-      await $api.post('/FinancialRecords', data)
-      return Promise.resolve(true)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  })
+    };
 
-  const addMutation = (async (payload: Mutation) => {
-    try {
-      // out
-      const dataOut = {
-        title: `M: ${payload.title}`,
-        amountIn: 0,
-        amountOut: payload.amountOut,
-        tCode: 'D',
-        tDate: payload.tDate,
-        financialAccountId: payload.fromFinancialAccountId,
-        userId: user.userId
+    const addMutation = async (payload: Mutation) => {
+      try {
+        // out
+        const dataOut = {
+          title: `M: ${payload.title}`,
+          amountIn: 0,
+          amountOut: payload.amountOut,
+          tCode: "D",
+          tDate: payload.tDate,
+          financialAccountId: payload.fromFinancialAccountId,
+          userId: user.userId,
+        };
+        await $api.post("/FinancialRecords", dataOut);
+
+        // in
+        const dataIn = {
+          title: `M: ${payload.title}`,
+          amountIn: payload.amountOut,
+          amountOut: 0,
+          tCode: "C",
+          tDate: payload.tDate,
+          financialAccountId: payload.toFinancialAccountId,
+          userId: user.userId,
+        };
+        await $api.post("/FinancialRecords", dataIn);
+
+        return Promise.resolve(true);
+      } catch (error) {
+        return Promise.reject(error);
       }
-      await $api.post('/FinancialRecords', dataOut)
+    };
 
-      // in
-      const dataIn = {
-        title: `M: ${payload.title}`,
-        amountIn: payload.amountOut,
-        amountOut: 0,
-        tCode: 'C',
-        tDate: payload.tDate,
-        financialAccountId: payload.toFinancialAccountId,
-        userId: user.userId
-      }
-      await $api.post('/FinancialRecords', dataIn)
-
-      return Promise.resolve(true)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  })
-
-  const getRecordInBetween = (async (payload: { startDate: string, endDate: string }) => {
-    try {
-      const { data } = await $api.get('/FinancialRecords', {
-        params: {
-          filter: {
-            where: {
-              isActive: 1,
-              tDate: {
-                between: [payload.startDate, payload.endDate]
+    const getRecordInBetween = async (payload: {
+      startDate: string;
+      endDate: string;
+    }) => {
+      try {
+        const { data } = await $api.get("/FinancialRecords", {
+          params: {
+            filter: {
+              where: {
+                isActive: 1,
+                tDate: {
+                  between: [payload.startDate, payload.endDate],
+                },
+                userId: user.userId,
               },
-              userId: user.userId
+              order: "tDate ASC",
             },
-            order: 'tDate ASC'
-          }
-        }
-      })
-      transactionLog.value = data
-      return Promise.resolve(data)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  })
+          },
+        });
+        transactionLog.value = data;
+        return Promise.resolve(data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
 
-  const getAccountRecordInBetween = (async (payload: { startDate: string, endDate: string, accountId: number }) => {
-    try {
-      const { data } = await $api.get('/FinancialRecords', {
-        params: {
-          filter: {
-            where: {
-              isActive: 1,
-              financialAccountId: payload.accountId,
-              tDate: {
-                between: [payload.startDate, payload.endDate]
+    const getAccountRecordInBetween = async (payload: {
+      startDate: string;
+      endDate: string;
+      accountId: number;
+    }) => {
+      try {
+        const { data } = await $api.get("/FinancialRecords", {
+          params: {
+            filter: {
+              where: {
+                isActive: 1,
+                financialAccountId: payload.accountId,
+                tDate: {
+                  between: [payload.startDate, payload.endDate],
+                },
+                userId: user.userId,
               },
-              userId: user.userId
+              order: "tDate ASC",
             },
-            order: 'tDate ASC'
-          }
-        }
-      })
-      transactionLog.value = data
-      return Promise.resolve(data)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  })
+          },
+        });
+        transactionLog.value = data;
+        return Promise.resolve(data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
 
-  const findRecord = async (payload: { title: string }) => {
-    try {
-      const { data } = await $api.get('/FinancialRecords', {
-        params: {
-          filter: {
-            where: {
-              userId: user.userId,
-              isActive: 1,
-              title: { like: `%${payload.title}%` }
+    const findRecord = async (payload: { title: string }) => {
+      try {
+        const { data } = await $api.get("/FinancialRecords", {
+          params: {
+            filter: {
+              where: {
+                userId: user.userId,
+                isActive: 1,
+                title: { like: `%${payload.title}%` },
+              },
+              order: "tDate DESC",
             },
-            order: "tDate DESC"
-          }
+          },
+        });
+        searchResult.value = data;
+        return Promise.resolve(true);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
+
+    const getStartingBalance = async (
+      endDate: string,
+      financialAccountId: number,
+    ) => {
+      try {
+        const whereF: StartingBalanceFilter = { endDate: endDate };
+        if (financialAccountId !== 0) {
+          whereF["financialAccountId"] = financialAccountId;
         }
-      })
-      searchResult.value = data
-      return Promise.resolve(true)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  }
+        const { data } = await $api.post(
+          "/FinancialRecords/StartingBalance",
+          whereF,
+        );
+        sBalance.value = data.amount;
+        return Promise.resolve(true);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
 
-  const getStartingBalance = async (endDate: string) => {
-    try {
-      const { data } = await $api.post('/FinancialRecords/StartingBalance', {
-        endDate: endDate
-      })
-      sBalance.value = data.amount
-      return Promise.resolve(true)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  }
-
-  const generateReport = async (payload: ReportDate) => {
-    try {
-      const { data } = await $api.get<FinancialRecord[]>('/FinancialRecords', {
-        params: {
-          filter: {
-            where: {
-              title: { nlike: 'M:%' },
-              tDate: {
-                between: [payload.startDate, payload.endDate]
-              }
+    const generateReport = async (payload: ReportPayload) => {
+      try {
+        const whereF: ReportFilter = {
+          tDate: {
+            between: [payload.startDate, payload.endDate],
+          },
+        };
+        if (payload.financialAccountId !== 0) {
+          whereF.financialAccountId = payload.financialAccountId;
+        } else {
+          whereF.title = { nlike: "M:%" };
+        }
+        const { data } = await $api.get<FinancialRecord[]>(
+          "/FinancialRecords",
+          {
+            params: {
+              filter: {
+                where: whereF,
+                order: "tDate",
+              },
             },
-            order: 'tCode, tDate'
-          }
-        }
-      })
-      finRecord.value = data
-      return Promise.resolve(true)
-    } catch (error) {
-      return Promise.reject(error)
-    }
-  }
+          },
+        );
+        finRecord.value = data;
+        return Promise.resolve(true);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
 
-  return {
-    getRecordInBetween, getAccountRecordInBetween, findRecord, addIncome,
-    addSpending, addMutation, generateReport, getStartingBalance,
-    transactionLog, searchResult, finRecord, sBalance
-  }
-}, {
-  persist: {
-    storage: persistedState.localStorage,
-    key: 'r00sydoo_record'
-  }
-})
+    return {
+      getRecordInBetween,
+      getAccountRecordInBetween,
+      findRecord,
+      addIncome,
+      addSpending,
+      addMutation,
+      generateReport,
+      getStartingBalance,
+      transactionLog,
+      searchResult,
+      finRecord,
+      sBalance,
+    };
+  },
+  {
+    persist: {
+      storage: persistedState.localStorage,
+      key: "r00sydoo_record",
+    },
+  },
+);

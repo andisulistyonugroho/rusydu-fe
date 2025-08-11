@@ -1,81 +1,106 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'secondlayernohead',
-  middleware: 'auth'
-})
-const { $debounce, $dayjs } = useNuxtApp()
-const { generateReport, getStartingBalance } = useRecordStore()
-const { finRecord, sBalance } = storeToRefs(useRecordStore())
+  layout: "secondlayernohead",
+  middleware: "auth",
+});
+const { $debounce, $dayjs } = useNuxtApp();
+const { generateReport, getStartingBalance } = useRecordStore();
+const { finRecord, sBalance } = storeToRefs(useRecordStore());
+const { getMyAccounts } = useAccountStore();
+const { accounts } = storeToRefs(useAccountStore());
 
-const payload = ref<ReportDate>({
-  startDate: $dayjs().format('YYYY-MM-DD'),
-  endDate: $dayjs().format('YYYY-MM-DD')
-})
-const dialog = ref(false)
-const loading = ref(false)
+const payload = ref<ReportPayload>({
+  startDate: $dayjs().format("YYYY-MM-DD"),
+  endDate: $dayjs().format("YYYY-MM-DD"),
+  financialAccountId: 0,
+});
+const dialog = ref(false);
+const loading = ref(false);
+const saldos = ref<number[]>([]);
 
-const doGetReport = $debounce(async () => {
-  try {
-    loading.value = true
-    const theStartDate = $dayjs(payload.value.startDate).subtract(7, 'hour').format('YYYY-MM-DD 17:00:00')
-    const theEndDate = $dayjs(payload.value.endDate).format('YYYY-MM-DD 16:59:59')
-    await generateReport({
-      startDate: theStartDate,
-      endDate: theEndDate
-    })
-    await getStartingBalance(theStartDate)
-    loading.value = false
-    dialog.value = false
-  } catch (error) {
-    loading.value = false
+const doGetReport = $debounce(
+  async () => {
+    try {
+      loading.value = true;
+      const theStartDate = $dayjs(payload.value.startDate)
+        .subtract(7, "hour")
+        .format("YYYY-MM-DD 17:00:00");
+      const theEndDate = $dayjs(payload.value.endDate).format(
+        "YYYY-MM-DD 16:59:59",
+      );
+      await generateReport({
+        startDate: theStartDate,
+        endDate: theEndDate,
+        financialAccountId: payload.value.financialAccountId,
+      });
+      await getStartingBalance(theStartDate, payload.value.financialAccountId);
+      generateSaldos();
+      loading.value = false;
+      dialog.value = false;
+    } catch (error) {
+      loading.value = false;
+    }
+  },
+  1000,
+  { leading: true, trailing: false },
+);
+
+const openPrinter = $debounce(
+  () => {
+    window.print();
+  },
+  1000,
+  { leading: true, trailing: false },
+);
+const generateSaldos = () => {
+  saldos.value = [];
+  let sb = sBalance.value;
+  for (let i = 0; i < finRecord.value.length; i++) {
+    sb += finRecord.value[i].amountIn - finRecord.value[i].amountOut;
+    saldos.value.push(sb);
   }
-}, 1000, { leading: true, trailing: false })
-
-const openPrinter = $debounce(() => {
-  window.print()
-}, 1000, { leading: true, trailing: false })
+};
 
 const totalIn = computed(() => {
   return finRecord.value.reduce((amount, obj) => {
-    return amount + obj.amountIn
-  }, 0)
-})
+    return amount + obj.amountIn;
+  }, 0);
+});
 const totalOut = computed(() => {
   return finRecord.value.reduce((amount, obj) => {
-    return amount + obj.amountOut
-  }, 0)
-})
+    return amount + obj.amountOut;
+  }, 0);
+});
 const balanceLeft = computed(() => {
-  return sBalance.value + totalIn.value - totalOut.value
-})
+  return sBalance.value + totalIn.value - totalOut.value;
+});
 
+finRecord.value = [];
+await getMyAccounts();
 </script>
 <template>
   <v-app-bar class="border-b">
     <v-btn icon="i-mdi-arrow-left" @click="$router.back()" />
     <v-app-bar-title>Laporan</v-app-bar-title>
     <v-btn icon="i-mdi-calendar-outline" @click="dialog = true" />
-    <v-btn v-if="finRecord.length" icon="i-mdi-printer-outline" @click="openPrinter()" />
+    <v-btn
+      v-if="finRecord.length"
+      icon="i-mdi-printer-outline"
+      @click="openPrinter()"
+    />
   </v-app-bar>
-  <v-table>
+  <v-table class="font-monospace">
     <thead>
       <tr>
-        <th class="text-left" width="5%">
-          TGL
-        </th>
-        <th class="text-left" width="*">
-          URAIAN
-        </th>
-        <th class="text-right" width="20%">
-          D
-        </th>
-        <th class="text-right" width="20%">
-          C
-        </th>
+        <th class="text-left" width="5%">TGL</th>
+        <th class="text-left" width="*">URAIAN</th>
+        <th class="text-right" width="20%">D</th>
+        <th class="text-right" width="20%">C</th>
+        <th class="text-right" width="20%">B</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="row in finRecord">
+      <tr v-for="(row, index) in finRecord">
         <td>{{ simpleDate(row.tDate) }}</td>
         <td>{{ row.title }}</td>
         <td class="text-right">
@@ -83,6 +108,9 @@ const balanceLeft = computed(() => {
         </td>
         <td class="text-right">
           {{ toMoney(row.amountIn) }}
+        </td>
+        <td class="text-right">
+          {{ toMoney(saldos[index]) }}
         </td>
       </tr>
       <tr>
@@ -113,22 +141,48 @@ const balanceLeft = computed(() => {
       </div>
     </div>
   </div>
+
   <v-dialog v-model="dialog" persistent>
     <v-card>
       <v-toolbar class="rounded-t-lg">
         <v-btn icon="i-mdi-close" dark @click="dialog = false" />
-        <v-toolbar-title>Tanggal</v-toolbar-title>
+        <v-toolbar-title>Filter</v-toolbar-title>
       </v-toolbar>
       <v-container fluid>
         <v-row no-gutters>
           <v-col cols="6" class="pr-1">
-            <v-date-input v-model="payload.startDate" prepend-icon="" variant="underlined" label="Tanggal Awal*" />
+            <v-date-input
+              v-model="payload.startDate"
+              prepend-icon=""
+              variant="underlined"
+              label="Tanggal Awal*"
+            />
           </v-col>
           <v-col cols="6" class="pl-1">
-            <v-date-input v-model="payload.endDate" prepend-icon="" variant="underlined" label="Tanggal Akhir*" />
+            <v-date-input
+              v-model="payload.endDate"
+              prepend-icon=""
+              variant="underlined"
+              label="Tanggal Akhir*"
+            />
           </v-col>
           <v-col cols="12">
-            <v-btn block variant="tonal" :loading="loading" @click="doGetReport()">Generate</v-btn>
+            <v-select
+              v-model="payload.financialAccountId"
+              variant="underlined"
+              item-value="id"
+              label="Akun"
+              :items="accounts"
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-btn
+              block
+              variant="tonal"
+              :loading="loading"
+              @click="doGetReport()"
+              >Generate</v-btn
+            >
           </v-col>
         </v-row>
       </v-container>

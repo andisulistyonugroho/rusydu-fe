@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
 import { md3 } from "vuetify/blueprints";
-const theVersion = "0.17";
+const theVersion = "0.18";
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
@@ -30,7 +30,6 @@ export default defineNuxtConfig({
         { name: "mobile-web-app-capable", content: "yes" },
       ],
       link: [
-
         { rel: "icon", href: "/splash_screens/icon.png" },
         {
           rel: "apple-touch-startup-image",

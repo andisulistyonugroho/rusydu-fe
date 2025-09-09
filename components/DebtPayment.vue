@@ -2,66 +2,70 @@
 const props = defineProps({
   debtid: { type: Number, default: null },
   debttitle: { type: String, default: null },
-  debtamount: { type: Number, default: null }
-})
-const { $dayjs, $debounce, $bus } = useNuxtApp()
-const { getMyAccounts } = useAccountStore()
-const { accounts } = storeToRefs(useAccountStore())
-const { payDebt } = useDebtStore()
-const { getBudgetInPeriod } = useBudgetingStore()
-const { budgets } = storeToRefs(useBudgetingStore())
+  debtamount: { type: Number, default: null },
+});
+const { $dayjs, $debounce, callHook } = useNuxtApp();
+const { getMyAccounts } = useAccountStore();
+const { accounts } = storeToRefs(useAccountStore());
+const { payDebt } = useDebtStore();
+const { getBudgetInPeriod } = useBudgetingStore();
+const { budgets } = storeToRefs(useBudgetingStore());
 
-const emit = defineEmits(['refreshparent', 'closeit'])
-const form = ref()
+const emit = defineEmits(["refreshparent", "closeit"]);
+const form = ref();
 
 const payload = ref<DebtPayment>({
-  title: '',
-  tCode: 'D',
+  title: "",
+  tCode: "D",
   amount: 0,
   tDate: $dayjs().format(),
   fromFinancialAccountId: 0,
   debtId: props.debtid,
   monthlyBudgetId: 0,
-})
+});
 
 const options = {
-  number: { locale: 'id' },
+  number: { locale: "id" },
   onMaska: (detail: any) => {
-    payload.value.amount = detail.unmasked
-  }
-}
+    payload.value.amount = detail.unmasked;
+  },
+};
 
-const doSubmit = $debounce(async () => {
-  try {
-    const validate = await form.value.validate()
-    if (!validate.valid) {
-      return
+const doSubmit = $debounce(
+  async () => {
+    try {
+      const validate = await form.value.validate();
+      if (!validate.valid) {
+        return;
+      }
+      callHook("waitDialog", true);
+      await payDebt(payload.value);
+      emit("refreshparent");
+      emit("closeit");
+      callHook("waitDialog", false);
+    } catch (error) {
+      callHook("waitDialog", false);
+      callHook("snackIt", error);
     }
-    $bus.$emit('wait-dialog', true)
-    await payDebt(payload.value)
-    emit('refreshparent')
-    emit('closeit')
-    $bus.$emit('wait-dialog', false)
-  } catch (error) {
-    $bus.$emit('wait-dialog', false)
-    $bus.$emit('error-snackbar', error)
-  }
-}, 1000, { leading: true, trailing: false })
+  },
+  1000,
+  { leading: true, trailing: false },
+);
 
 const getBudget = async () => {
   try {
-    $bus.$emit('wait-dialog', true)
-    const period = `${$dayjs().format('YYYY-MM')}-01 00:00:00`
-    await getBudgetInPeriod(period)
-    $bus.$emit('wait-dialog', false)
+    callHook("waitDialog", true);
+    const period = `${$dayjs().format("YYYY-MM")}-01 00:00:00`;
+    await getBudgetInPeriod(period);
+    callHook("waitDialog", false);
   } catch (error) {
-    $bus.$emit('wait-dialog', false)
-    $bus.$emit('error-snackbar', error)
+    callHook("waitDialog", false);
+    callHook("snackIt", error);
   }
-}
+};
 
-await getMyAccounts()
-await getBudget()
+await getMyAccounts();
+await getBudget();
 </script>
 <template>
   <v-card variant="flat">
@@ -73,22 +77,54 @@ await getBudget()
       <div class="text-center">
         {{ props.debttitle }}
       </div>
-      <div class="text-center">
-        Sisa: {{ toMoney(props.debtamount) }}
-      </div>
+      <div class="text-center">Sisa: {{ toMoney(props.debtamount) }}</div>
       <v-divider class="my-3"></v-divider>
       <v-form ref="form">
-        <v-text-field v-model="payload.title" label="Title*" :rules="[(v) => !!v || 'Harus diisi']" variant="underlined"
-          placeholder="Bayar-bayar" persistent-placeholder clearable />
-        <v-text-field prefix="Rp" v-maska="options" :rules="[(v) => !!v || 'Harus diisi']" label="Nominal"
-          variant="underlined" placeholder="0" persistent-placeholder clearable />
-        <v-select v-model="payload.fromFinancialAccountId" label="Akun Asal*" :items="accounts" item-value="id"
-          variant="underlined" />
-        <v-date-input v-model="payload.tDate" prepend-icon="" variant="underlined" label="Tanggal Transaksi*" />
-        <v-select v-model="payload.monthlyBudgetId" label="Ambil dari budget" :items="budgets" item-value="id"
-          variant="underlined" clearable>
+        <v-text-field
+          v-model="payload.title"
+          label="Title*"
+          :rules="[(v) => !!v || 'Harus diisi']"
+          variant="underlined"
+          placeholder="Bayar-bayar"
+          persistent-placeholder
+          clearable
+        />
+        <v-text-field
+          prefix="Rp"
+          v-maska="options"
+          :rules="[(v) => !!v || 'Harus diisi']"
+          label="Nominal"
+          variant="underlined"
+          placeholder="0"
+          persistent-placeholder
+          clearable
+        />
+        <v-select
+          v-model="payload.fromFinancialAccountId"
+          label="Akun Asal*"
+          :items="accounts"
+          item-value="id"
+          variant="underlined"
+        />
+        <v-date-input
+          v-model="payload.tDate"
+          prepend-icon=""
+          variant="underlined"
+          label="Tanggal Transaksi*"
+        />
+        <v-select
+          v-model="payload.monthlyBudgetId"
+          label="Ambil dari budget"
+          :items="budgets"
+          item-value="id"
+          variant="underlined"
+          clearable
+        >
           <template v-slot:item="{ props: itemProps, item }">
-            <v-list-item v-bind="itemProps" :subtitle="toMoney(item.raw.amountLeft)"></v-list-item>
+            <v-list-item
+              v-bind="itemProps"
+              :subtitle="toMoney(item.raw.amountLeft)"
+            ></v-list-item>
           </template>
         </v-select>
       </v-form>

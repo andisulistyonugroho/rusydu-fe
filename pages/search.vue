@@ -1,30 +1,34 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'secondlayernohead',
-  middleware: 'auth'
-})
-const { $bus } = useNuxtApp()
-const { $debounce } = useNuxtApp()
-const { findRecord } = useRecordStore()
+  layout: "secondlayernohead",
+  middleware: "auth",
+});
+const { callHook } = useNuxtApp();
+const { $debounce } = useNuxtApp();
+const { findRecord } = useRecordStore();
 
-const { searchResult } = storeToRefs(useRecordStore())
+const { searchResult } = storeToRefs(useRecordStore());
 
-$bus.$emit('set-header', 'Pencarian')
+callHook("setHeader", "Pencarian");
 
-const title = ref("")
+const title = ref("");
 
-const doFilter = $debounce(async () => {
-  if (!title.value) {
-    return
-  }
-  await findRecord({ title: title.value })
-}, 1000, { leading: true, trailing: false })
+const doFilter = $debounce(
+  async () => {
+    if (!title.value) {
+      return;
+    }
+    await findRecord({ title: title.value });
+  },
+  1000,
+  { leading: true, trailing: false },
+);
 
 const total = computed(() => {
   return searchResult.value.reduce((amount, obj) => {
-    return amount + obj.amountIn - obj.amountOut
-  }, 0)
-})
+    return amount + obj.amountIn - obj.amountOut;
+  }, 0);
+});
 </script>
 
 <template>
@@ -33,8 +37,15 @@ const total = computed(() => {
     <v-app-bar-title>Pencarian</v-app-bar-title>
     <template v-slot:extension>
       <div class="w-100 mx-4">
-        <v-text-field v-model="title" label="Pencarian" placeholder="beli bensin" persistent-placeholder
-          variant="underlined" append-inner-icon="i-mdi-search" @click:append-inner="doFilter()" />
+        <v-text-field
+          v-model="title"
+          label="Pencarian"
+          placeholder="beli bensin"
+          persistent-placeholder
+          variant="underlined"
+          append-inner-icon="i-mdi-search"
+          @click:append-inner="doFilter()"
+        />
       </div>
     </template>
   </v-app-bar>
@@ -50,8 +61,11 @@ const total = computed(() => {
         <v-col cols="8" class="mb-3">
           {{ row.title }}
         </v-col>
-        <v-col cols="4" :class="`${row.tCode === 'D' ? `text-red-darken-1` : `text-green-darken-1`} text-right mb-3`">
-          {{ toMoney(row.tCode === 'D' ? row.amountOut : row.amountIn) }}
+        <v-col
+          cols="4"
+          :class="`${row.tCode === 'D' ? `text-red-darken-1` : `text-green-darken-1`} text-right mb-3`"
+        >
+          {{ toMoney(row.tCode === "D" ? row.amountOut : row.amountIn) }}
         </v-col>
       </template>
     </v-row>

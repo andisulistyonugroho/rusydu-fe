@@ -30,23 +30,7 @@ export default defineNuxtConfig({
         { name: "mobile-web-app-capable", content: "yes" },
       ],
       link: [
-        { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
-        { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
-        {
-          rel: "preconnect",
-          crossorigin: "anonymous",
-          href: "https://fonts.googleapis.com",
-        },
-        {
-          rel: "preconnect",
-          crossorigin: "anonymous",
-          href: "https://fonts.gstatic.com",
-        },
-        {
-          rel: "stylesheet",
-          crossorigin: "anonymous",
-          href: "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300&display=swap",
-        },
+
         { rel: "icon", href: "/splash_screens/icon.png" },
         {
           rel: "apple-touch-startup-image",

@@ -1,45 +1,43 @@
 <script setup lang="ts">
-const { $bus } = useNuxtApp()
+const { hook } = useNuxtApp();
 
-const waitDialog = ref(false)
-const drawer = ref(false)
+const dialogWait = ref(false);
+const drawer = ref(false);
 const snacko = ref({
-  message: '',
-  color: 'error',
+  message: "",
+  color: "error",
   open: false,
-})
+});
 
-onMounted(() => {
-  $bus.$on('wait-dialog', (dialog: boolean) => {
-    waitDialog.value = dialog
-  })
-  $bus.$on('error-snackbar', (error: unknown) => {
-    let message = 'unknown error'
-
-    if (typeof error === 'object' && error !== null) {
-      const err: any = error
+hook("snackIt", (error: unknown) => {
+  alert("error:" + error);
+  let msg = "";
+  let color = "success";
+  if (error instanceof Error) {
+    msg = "unknown error";
+    color = "error";
+    if (typeof error === "object" && error !== null) {
+      const err: any = error;
       if (err.response && err.response.data && err.response.data.error) {
-        message = err.response.data.error.message
+        msg = err.response.data.error.message;
       } else if (err.message) {
-        message = err.message
+        msg = err.message;
       }
     }
+  } else if (typeof error === "string") {
+    msg = error;
+    color = "success";
+  }
 
-    snacko.value.message = message
-    snacko.value.open = true
-  })
-  $bus.$on('success-snackbar', (message: string) => {
-    snacko.value.color = 'success'
-    snacko.value.message = message
-    snacko.value.open = true
-  })
-})
-
-onBeforeUnmount(() => {
-  $bus.$off('wait-dialog')
-  $bus.$off('error-snackbar')
-  $bus.$off('success-snackbar')
-})
+  snacko.value = {
+    message: msg,
+    color: color,
+    open: true,
+  };
+});
+hook("waitDialog", (open: boolean) => {
+  dialogWait.value = open;
+});
 </script>
 <template>
   <NuxtPwaManifest />
@@ -55,15 +53,24 @@ onBeforeUnmount(() => {
 
     <v-main>
       <slot />
-      <v-progress-linear :active="waitDialog" :indeterminate="waitDialog" absolute bottom
-        color="primary"></v-progress-linear>
+      <v-progress-linear
+        :active="dialogWait"
+        :indeterminate="dialogWait"
+        absolute
+        bottom
+        color="primary"
+      ></v-progress-linear>
     </v-main>
 
     <v-snackbar v-model="snacko.open" :color="snacko.color" multi-line>
       {{ snacko.message }}
 
       <template v-slot:actions>
-        <v-btn :color="snacko.color" variant="text" @click="snacko.open = false">
+        <v-btn
+          :color="snacko.color"
+          variant="text"
+          @click="snacko.open = false"
+        >
           Close
         </v-btn>
       </template>

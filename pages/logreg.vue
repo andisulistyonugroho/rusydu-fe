@@ -4,7 +4,7 @@ definePageMeta({
   layout: "empty",
   middleware: "auth",
 });
-const { $debounce, $bus, $api, $pwa, $device } = useNuxtApp();
+const { $debounce, callHook, $api, $pwa, $device } = useNuxtApp();
 const route = useRoute();
 const { setUser } = useAuthStore();
 
@@ -33,7 +33,7 @@ const doSubmit = $debounce(
         if (!validate.valid) {
           return true;
         }
-        $bus.$emit("wait-dialog", true);
+        callHook("waitDialog", true);
         await doLogin();
         navigateTo("/", { replace: true });
       } else if (tab.value === 2) {
@@ -41,15 +41,15 @@ const doSubmit = $debounce(
         if (!validate.valid) {
           return true;
         }
-        $bus.$emit("wait-dialog", true);
+        callHook("waitDialog", true);
         await doRegis();
         await doLogin();
         navigateTo("/", { replace: true });
       }
-      $bus.$emit("wait-dialog", false);
+      callHook("waitDialog", false);
     } catch (error) {
-      $bus.$emit("wait-dialog", false);
-      $bus.$emit("error-snackbar", error);
+      callHook("waitDialog", false);
+      callHook("snackIt", error);
     }
   },
   1000,

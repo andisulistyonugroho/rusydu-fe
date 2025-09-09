@@ -121,7 +121,7 @@ await getMyAccounts();
       </tr>
     </tbody>
   </v-table>
-  <div class="d-flex justify-end font-weight-bold text-body-2">
+  <div class="d-flex justify-end font-weight-bold text-body-2 font-monospace">
     <div class="bg-grey-lighten-3 pa-3">
       <div class="d-flex justify-space-between">
         <div class="mr-3">Saldo awal:</div>

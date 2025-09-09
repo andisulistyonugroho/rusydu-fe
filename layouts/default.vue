@@ -10,7 +10,6 @@ const snacko = ref({
 });
 
 hook("snackIt", (error: unknown) => {
-  alert("error:" + error);
   let msg = "";
   let color = "success";
   if (error instanceof Error) {

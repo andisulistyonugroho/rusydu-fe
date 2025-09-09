@@ -92,7 +92,6 @@ const onScroll = $debounce(
     }
 
     if (posy <= ih) {
-      // alert('do get older data')
       startDate.value = startDate.value
         .subtract(numOfDays, "days")
         .startOf("date");

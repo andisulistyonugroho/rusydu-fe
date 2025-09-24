@@ -89,50 +89,50 @@ await getMyAccounts();
       @click="openPrinter()"
     />
   </v-app-bar>
-  <v-table class="font-monospace">
+  <v-table striped="odd" class="font-monospace small-table">
     <thead>
       <tr>
-        <th class="text-left" width="5%">TGL</th>
-        <th class="text-left" width="*">URAIAN</th>
-        <th class="text-right" width="20%">D</th>
-        <th class="text-right" width="20%">C</th>
-        <th class="text-right" width="20%">B</th>
+        <th class="text-left text-tiny" width="5%">TGL</th>
+        <th class="text-left text-tiny" width="*">URAIAN</th>
+        <th class="text-right text-tiny" width="20%">D</th>
+        <th class="text-right text-tiny" width="20%">C</th>
+        <th class="text-right text-tiny" width="20%">B</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(row, index) in finRecord">
-        <td>{{ simpleDate(row.tDate) }}</td>
-        <td>{{ row.title }}</td>
-        <td class="text-right">
-          {{ toMoney(row.amountOut) }}
-        </td>
-        <td class="text-right">
+        <td class="text-tiny">{{ simpleDate(row.tDate) }}</td>
+        <td class="text-tiny">{{ row.title }}</td>
+        <td class="text-right text-tiny">
           {{ toMoney(row.amountIn) }}
         </td>
-        <td class="text-right">
+        <td class="text-right text-tiny">
+          {{ toMoney(row.amountOut) }}
+        </td>
+        <td class="text-right text-tiny">
           {{ toMoney(saldos[index]) }}
         </td>
       </tr>
-      <tr>
+      <tr class="text-tiny">
         <td></td>
         <td>Jumlah</td>
-        <td class="text-right">{{ toMoney(totalOut) }}</td>
         <td class="text-right">{{ toMoney(totalIn) }}</td>
+        <td class="text-right">{{ toMoney(totalOut) }}</td>
       </tr>
     </tbody>
   </v-table>
-  <div class="d-flex justify-end font-weight-bold text-body-2 font-monospace">
+  <div class="d-flex justify-end text-tiny font-monospace">
     <div class="bg-grey-lighten-3 pa-3">
       <div class="d-flex justify-space-between">
         <div class="mr-3">Saldo awal:</div>
         <div class="text-right">{{ toMoney(sBalance) }}</div>
       </div>
       <div class="d-flex justify-space-between">
-        <div class="mr-3">Total kredit:</div>
+        <div class="mr-3">Total masuk:</div>
         <div class="text-right">{{ toMoney(totalIn) }}</div>
       </div>
       <div class="d-flex justify-space-between">
-        <div class="mr-3">Total debit:</div>
+        <div class="mr-3">Total keluar:</div>
         <div class="text-right">{{ toMoney(totalOut) }}</div>
       </div>
       <div class="d-flex justify-space-between">

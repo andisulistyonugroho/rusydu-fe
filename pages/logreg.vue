@@ -170,7 +170,7 @@ const doInstall = () => {
                 rounded="lg"
                 variant="underlined"
                 label="Password*"
-                :append-inner-icon="passType ? 'mdi-eye-off' : 'mdi-eye'"
+                :append-inner-icon="passType ? 'i-mdi-eye-off' : 'i-mdi-eye'"
                 :type="passType ? 'password' : 'text'"
                 @click:append-inner="passType = !passType"
                 clearable

@@ -9,14 +9,29 @@ $font:
     "Droid Sans",
     "Helvetica Neue",
     sans-serif;
+
 @use "vuetify/lib/styles/main.sass" with (
     $color-pack: true,
-    $body-font-family: $font // $font-size-root: 14px
+    $body-font-family: $font
 );
 
 .text-tiny {
-    font-size: 0.55rem !important;
+    font-size: 0.5rem !important;
 }
 .font-monospace {
     font-family: monospace !important;
+}
+
+.small-table > table > tbody > tr > td {
+    padding: 0 8px !important;
+}
+
+@media print {
+    .text-tiny {
+        font-size: 0.875rem !important;
+    }
+
+    .small-table > table > tbody > tr > td {
+        padding: 0 16px;
+    }
 }

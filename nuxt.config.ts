@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
 import { md3 } from "vuetify/blueprints";
-const theVersion = "0.19";
+const theVersion = "0.20";
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
@@ -25,7 +25,7 @@ export default defineNuxtConfig({
       viewport: "width=device-width, initial-scale=1",
       title: "RUSDU",
       meta: [
-        { name: "description", content: "Biar gampang dilihat lagi" },
+        { name: "description", content: "Jaga harta kelola duni" },
         { name: "apple-mobile-web-app-capable", content: "yes" },
         { name: "mobile-web-app-capable", content: "yes" },
       ],

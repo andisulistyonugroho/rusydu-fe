@@ -8,7 +8,7 @@ const { getAvailableMonth } = useBudgetingStore();
 const { availableMonths } = storeToRefs(useBudgetingStore());
 
 await getAvailableMonth();
-callHook("setHeader", "Budgeting");
+callHook("setHeader", "Budget Plan");
 
 const alert = ref(true);
 </script>
@@ -41,7 +41,7 @@ const alert = ref(true);
           {{ toMonth(row.thePeriod) }}: {{ toMoney(row.amount) }}
         </div>
         <div class="text-body-2">
-          Terpakai: {{ toMoney(row.amountUsed) }}, Sisa:
+          Terbayar: {{ toMoney(row.amountUsed) }}, Belum:
           {{ toMoney(row.amountLeft) }}
         </div>
         <template v-slot:append>

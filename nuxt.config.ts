@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
 import { md3 } from "vuetify/blueprints";
-const theVersion = "0.20";
+const theVersion = "0.21";
 export default defineNuxtConfig({
   devtools: { enabled: true },
 

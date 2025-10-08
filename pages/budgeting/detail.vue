@@ -34,6 +34,16 @@ const selectedData = ref({
   selectedAmount: 0,
 });
 
+const totalNeed = computed(() => {
+  return budgets.value.reduce((amount, obj) => amount + obj.amount, 0);
+});
+const totalPaid = computed(() => {
+  return budgets.value.reduce((amount, obj) => amount + obj.amountUsed, 0);
+});
+const totalLeft = computed(() => {
+  return budgets.value.reduce((amount, obj) => amount + obj.amountLeft, 0);
+});
+
 if (thePeriod) {
   callHook("waitDialog", true);
   await getBudgetInPeriod(thePeriod);
@@ -88,13 +98,21 @@ const setAsComplete = $debounce(
 getTotalBalance();
 </script>
 <template>
-  <v-app-bar extended class="border-b">
+  <v-app-bar extended class="border-b" extension-height="125">
     <v-btn icon="i-mdi-arrow-left" @click="$router.back()" />
-    <v-app-bar-title>Budgeting {{ periodeString }}</v-app-bar-title>
+    <v-app-bar-title>Budget Plan {{ periodeString }}</v-app-bar-title>
     <v-btn icon="i-mdi-plus" :to="`/budgeting/form?theperiod=${thePeriod}`" />
     <template v-slot:extension>
-      <div class="w-100 text-center font-weight-bold">
-        Saldo: {{ toMoney(totalBalance) }}
+      <div class="w-100 text-right">
+        <div class="mr-10">
+          <div>Kebutuhan: {{ toMoney(totalNeed) }}</div>
+          <div>Terbayar: {{ toMoney(totalPaid) }}</div>
+          <div>Belum: {{ toMoney(totalLeft) }}</div>
+          <div>Dana tersedia: {{ toMoney(totalBalance) }}</div>
+        </div>
+        <div v-if="totalBalance < totalLeft" class="w-100 bg-red pr-10">
+          Dana kurang, harus berhemat
+        </div>
       </div>
     </template>
   </v-app-bar>

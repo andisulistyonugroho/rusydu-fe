@@ -10,7 +10,7 @@ const { budgets } = storeToRefs(useBudgetingStore());
 const route = useRoute();
 
 const thePeriod = route.query.theperiod;
-callHook("waitDialog", "Salin Budget");
+callHook("setHeader", "Salin Budget");
 const months = [
   { title: "Januari", value: "01" },
   { title: "Pebruari", value: "02" },

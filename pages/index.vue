@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { callHook, $dayjs } = useNuxtApp();
+const { callHook } = useNuxtApp();
 definePageMeta({
   layout: "noheader",
   middleware: "auth",

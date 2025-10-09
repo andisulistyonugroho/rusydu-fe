@@ -4,6 +4,7 @@ export const useAccountStore = defineStore(
     const { $api, $dayjs } = useNuxtApp();
     const { user } = useAuthStore();
     const accounts = ref<Account[]>([]);
+    const account = ref<Account>();
     const totalBalance = ref(0);
 
     const getMyAccounts = async () => {
@@ -50,13 +51,24 @@ export const useAccountStore = defineStore(
         return Promise.reject(error);
       }
     };
+    const getAccount = async (id: number) => {
+      try {
+        const { data } = await $api.get(`/FinancialAccounts/${id}`);
+        account.value = data;
+        return Promise.resolve(true);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
 
     return {
       getMyAccounts,
       addMyAccounts,
       getTotalBalance,
+      getAccount,
       accounts,
       totalBalance,
+      account,
     };
   },
   {

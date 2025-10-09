@@ -1,10 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: "secondlayer",
+  layout: "secondlayernohead",
   middleware: "auth",
 });
 
-const { callHook, $debounce } = useNuxtApp();
+const { $debounce } = useNuxtApp();
 const dayjs = useDayjs();
 const route = useRoute();
 const accountIdRoute = route.query.accountId;
@@ -12,64 +12,57 @@ let accountId = 0;
 if (typeof accountIdRoute === "string") {
   accountId = parseInt(accountIdRoute);
 }
-const startDate = ref(dayjs().startOf("day"));
-const dNewRecord = ref(false);
+const page = ref(1);
 const days = ref<DailyRec[]>([]);
-const numOfDays = 31;
-const tlog = ref([]);
-const startIndex = ref(0);
 
-const { getAccountRecordInBetween } = useRecordStore();
+const { getAccount } = useAccountStore();
+const { account } = storeToRefs(useAccountStore());
+const { getAccountRecordHistory } = useRecordStore();
 const { transactionLog } = storeToRefs(useRecordStore());
 
-callHook("setHeader", "Histori Akun");
-const data = ref({
-  title: null,
-  sBalance: null,
-});
+const generateLogs = () => {
+  let tmp_date =
+    days.value.length > 0
+      ? dayjs(days.value[days.value.length - 1].text).format("YYYY-MM-DD")
+      : "";
+  for (let i = 0; i < transactionLog.value.length; i++) {
+    const row = transactionLog.value[i];
+    const the_date = dayjs(row.tDate).format("YYYY-MM-DD");
+    let dailyR: DailyRec = {
+      id: "",
+      text: "",
+      logs: [],
+      totalIn: 0,
+      totalOut: 0,
+    };
 
-const generateCalendar = (position?: string) => {
-  tlog.value = JSON.parse(JSON.stringify(transactionLog.value));
-  const backdate = [];
-  for (let i = 0; i <= numOfDays; i++) {
-    const theDay = startDate.value.subtract(i, "days");
-    const logs = showLogs(theDay.format("YYYY-MM-DD"));
-    if (logs.totalIn === 0 && logs.totalOut === 0) {
-      continue;
+    if (tmp_date === "") {
+      dailyR = {
+        id: the_date,
+        text: the_date,
+        logs: [row],
+        totalIn: row.amountIn,
+        totalOut: row.amountOut,
+      };
+      days.value.push(dailyR);
+    } else if (tmp_date === the_date) {
+      const rowindex = days.value.findIndex((obj) => obj.id === the_date);
+      days.value[rowindex].logs.push(row);
+      days.value[rowindex].totalIn += row.amountIn;
+      days.value[rowindex].totalOut += row.amountOut;
+    } else if (tmp_date !== the_date) {
+      dailyR = {
+        id: the_date,
+        text: the_date,
+        logs: [row],
+        totalIn: row.amountIn,
+        totalOut: row.amountOut,
+      };
+      days.value.push(dailyR);
     }
 
-    if (position === "start") {
-      backdate.push({
-        id: theDay.format("YYYYMMDD"),
-        text: theDay.format("ddd, DD MMM YYYY"),
-        logs: logs.list,
-        totalIn: logs.totalIn,
-        totalOut: logs.totalOut,
-      });
-    } else {
-      days.value.push({
-        id: theDay.format("YYYYMMDD"),
-        text: theDay.format("ddd, DD MMM YYYY"),
-        logs: logs.list,
-        totalIn: logs.totalIn,
-        totalOut: logs.totalOut,
-      });
-    }
+    tmp_date = dayjs(row.tDate).format("YYYY-MM-DD");
   }
-  if (backdate.length > 0) {
-    days.value.unshift(...backdate);
-  }
-};
-
-const showLogs = (theDate: string) => {
-  // const logs = tlog.value.filter((obj) => dayjs(obj.tDate).format('YYYY-MM-DD') === theDate)
-  const logs = transactionLog.value.filter(
-    (obj) => dayjs(obj.tDate).format("YYYY-MM-DD") === theDate,
-  );
-  const totalIn = logs.reduce((total, obj) => total + obj.amountIn, 0);
-  const totalOut = logs.reduce((total, obj) => total + obj.amountOut, 0);
-
-  return { list: logs, totalIn: totalIn, totalOut: totalOut };
 };
 
 const onScroll = $debounce(
@@ -92,18 +85,9 @@ const onScroll = $debounce(
     }
 
     if (posy <= ih) {
-      startDate.value = startDate.value
-        .subtract(numOfDays, "days")
-        .startOf("date");
-      await getAccountRecordInBetween({
-        startDate: startDate.value
-          .subtract(numOfDays, "days")
-          .format("YYYY-MM-DD 17:00:00"),
-        endDate: startDate.value.format("YYYY-MM-DD 16:59:59"),
-        accountId: accountId,
-      });
-
-      generateCalendar();
+      page.value += 1;
+      await getAccountRecordHistory({ accountId: accountId, page: page.value });
+      generateLogs();
     }
   },
   1000,
@@ -111,7 +95,7 @@ const onScroll = $debounce(
 );
 
 onMounted(() => {
-  generateCalendar();
+  generateLogs();
   document.addEventListener("scroll", onScroll);
 });
 
@@ -119,15 +103,20 @@ onBeforeUnmount(() => {
   document.removeEventListener("scroll", onScroll);
 });
 
-await getAccountRecordInBetween({
-  startDate: startDate.value
-    .subtract(numOfDays, "days")
-    .format("YYYY-MM-DD 17:00:00"),
-  endDate: startDate.value.format("YYYY-MM-DD 16:59:59"),
-  accountId: accountId,
-});
+await getAccount(accountId);
+await getAccountRecordHistory({ accountId: accountId, page: page.value });
 </script>
 <template>
+  <v-app-bar extended class="border-b">
+    <v-btn icon="i-mdi-arrow-left" @click="$router.back()" />
+    <v-app-bar-title>{{ account?.title }}</v-app-bar-title>
+    <v-btn icon="i-mdi-add" />
+    <template v-slot:extension>
+      <div class="w-100 text-center">
+        Saldo: {{ toMoney(account ? account.eBalance : 0) }}
+      </div>
+    </template>
+  </v-app-bar>
   <v-container fluid class="fill-height">
     <!-- <v-skeleton-loader type="list-item-two-line" width="100%"></v-skeleton-loader> -->
     <v-row no-gutters>

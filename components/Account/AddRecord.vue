@@ -87,5 +87,14 @@ const tCode = ref();
         emit('savesuccess');
       "
     />
+    <LazyAccountSpendingForm
+      v-if="tCode === 'D'"
+      :accountid="props.accountid"
+      :hinttext="hintType"
+      @savesuccess="
+        dialog = false;
+        emit('savesuccess');
+      "
+    />
   </v-dialog>
 </template>

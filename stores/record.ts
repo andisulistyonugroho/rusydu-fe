@@ -203,6 +203,33 @@ export const useRecordStore = defineStore(
       }
     };
 
+    const getAccountRecordHistory = async (payload: {
+      accountId: number;
+      page: number;
+    }) => {
+      try {
+        const rowsperpage = 100;
+        const { data } = await $api.get("/FinancialRecords", {
+          params: {
+            filter: {
+              where: {
+                isActive: 1,
+                financialAccountId: payload.accountId,
+                userId: user.userId,
+              },
+              order: "tDate DESC",
+              limit: rowsperpage,
+              skip: (payload.page - 1) * rowsperpage,
+            },
+          },
+        });
+        transactionLog.value = data;
+        return Promise.resolve(data);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
+
     return {
       getRecordInBetween,
       getAccountRecordInBetween,
@@ -211,6 +238,7 @@ export const useRecordStore = defineStore(
       addSpending,
       addMutation,
       generateReport,
+      getAccountRecordHistory,
       getStartingBalance,
       transactionLog,
       searchResult,

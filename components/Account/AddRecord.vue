@@ -19,20 +19,6 @@ const transactionType = [
     color: "green",
     icon: "i-mdi-cash-register",
   },
-  {
-    title: "Transfer/mutasi",
-    value: "M",
-    desc: "Pindah uang dari satu akun ke akun lain",
-    color: "yellow",
-    icon: "i-mdi-swap-horizontal",
-  },
-  {
-    title: "Hutang",
-    value: "H",
-    desc: "Dapat pinjaman atau tunggakan",
-    color: "red",
-    icon: "i-mdi-ambulance",
-  },
 ];
 
 const hintType = computed(() => {

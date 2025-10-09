@@ -1,9 +1,8 @@
 <script setup lang="ts">
-const { getTotalBalance } = useAccountStore();
-
+const dialog = defineModel<boolean>("dialog");
+const emit = defineEmits(["savesuccess"]);
 const props = defineProps({
-  dialog: { type: Boolean, default: false },
-  transactiondate: { type: String, default: null },
+  accountid: { type: Number, default: 0 },
 });
 const transactionType = [
   {
@@ -35,7 +34,6 @@ const transactionType = [
     icon: "i-mdi-ambulance",
   },
 ];
-const emit = defineEmits(["closeit", "refreshparent"]);
 
 const hintType = computed(() => {
   return transactionType.find((obj) => obj.value === tCode.value)?.desc;
@@ -48,17 +46,11 @@ const dialogColor = computed(() => {
 });
 
 const tCode = ref();
-
-const saveSuccess = () => {
-  getTotalBalance();
-  emit("refreshparent");
-  tCode.value = null;
-};
 </script>
 <template>
-  <v-dialog v-model="props.dialog">
+  <v-dialog v-model="dialog">
     <v-toolbar class="rounded-t-lg" :color="dialogColor ? dialogColor : ``">
-      <v-btn v-if="!tCode" icon="i-mdi-close" dark @click="emit('closeit')" />
+      <v-btn v-if="!tCode" icon="i-mdi-close" dark @click="dialog = false" />
       <v-btn v-else icon="i-mdi-arrow-left" dark @click="tCode = null" />
       <v-toolbar-title>{{
         tCode ? transactionTypeTitle : "Pencatatan"
@@ -86,29 +78,14 @@ const saveSuccess = () => {
         </v-list-item>
       </v-list>
     </div>
-    <LazyIncomeForm
+    <LazyAccountIncomeForm
       v-if="tCode === 'C'"
-      :transactiondate="transactiondate"
+      :accountid="props.accountid"
       :hinttext="hintType"
-      @savesuccess="saveSuccess"
-    />
-    <LazySpendingForm
-      v-else-if="tCode === 'D'"
-      :transactiondate="transactiondate"
-      :hinttext="hintType"
-      @savesuccess="saveSuccess"
-    />
-    <LazyMutationForm
-      v-else-if="tCode === 'M'"
-      :transactiondate="transactiondate"
-      :hinttext="hintType"
-      @savesuccess="saveSuccess"
-    />
-    <LazyDebtForm
-      v-else-if="tCode === 'H'"
-      :transactiondate="transactiondate"
-      :hinttext="hintType"
-      @savesuccess="saveSuccess"
+      @savesuccess="
+        dialog = false;
+        emit('savesuccess');
+      "
     />
   </v-dialog>
 </template>

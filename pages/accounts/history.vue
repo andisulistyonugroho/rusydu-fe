@@ -14,6 +14,7 @@ if (typeof accountIdRoute === "string") {
 }
 const page = ref(1);
 const days = ref<DailyRec[]>([]);
+const dialog = ref(false);
 
 const { getAccount } = useAccountStore();
 const { account } = storeToRefs(useAccountStore());
@@ -65,6 +66,14 @@ const generateLogs = () => {
   }
 };
 
+const refreshParent = async () => {
+  days.value = [];
+  page.value = 1;
+  await getAccount(accountId);
+  await getAccountRecordHistory({ accountId: accountId, page: page.value });
+  generateLogs();
+};
+
 const onScroll = $debounce(
   async () => {
     const ih = window.innerHeight;
@@ -110,7 +119,7 @@ await getAccountRecordHistory({ accountId: accountId, page: page.value });
   <v-app-bar extended class="border-b">
     <v-btn icon="i-mdi-arrow-left" @click="$router.back()" />
     <v-app-bar-title>{{ account?.title }}</v-app-bar-title>
-    <v-btn icon="i-mdi-add" />
+    <v-btn icon="i-mdi-add" @click="dialog = true" />
     <template v-slot:extension>
       <div class="w-100 text-center">
         Saldo: {{ toMoney(account ? account.eBalance : 0) }}
@@ -171,4 +180,9 @@ await getAccountRecordHistory({ accountId: accountId, page: page.value });
       width="100%"
     ></v-skeleton-loader>
   </v-container>
+  <LazyAccountAddRecord
+    v-model:dialog="dialog"
+    :accountid="accountId"
+    @savesuccess="refreshParent()"
+  />
 </template>

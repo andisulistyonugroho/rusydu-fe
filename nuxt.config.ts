@@ -320,19 +320,6 @@ export default defineNuxtConfig({
       start_url: "/?source=pwa",
       display: "standalone",
       scope: "/",
-      screenshots: [
-        {
-          src: "/splash_screens/4__iPhone_SE__iPod_touch_5th_generation_and_later_portrait.png",
-          type: "image/png",
-          sizes: "640x1136",
-        },
-        {
-          src: "/splash_screens/iPhone_11__iPhone_XR_landscape.png",
-          type: "image/png",
-          sizes: "1792x828",
-          form_factor: "wide",
-        },
-      ],
     },
     workbox: {
       cacheId: "rusdu",
@@ -366,7 +353,7 @@ export default defineNuxtConfig({
           },
         },
       ],
-      navigateFallback: "null",
+      navigateFallback: "/",
       globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
     },
     client: {

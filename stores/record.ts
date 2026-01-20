@@ -191,7 +191,8 @@ export const useRecordStore = defineStore(
             params: {
               filter: {
                 where: whereF,
-                order: "tDate",
+                order: "monthlyBudgetId, tDate",
+                include: "monthlyBudget",
               },
             },
           },

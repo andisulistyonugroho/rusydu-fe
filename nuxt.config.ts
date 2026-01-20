@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
 import { md3 } from "vuetify/blueprints";
-const theVersion = "0.22";
+const theVersion = "0.23";
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
@@ -304,6 +304,7 @@ export default defineNuxtConfig({
     manifest: {
       name: "RUSDU",
       short_name: "Rusdu",
+      useWebManifestExtension: false,
       description: "Jaga kelola harta",
       background_color: "#FFFFFF",
       theme_color: "#FFFFFF",

@@ -54,22 +54,6 @@ export const useDebtStore = defineStore("debt", () => {
     }
   };
 
-  const getLunas = async () => {
-    try {
-      const params = {
-        where: { isActive: 0, parentId: { eq: null } },
-        order: "id DESC",
-      };
-      const { data } = await $api.get<Debt[]>(
-        "/Debts?filter=" + encodeURI(JSON.stringify(params)),
-      );
-      debts.value = data;
-      return Promise.resolve(true);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  };
-
   const payDebt = async (payload: DebtPayment) => {
     try {
       const data = {
@@ -126,7 +110,6 @@ export const useDebtStore = defineStore("debt", () => {
     payDebt,
     getDebtHistory,
     getParents,
-    getLunas,
     getPaid,
     debts,
     debt,
